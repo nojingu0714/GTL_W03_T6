@@ -73,7 +73,6 @@ private:
     UInputManager* InputManager;
     UUIManager* UIManager;
     UGizmoManager* GizmoManager;
-
 public:
     const FWindowInfo& GetWindowInfo() const { return WindowInfo; }
 

@@ -19,6 +19,8 @@ public:
 	void DeleteActor(uint32 uuid);
 	void DeleteActor(FString InName);
 
+	void ShowActorList();
+
 	// UUIBase을(를) 통해 상속됨
 	void Tick(float TickTime) override;
 	void ActorSpawner();
@@ -33,4 +35,5 @@ private:
 	int32 CurrentPrimitiveType;
 	int32 SpawnNum;
 	bool DebugSpawnLine = false;
+	bool bShowActorList = true;
 };

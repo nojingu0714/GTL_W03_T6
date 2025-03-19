@@ -4,6 +4,8 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "Core/Input/InputManager.h"
+#include "Core/Gizmo/GizmoManager.h"
+#include "CoreUObject/GameFrameWork/Camera.h"
 #include "Utils/Math/Geometry.h"
 
 #include "GameFrameWork/Shapes/Triangle.h"
@@ -102,6 +104,7 @@ void USceneManager::SceneHierarchy()
 {
     ImGui::BeginChild("ScrollingRegion");
 
+    // create node for child
     std::function<void(USceneComponent*)> createNode = [&createNode](USceneComponent* comp)->void {
         FString ws = comp->GetName();
         std::string s;
@@ -111,8 +114,8 @@ void USceneManager::SceneHierarchy()
         if (comp->GetAllChildren().size() == 0)
             flags |= ImGuiTreeNodeFlags_Leaf;
 
-        if (ImGui::TreeNodeEx(s.c_str(), flags)) {
-            for (auto& child : comp->GetAllChildren()) {
+        if ( ImGui::TreeNodeEx(s.c_str(), flags) ) {
+            for ( auto& child : comp->GetAllChildren() ) {
                 createNode(child);
             }
             ImGui::TreePop();

@@ -20,5 +20,7 @@ public:
 
 	inline void SetDirection(FMatrix m) { rotation = m; }
 	FMatrix GetWorldMatrix() const;
+	FVector GetStartPoint() const;
+	FVector GetEndPoint() const;
 };
 

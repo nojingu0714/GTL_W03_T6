@@ -62,6 +62,13 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 		return false;
 	}
 
+    // for batch line rendering
+    hr = DirectX11Handle->CheckAndAddDynamicVertexBuffer<FVertexSimple>(L"Dynamic", 1024);
+    if ( FAILED(hr) ) {
+        MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
+        return false;
+    }
+
 	// TimeManager 추가
 	TimeManager = new UTimeManager();
 	TimeManager->Initialize();

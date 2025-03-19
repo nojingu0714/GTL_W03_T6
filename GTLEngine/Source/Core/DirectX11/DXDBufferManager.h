@@ -14,6 +14,8 @@ public:
 	HRESULT CreateASCIITextBuffer(ID3D11Device* Device, const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset);
 
 	void ReleaseBuffers();
+	template<typename T>
+	HRESULT CreateDynamicVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
 
 };
 
@@ -40,4 +42,27 @@ inline HRESULT UDXDBufferManager::CreateVertexBuffer(ID3D11Device* Device, const
 
 	return S_OK;
 	
+}
+
+template<typename T>
+inline HRESULT UDXDBufferManager::CreateDynamicVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo) {
+	ID3D11Buffer* NewVertexBuffer;
+	// 버텍스 버퍼 생성
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = sizeof(T) * static_cast<uint32>(vertices.size());
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = vertices.data();
+
+	HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, &NewVertexBuffer);
+	if ( FAILED(hr) )
+		return hr;
+
+	OutVertexInfo.NumVertices = static_cast<uint32>(vertices.size());
+	OutVertexInfo.VertexBuffer = NewVertexBuffer;
+
+	return S_OK;
 }

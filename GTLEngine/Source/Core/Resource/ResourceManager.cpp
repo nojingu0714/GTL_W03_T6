@@ -273,11 +273,17 @@ void UResourceManager::NewScene()
 
 void UResourceManager::LoadScene(std::string SceneName)
 {
+    std::string str = ("Resource/Scenes/" + SceneName + ".Scene");
     std::ifstream inFile("Resource/Scenes/" + SceneName + ".Scene");
+
+    wchar_t wbuf[1024];
+    MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size() + 1, wbuf, ARRAYSIZE(wbuf));
+    FString wSceneName = FString(wbuf);
+
     if (!inFile.is_open())
     {
         // 파일 열기 실패 처리
-        UE_LOG(TEXT("Can't access %s"), ("Resource/Scenes/" + SceneName + ".Scene").c_str())
+        UE_LOG(TEXT("Can't access %s"), wbuf)
         //ULogManager::AddLog(TEXT("Can't access %s"), (SceneName + ".Scene").c_str());
         return;
     }
@@ -340,9 +346,7 @@ void UResourceManager::LoadScene(std::string SceneName)
             }
         }
     }
-    std::string str = ("Resource/Scenes/" + SceneName + ".Scene");
-    wchar_t wbuf[1024];
-    MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size() + 1, wbuf, ARRAYSIZE(wbuf));
+    
     UE_LOG(TEXT("Success to Load %s"), wbuf);
     //ULogManager::AddLog(TEXT("Success to Load %s"), (SceneName + ".Scene").c_str());
 }

@@ -49,3 +49,11 @@ FMatrix ULineComponent::GetWorldMatrix() const {
 	}
 	return ScaleMat * RotMat * TransMat;
 }
+
+FVector ULineComponent::GetStartPoint() const {
+	return GetWorldMatrix().TransformPositionVector(FVector::ZeroVector);
+}
+
+FVector ULineComponent::GetEndPoint() const {
+	return GetStartPoint() + GetWorldMatrix().TransformDirectionVector(FVector(1, 0, 0));
+}

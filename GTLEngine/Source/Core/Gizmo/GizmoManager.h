@@ -25,6 +25,8 @@ public:
 	IClickable* PickClickable(float MouseX, float MouseY) const;
 	void ClearSelected();
 	const TArray<UGizmoBase*> GetGizmo();
+	void AttachGizmo(AActor* target);
 	inline AActor* GetSelected() const { return SelectedActor; }
+	inline void SetSelected(AActor* actor) { SelectedActor = actor; }
 };
 
