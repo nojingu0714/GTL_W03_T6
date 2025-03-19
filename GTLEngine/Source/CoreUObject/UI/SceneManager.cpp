@@ -23,25 +23,54 @@ void USceneManager::DeleteActor(FString InName) {
 
 }
 
-void USceneManager::RenderUI() {
+void USceneManager::Tick(float TickTime) {
+    ImGui::Begin("Scene Manager");
 
-    const char* items[] = { "None", "Line", "Triangle", "Sphere", "Cube", "Cylinder", "Cone" };
+    ActorSpawner();
 
-    if ( SpawnNum < 1 )
+    ImGui::Separator();
+
+    DebugLineToggle();
+
+    ImGui::Separator();
+
+    SceneHierarchy();
+
+    ImGui::End();
+
+    //DebugLine 생성
+    UInputManager* inputManager = UEngine::GetEngine().GetInputManager();
+    if ( DebugSpawnLine && inputManager->GetMouseDown(UInputManager::EMouseButton::LEFT) ) {
+		float mouse_x = inputManager->GetMouseNdcX();
+		float mouse_y = inputManager->GetMouseNdcY();
+		FRay ray = Geometry::CreateRayWithMouse(mouse_x, mouse_y);
+		ALine* line = UEngine::GetEngine().GetWorld()->SpawnActor<ALine>(
+			TEXT("Line"),
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			FVector::OneVector,
+			nullptr
+		);
+        line->SetRay(ray);
+	}
+}
+
+void USceneManager::ActorSpawner()
+{
+    const char* items[] = { "Triangle", "Sphere", "Cube", "Cylinder", "Cone" };
+
+    if (SpawnNum < 1)
         SpawnNum = 1;
 
-	ImGui::Begin("Scene Manager");
-	ImGui::DragFloat3("Location", SpawnLocation);
-	ImGui::DragFloat3("Rotation", SpawnRotation);
-	ImGui::DragFloat3("Scale", SpawnScale);
+    ImGui::DragFloat3("Location", SpawnLocation);
+    ImGui::DragFloat3("Rotation", SpawnRotation);
+    ImGui::DragFloat3("Scale", SpawnScale);
     ImGui::Combo("Primitive", &CurrentPrimitiveType, items, ARRAYSIZE(items));
+    int adjustedType = CurrentPrimitiveType + 2;
     ImGui::InputInt("Number of Spawn", &SpawnNum);
     if (ImGui::Button("Spawn")) {
         for (int i = 0; i < SpawnNum; i++) {
-            switch ( static_cast<EPrimitiveType>(CurrentPrimitiveType) ) {
-            case EPrimitiveType::Line:
-                SpawnActor<ALine>(TEXT("Line"));
-                break;
+            switch (static_cast<EPrimitiveType>(adjustedType)) {
             case EPrimitiveType::Triangle:
                 SpawnActor<ATriangle>(TEXT("Triangle"));
                 break;
@@ -62,10 +91,15 @@ void USceneManager::RenderUI() {
             }
         }
     }
-    ImGui::Separator();
-    ImGui::Checkbox("Spawn debug line", &DebugSpawnLine);
-    ImGui::Separator();
+}
 
+void USceneManager::DebugLineToggle()
+{
+    ImGui::Checkbox("Spawn debug line", &DebugSpawnLine);
+}
+
+void USceneManager::SceneHierarchy()
+{
     ImGui::BeginChild("ScrollingRegion");
 
     std::function<void(USceneComponent*)> createNode = [&createNode](USceneComponent* comp)->void {
@@ -74,64 +108,31 @@ void USceneManager::RenderUI() {
         s.assign(ws.begin(), ws.end());
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
-        if ( comp->GetAllChildren().size() == 0 )
+        if (comp->GetAllChildren().size() == 0)
             flags |= ImGuiTreeNodeFlags_Leaf;
 
         if (ImGui::TreeNodeEx(s.c_str(), flags)) {
-            for ( auto& child : comp->GetAllChildren() ) {
+            for (auto& child : comp->GetAllChildren()) {
                 createNode(child);
             }
             ImGui::TreePop();
         }
-        
-        
-    };
-    for ( AActor* obj : UEngine::GetEngine().GetWorld()->GetActors() ) {
-        if ( obj ) {
+
+
+        };
+    for (AActor* obj : UEngine::GetEngine().GetWorld()->GetActors()) {
+        if (obj) {
             FString ws = obj->GetName();
             std::string s;
             s.assign(ws.begin(), ws.end());
-            if ( ImGui::TreeNodeEx(s.c_str()) ) {
+            if (ImGui::TreeNodeEx(s.c_str())) {
                 createNode(obj->GetRootComponent());
                 ImGui::TreePop();
             }
-            
+
         }
     }
     ImGui::EndChild();
-
-    // TODO: Insert Actor List
-    //ImGui::BeginChild("ScrollingRegion");
-    //for (UObject* obj: GUObjectArray) {
-    //    if (obj) {
-    //        FString ws = obj->GetName();
-    //        std::string s;
-    //        s.assign(ws.begin(), ws.end());
-    //        ImGui::Text("%s(%d)", s.c_str(), obj->GetUUID());
-    //    }
-    //}
-    //ImGui::EndChild();
-
-	ImGui::End();
-}
-
-void USceneManager::Tick(float TickTime) {
-	RenderUI();
-
-    UInputManager* inputManager = UEngine::GetEngine().GetInputManager();
-    if ( DebugSpawnLine && inputManager->GetMouseDown(UInputManager::EMouseButton::LEFT) ) {
-		float mouse_x = inputManager->GetMouseNdcX();
-		float mouse_y = inputManager->GetMouseNdcY();
-		FRay ray = Geometry::CreateRayWithMouse(mouse_x, mouse_y);
-		ALine* line = UEngine::GetEngine().GetWorld()->SpawnActor<ALine>(
-			TEXT("Line"),
-			FVector::ZeroVector,
-			FRotator::ZeroRotator,
-			FVector::OneVector,
-			nullptr
-		);
-        line->SetRay(ray);
-	}
 }
 
 void USceneManager::Destroy() {}

@@ -15,17 +15,6 @@ UPropertyPanel::UPropertyPanel()
 
 void UPropertyPanel::Tick(float DeltaTime)
 {
-	Render();
-}
-
-void UPropertyPanel::Destroy()
-{
-}
-
-void UPropertyPanel::Render()
-{
-	ImGuiIO& io = ImGui::GetIO();
-
 	float scaleX = io.DisplaySize.x / 1600.0f;
 	float scaleY = io.DisplaySize.y / 900.0f;
 
@@ -35,6 +24,26 @@ void UPropertyPanel::Render()
 	ImGui::SetNextWindowSize(WinSize, ImGuiCond_Appearing);
 	ImGui::Begin("Property Panel", nullptr, ImGuiWindowFlags_NoResize);
 
+	WorldCoordCheckbox();
+
+	ImGui::Separator();
+
+	PropertiesInspector();
+
+	ImGui::End();
+}
+
+void UPropertyPanel::Destroy()
+{
+}
+
+void UPropertyPanel::WorldCoordCheckbox()
+{
+	ImGui::Checkbox("WorldCoord", &UGizmoBase::IsAbsoluteCoord);
+}
+
+void UPropertyPanel::PropertiesInspector()
+{
 	AActor* selected = UEngine::GetEngine().GetGizmoManager()->GetSelected();
 
 	if (selected) {
@@ -58,9 +67,4 @@ void UPropertyPanel::Render()
 
 		ImGui::Text("GUID : %d", selected->GetUUID());
 	}
-
-	ImGui::Separator();
-
-	ImGui::Checkbox("WorldCoord", &UGizmoBase::IsAbsoluteCoord);
-	ImGui::End();
 }

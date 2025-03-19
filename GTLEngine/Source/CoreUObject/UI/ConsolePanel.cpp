@@ -58,10 +58,7 @@ FString UConsolePanel::Delete(TArray<FString> commands) {
     return FString();
 }
 
-void UConsolePanel::Tick(float TickTime) {
-
-    const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-    ImGuiIO& io = ImGui::GetIO();
+void UConsolePanel::Tick(float TickTime) {    
     float scaleX = io.DisplaySize.x / 1600.0f;
     float scaleY = io.DisplaySize.y / 900.0f;
     ImVec2 WinSize(WindowWidth * scaleX, WindowHeight * scaleY);
@@ -71,30 +68,46 @@ void UConsolePanel::Tick(float TickTime) {
 
 	ImGui::Begin("Console");
 
-    if ( ImGui::Button("Clear") )
-        ULogManager::ClearLog();
-
-    ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_HorizontalScrollbar);
-    for ( const char* item : ULogManager::GetLogs() ) {
-        ImGui::TextUnformatted(item);
-        //ImGui::Text(item);
-    }
-    if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() ) {
-        ImGui::SetScrollHereY(1.0f);
-    }
-    ImGui::EndChild();
+    ClearLogButton();
+    LogDisplay();
 
     ImGui::Separator();
 
+    CommandInput();
+
+	ImGui::End();
+}
+
+void UConsolePanel::ClearLogButton()
+{
+    if (ImGui::Button("Clear"))
+        ULogManager::ClearLog();
+}
+
+void UConsolePanel::LogDisplay()
+{
+    const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+    ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_HorizontalScrollbar);
+    for (const char* item : ULogManager::GetLogs()) {
+        ImGui::TextUnformatted(item);
+        //ImGui::Text(item);
+    }
+    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+        ImGui::SetScrollHereY(1.0f);
+    }
+    ImGui::EndChild();
+}
+
+void UConsolePanel::CommandInput()
+{
     const ImGuiInputTextFlags INPUT_TEXT_FLAGS = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll;
     if (ImGui::InputText("Input", InputBuffer, IM_ARRAYSIZE(InputBuffer), INPUT_TEXT_FLAGS, 0, (void*)this)) {
         char* s = InputBuffer;
         Strtrim(s);
-        if ( s[0] )
+        if (s[0])
             ExecCommand(s);
         strcpy_s(s, 256, "");
     }
-	ImGui::End();
 }
 
 void UConsolePanel::Destroy() {}

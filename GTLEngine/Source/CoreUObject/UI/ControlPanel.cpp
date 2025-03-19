@@ -25,14 +25,10 @@ UControlPanel::UControlPanel()
 	: UUIBase(), CurrentPrimitiveType(0), SpawnNum(1), SceneName("NewScene"), blsOrthogonal(nullptr), Location{ 0.f, 0.f,0.f }, Rotation{ 0.f,0.f,0.f }, Scale{ 1.f,1.f,1.f },
     FOV(nullptr), CameraLocation(nullptr), CameraRotation(nullptr), WindowWidth(360.f), WindowHeight(400.f)
 {
-
 }
 
 void UControlPanel::Tick(float DeltaTime)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    
-
+{    
     float scaleX = io.DisplaySize.x / 1600.0f;
     float scaleY = io.DisplaySize.y / 900.0f;
     
@@ -41,15 +37,37 @@ void UControlPanel::Tick(float DeltaTime)
     ImGui::SetNextWindowPos(ImVec2(5, 10), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(WinSize, ImGuiCond_Appearing);
 
-    // 제목.
     ImGui::Begin("Control Panel", nullptr, ImGuiWindowFlags_NoResize);
+
+    EnvironmentPanel();
+    
+    ImGui::Separator();
+
+    GizmoPanel();
+
+    ImGui::Separator();
+
+    SceneManagementPanel();
+
+    ImGui::Separator();
+
+    // TODO: 메모리 가져와서 UI 업데이트 해주기.
+    MemoryPanel();
+
+    ImGui::Separator();
+
+    ImGui::End();
+}
+
+void UControlPanel::EnvironmentPanel()
+{
     ImGui::Text("HELLO GTL!!");
 
     // FPS 및 창 크기출력.
     ImGui::Text("FPS %.0f (%.0f ms)", io.Framerate, 1000.0f / io.Framerate);
     ImGui::Text("Window %dx%d", UEngine::GetEngine().GetWindowInfo().Width, UEngine::GetEngine().GetWindowInfo().Height);
     ImGui::Text("Mouse %d,%d", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-    
+
     ACamera* cam = UEngine::GetEngine().GetWorld()->GetCamera();
     if (cam)
     {
@@ -57,14 +75,15 @@ void UControlPanel::Tick(float DeltaTime)
         ImGui::DragFloat("Camera speed", &cam->MoveSpeed, 0.1f, 0.1f, 100.f, "%.1f");
         ImGui::DragFloat("Mouse Sensitive", &cam->MouseSensitive, 0.1f, 0.1f, 10.f, "%.1f");
     }
-    else 
+    else
     {
         ImGui::Text("Can not find main camera");
     }
-    
-    ImGui::Separator();
+}
 
-	// 폰트 설정.
+void UControlPanel::GizmoPanel()
+{
+    // 폰트 설정.
     ImFont* UnicodeFont = io.Fonts->Fonts[FEATHER_FONT];
     ImGui::PushFont(UnicodeFont);
 
@@ -81,7 +100,7 @@ void UControlPanel::Tick(float DeltaTime)
         UCameraComponent* camera = Camera->GetCameraComponent();
 
     bool IsTranslateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoTranslate;
-    if(IsTranslateActive)
+    if (IsTranslateActive)
         ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
     if (ImGui::Button(ICON_GIZMO_TRANSLATE, ControlButtonSize)) // 기즈모 이동버튼
     {
@@ -143,21 +162,21 @@ void UControlPanel::Tick(float DeltaTime)
     UEngine::GetEngine().ViewModeIndex = static_cast<EViewModeIndex>(viewModeIndex);
 
     // set draw targets
-    if ( ImGui::CollapsingHeader("Rendering Entity") ) {
+    if (ImGui::CollapsingHeader("Rendering Entity")) {
         EEngineShowFlags flags = UEngine::GetEngine().ShowFlags;
 
         // primitive
         bool Primitive = GetFlag(flags, EEngineShowFlags::SF_Primitives);
         ImGui::Checkbox("Primitives", &Primitive);
-        if ( Primitive )
+        if (Primitive)
             SetFlagOn(flags, EEngineShowFlags::SF_Primitives);
-        else 
+        else
             SetFlagOff(flags, EEngineShowFlags::SF_Primitives);
 
         // line
         bool Line = GetFlag(flags, EEngineShowFlags::SF_Line);
         ImGui::Checkbox("Line", &Line);
-        if ( Line )
+        if (Line)
             SetFlagOn(flags, EEngineShowFlags::SF_Line);
         else
             SetFlagOff(flags, EEngineShowFlags::SF_Line);
@@ -165,34 +184,29 @@ void UControlPanel::Tick(float DeltaTime)
         // BillboardText
         bool BillboardText = GetFlag(flags, EEngineShowFlags::SF_BillboardText);
         ImGui::Checkbox("UUID", &BillboardText);
-        if ( BillboardText )
+        if (BillboardText)
             SetFlagOn(flags, EEngineShowFlags::SF_BillboardText);
-        else 
+        else
             SetFlagOff(flags, EEngineShowFlags::SF_BillboardText);
 
         UEngine::GetEngine().ShowFlags = flags;
     }
+}
 
-
-    ImGui::Separator();
-
-    // Primitive Spawn 창.
-    // SceneManager로 이전
-    //DrawSpawnPrimitive();
-
-    //ImGui::Separator();
-
-
-	// Scene 로드 세이브.
+void UControlPanel::SceneManagementPanel()
+{
+    // Scene 로드 세이브.
+    // 폰트 설정.
+    ImFont* UnicodeFont = io.Fonts->Fonts[FEATHER_FONT];
     ImGui::PushFont(UnicodeFont);
 
+    ImVec2 ControlButtonSize = ImVec2(32, 32);
     UResourceManager* ResourceManager = UEngine::GetEngine().GetResourceManager();
     if (!ResourceManager)
         return;
 
     if (ImGui::Button(ICON_BUTTON_NEW_SCENE, ControlButtonSize))     // New Scene
     {
-        Camera->SaveConfig();
         ResourceManager->NewScene();
     }
 
@@ -221,133 +235,126 @@ void UControlPanel::Tick(float DeltaTime)
     {
         SceneName = buf;
     }
+}
 
-    ImGui::Separator();
-
-    //ImGui::Separator();
-
-    // TODO: 메모리 가져와서 UI 업데이트 해주기.
-    
+void UControlPanel::MemoryPanel()
+{
     ImGui::Text("Allocation Bytes %d", FPlatformMemory::GetAllocationBytes());
     ImGui::Text("Allocation Count %d", FPlatformMemory::GetAllocationCount());
-
-    ImGui::Separator();
-
-    ImGui::End();
 }
 
 void UControlPanel::Destroy() {}
 
 const char* primitives[] = { "Sphere", "Cube", "Triangle", "Cylinder", "Cone"};
 
-void UControlPanel::DrawSpawnPrimitive()
-{
-	
-    // 여기부터 Primitive
-
-    ImGui::SetNextItemWidth(100);
-
-    ImGui::Combo("Primitive", &CurrentPrimitiveType, Items, IM_ARRAYSIZE(Items));
-
-    ImGui::SameLine(0, 5.0f);
-
-    if (CreateCustomInputInt("Number Of Spawn", ImGuiDataType_S32, &SpawnNum, "%d", ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsDecimal))
-    {
-        std::cout << "SpawnNum : " << SpawnNum << std::endl;
-
-        UWorld* World = UEngine::GetEngine().GetWorld();
-        if (!World)
-            return;
-
-        // 액터 스폰.
-        switch (static_cast<EPrimitiveType>(CurrentPrimitiveType))
-        {
-        case EPrimitiveType::Triangle:
-            World->SpawnActor<ATriangle>(TEXT("Triangle"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-            break;
-        case EPrimitiveType::Sphere:
-            World->SpawnActor<ASphere>(TEXT("Sphere"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-            break;
-        case EPrimitiveType::Cube:
-            World->SpawnActor<ACube>(TEXT("Cube"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-            break;
-        case EPrimitiveType::Cylinder:
-            World->SpawnActor<ACylinder>(TEXT("Cylinder"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-            break;
-        case EPrimitiveType::Cone:
-            World->SpawnActor<ACone>(TEXT("Cone"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-            break;
-        default:
-            break;
-        }
-    }
-
-	ImGui::DragFloat3("Location", Location);
-	ImGui::DragFloat3("Rotation", Rotation);
-	ImGui::DragFloat3("Scale", Scale);
-}
-
-
-bool UControlPanel::CreateCustomInputInt(const char* label, ImGuiDataType data_type, void* p_data, const char* format, ImGuiInputTextFlags flags)
-{
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-    ImGuiContext& g = *GImGui;
-    ImGuiStyle& style = g.Style;
-    IM_ASSERT((flags & ImGuiInputTextFlags_EnterReturnsTrue) == 0); // Not supported by InputScalar()!
-
-    if (format == NULL)
-        format = ImGui::DataTypeGetInfo(data_type)->PrintFmt;
-
-    void* p_data_default = (g.NextItemData.HasFlags & ImGuiNextItemDataFlags_HasRefVal) ? &g.NextItemData.RefVal : &g.DataTypeZeroValue;
-
-    char buf[64];
-    if ((flags & ImGuiInputTextFlags_DisplayEmptyRefVal) && ImGui::DataTypeCompare(data_type, p_data, p_data_default) == 0)
-        buf[0] = 0;
-    else
-        ImGui::DataTypeFormatString(buf, IM_ARRAYSIZE(buf), data_type, p_data, format);
-
-    g.NextItemData.ItemFlags |= ImGuiItemFlags_NoMarkEdited;
-    flags |= ImGuiInputTextFlags_AutoSelectAll | (ImGuiInputTextFlags)ImGuiInputTextFlags_LocalizeDecimalPoint;
-
-    bool value_changed = false;
-    const float button_size = ImGui::GetFrameHeight();
-
-    ImGui::BeginGroup();
-    ImGui::PushID(label);
-    ImGui::SetNextItemWidth(ImMax(1.0f, ImGui::CalcItemWidth() - (button_size + style.ItemInnerSpacing.x) * 6 + 15));
-    if (ImGui::InputText("", buf, IM_ARRAYSIZE(buf), flags))
-        ImGui::DataTypeApplyFromText(buf, data_type, p_data, format, (flags & ImGuiInputTextFlags_ParseEmptyRefVal) ? p_data_default : NULL);
-    IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Inputable);
-
-    const ImVec2 backup_frame_padding = style.FramePadding;
-    style.FramePadding.x = style.FramePadding.y;
-    if (flags & ImGuiInputTextFlags_ReadOnly)
-        ImGui::BeginDisabled();
-    ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
-    ImGui::SameLine(0, style.ItemInnerSpacing.x);
-    if (ImGui::ButtonEx("Spawn", ImVec2(button_size * 4.2f, button_size)))
-    {
-        value_changed = true;
-    }
-    ImGui::PopItemFlag();
-    if (flags & ImGuiInputTextFlags_ReadOnly)
-        ImGui::EndDisabled();
-
-    style.FramePadding = backup_frame_padding;
-
-    ImGui::PopID();
-    ImGui::EndGroup();
+//void UControlPanel::DrawSpawnPrimitive()
+//{
+//	
+//    // 여기부터 Primitive
+//
+//    ImGui::SetNextItemWidth(100);
+//
+//    ImGui::Combo("Primitive", &CurrentPrimitiveType, Items, IM_ARRAYSIZE(Items));
+//
+//    ImGui::SameLine(0, 5.0f);
+//
+//    if (CreateCustomInputInt("Number Of Spawn", ImGuiDataType_S32, &SpawnNum, "%d", ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsDecimal))
+//    {
+//        std::cout << "SpawnNum : " << SpawnNum << std::endl;
+//
+//        UWorld* World = UEngine::GetEngine().GetWorld();
+//        if (!World)
+//            return;
+//
+//        // 액터 스폰.
+//        switch (static_cast<EPrimitiveType>(CurrentPrimitiveType))
+//        {
+//        case EPrimitiveType::Triangle:
+//            World->SpawnActor<ATriangle>(TEXT("Triangle"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
+//            break;
+//        case EPrimitiveType::Sphere:
+//            World->SpawnActor<ASphere>(TEXT("Sphere"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
+//            break;
+//        case EPrimitiveType::Cube:
+//            World->SpawnActor<ACube>(TEXT("Cube"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
+//            break;
+//        case EPrimitiveType::Cylinder:
+//            World->SpawnActor<ACylinder>(TEXT("Cylinder"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
+//            break;
+//        case EPrimitiveType::Cone:
+//            World->SpawnActor<ACone>(TEXT("Cone"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
+//            break;
+//        default:
+//            break;
+//        }
+//    }
+//
+//	ImGui::DragFloat3("Location", Location);
+//	ImGui::DragFloat3("Rotation", Rotation);
+//	ImGui::DragFloat3("Scale", Scale);
+//}
 
 
-    g.LastItemData.ItemFlags &= ~ImGuiItemFlags_NoMarkEdited;
-    if (value_changed)
-        ImGui::MarkItemEdited(g.LastItemData.ID);
-
-    return value_changed;
-}
+//bool UControlPanel::CreateCustomInputInt(const char* label, ImGuiDataType data_type, void* p_data, const char* format, ImGuiInputTextFlags flags)
+//{
+//    ImGuiWindow* window = ImGui::GetCurrentWindow();
+//    if (window->SkipItems)
+//        return false;
+//
+//    ImGuiContext& g = *GImGui;
+//    ImGuiStyle& style = g.Style;
+//    IM_ASSERT((flags & ImGuiInputTextFlags_EnterReturnsTrue) == 0); // Not supported by InputScalar()!
+//
+//    if (format == NULL)
+//        format = ImGui::DataTypeGetInfo(data_type)->PrintFmt;
+//
+//    void* p_data_default = (g.NextItemData.HasFlags & ImGuiNextItemDataFlags_HasRefVal) ? &g.NextItemData.RefVal : &g.DataTypeZeroValue;
+//
+//    char buf[64];
+//    if ((flags & ImGuiInputTextFlags_DisplayEmptyRefVal) && ImGui::DataTypeCompare(data_type, p_data, p_data_default) == 0)
+//        buf[0] = 0;
+//    else
+//        ImGui::DataTypeFormatString(buf, IM_ARRAYSIZE(buf), data_type, p_data, format);
+//
+//    g.NextItemData.ItemFlags |= ImGuiItemFlags_NoMarkEdited;
+//    flags |= ImGuiInputTextFlags_AutoSelectAll | (ImGuiInputTextFlags)ImGuiInputTextFlags_LocalizeDecimalPoint;
+//
+//    bool value_changed = false;
+//    const float button_size = ImGui::GetFrameHeight();
+//
+//    ImGui::BeginGroup();
+//    ImGui::PushID(label);
+//    ImGui::SetNextItemWidth(ImMax(1.0f, ImGui::CalcItemWidth() - (button_size + style.ItemInnerSpacing.x) * 6 + 15));
+//    if (ImGui::InputText("", buf, IM_ARRAYSIZE(buf), flags))
+//        ImGui::DataTypeApplyFromText(buf, data_type, p_data, format, (flags & ImGuiInputTextFlags_ParseEmptyRefVal) ? p_data_default : NULL);
+//    IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Inputable);
+//
+//    const ImVec2 backup_frame_padding = style.FramePadding;
+//    style.FramePadding.x = style.FramePadding.y;
+//    if (flags & ImGuiInputTextFlags_ReadOnly)
+//        ImGui::BeginDisabled();
+//    ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
+//    ImGui::SameLine(0, style.ItemInnerSpacing.x);
+//    if (ImGui::ButtonEx("Spawn", ImVec2(button_size * 4.2f, button_size)))
+//    {
+//        value_changed = true;
+//    }
+//    ImGui::PopItemFlag();
+//    if (flags & ImGuiInputTextFlags_ReadOnly)
+//        ImGui::EndDisabled();
+//
+//    style.FramePadding = backup_frame_padding;
+//
+//    ImGui::PopID();
+//    ImGui::EndGroup();
+//
+//
+//    g.LastItemData.ItemFlags &= ~ImGuiItemFlags_NoMarkEdited;
+//    if (value_changed)
+//        ImGui::MarkItemEdited(g.LastItemData.ID);
+//
+//    return value_changed;
+//}
 
 
 //void UControlPanel::DrawSpawnPrimitive()

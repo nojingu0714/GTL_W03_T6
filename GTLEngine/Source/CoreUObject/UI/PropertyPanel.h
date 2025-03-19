@@ -14,7 +14,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Destroy() override;
 private:
-	void Render();
+	void WorldCoordCheckbox();
+	void PropertiesInspector();
 
 
 private:
@@ -25,4 +26,5 @@ private:
 	float WindowWidth;
 	float WindowHeight;
 	UGizmoManager* gizmoManager;
+	ImGuiIO& io = ImGui::GetIO();
 };

@@ -14,12 +14,16 @@ public:
 
 public:
 	virtual void Tick(float DeltaTime) override;
+	void EnvironmentPanel();
+	void GizmoPanel();
+	void SceneManagementPanel();
+	void MemoryPanel();
 	virtual void Destroy() override;
 
 private:
-	void DrawSpawnPrimitive();
+	//void DrawSpawnPrimitive();
 
-	bool CreateCustomInputInt(const char* label, ImGuiDataType data_type, void* p_data, const char* format, ImGuiInputTextFlags flags);
+	//bool CreateCustomInputInt(const char* label, ImGuiDataType data_type, void* p_data, const char* format, ImGuiInputTextFlags flags);
 
 private:
 	int32 CurrentPrimitiveType;
@@ -38,4 +42,6 @@ private:
 
 	float WindowWidth;
 	float WindowHeight;
+
+	ImGuiIO& io = ImGui::GetIO();
 };

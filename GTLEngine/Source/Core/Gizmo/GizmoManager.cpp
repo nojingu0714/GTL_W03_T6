@@ -136,6 +136,8 @@ IClickable* UGizmoManager::PickClickable(float MouseX, float MouseY) const {
 		{
 			float distanceSq = (camera->GetActorLocation() - hitpoint).LengthSquared();
 			if (UGizmoBase* gizmo = dynamic_cast<UGizmoBase*>(clickable)) {
+				if (gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
+					continue;
 				if (distanceSq < gizmoMinDistancePow) {
 					gizmoMinDistancePow = distanceSq;
 					selectedGizmo = gizmo;
