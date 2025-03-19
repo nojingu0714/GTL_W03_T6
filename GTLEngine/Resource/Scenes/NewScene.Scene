@@ -12,6 +12,25 @@
       "Rotation" : [0.000000, 0.000000, 0.000000],
       "Scale" : [1.000000, 1.000000, 1.000000],
       "Type" : "class USceneComponent"
+    },
+    "1" : {
+      "Children" : [{
+          "Children" : [{
+              "Children" : [],
+              "Location" : [0.000000, 5.000000, 2.000000],
+              "Rotation" : [45.000000, 0.000000, 0.000000],
+              "Scale" : [1.000000, 2.000000, 2.000000],
+              "Type" : "class UCubeComponent"
+            }],
+          "Location" : [0.000000, 0.000000, 0.000000],
+          "Rotation" : [0.000000, 0.000000, -45.000000],
+          "Scale" : [1.000000, 1.000000, 2.000000],
+          "Type" : "class UCubeComponent"
+        }],
+      "Location" : [0.000000, 0.000000, 0.000000],
+      "Rotation" : [0.000000, 421.000000, 0.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "class USceneComponent"
     }
   }
 }

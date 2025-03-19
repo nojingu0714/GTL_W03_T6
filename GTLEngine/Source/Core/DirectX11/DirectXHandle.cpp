@@ -726,39 +726,6 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
 	DXDDeviceContext->Draw(number, 0);
 }
 
-void UDirectXHandle::RenderLine(ULineComponent* LineComp) {
-
-    if ( LineComp == nullptr)
-        return;
-
-	if (LineComp->GetPrimitiveType() == EPrimitiveType::None)
-		return;
-
-    // Begin Object Matrix Update. 
-    //ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
-    //if ( !CbChangesEveryObject ) {
-    //    return;
-    //}
-    //D3D11_MAPPED_SUBRESOURCE MappedData = {};
-    //DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-    //if ( FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData) ) {
-    //    Buffer->WorldMatrix = LineComp->GetWorldMatrix();
-    //}
-    //DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
-
-    //EPrimitiveType Type = LineComp->GetPrimitiveType();
-    //uint Stride = sizeof(FVertexSimple);
-    //UINT offset = 0;
-    //FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(Type)];
-    //ID3D11Buffer* VB = Info.VertexBuffer;
-    //uint Num = Info.NumVertices;
-    //DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
-
-    //DXDDeviceContext->Draw(Num, 0);
-
-	//Info.VertexBuffer->Release();
-}
-
 void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 {
 	if ( !GetFlag(UEngine::GetEngine().ShowFlags, EEngineShowFlags::SF_BillboardText) )

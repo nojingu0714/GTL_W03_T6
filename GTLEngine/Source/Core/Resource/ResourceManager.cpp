@@ -426,13 +426,19 @@ void UResourceManager::SaveScene(std::string SceneName)
     }
     std::string jsonData = Scene.dump();
     std::ofstream outFile("Resource/Scenes/" + SceneName + ".Scene");
+
+    std::string str = ("Resource/Scenes/" + SceneName + ".Scene");
+    wchar_t wbuf[1024];
+    MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size() + 1, wbuf, ARRAYSIZE(wbuf));
+    FString wSceneName = FString(wbuf);
+
     if (outFile.is_open())
     {
         outFile << jsonData;
         outFile.close();
-        ULogManager::AddLog(L"Success to Save %s", (SceneName + ".Scene").c_str());
+        UE_LOG(L"Success to Save %s", wSceneName.c_str());
     } else {
-        ULogManager::AddLog(L"Can't access %s", (SceneName + ".Scene").c_str());
+        UE_LOG(L"Can't access %s", wSceneName.c_str());
     }
 }
 

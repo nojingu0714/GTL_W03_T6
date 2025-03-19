@@ -127,7 +127,8 @@ void USceneManager::SceneHierarchy()
 
         };
     for (AActor* obj : UEngine::GetEngine().GetWorld()->GetActors()) {
-        if ( Cast<ALine>(obj) )
+        // cast가 안먹힌다
+        if ( dynamic_cast<ALine*>(obj) != nullptr )
             continue;
         if (obj) {
             FString ws = obj->GetName();
