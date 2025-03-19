@@ -13,7 +13,6 @@ public:
 	ID3D11DepthStencilState* GetMaskZeroDepthStencilState() const { return MaskZeroDepthStencilState; }
 
 private:
-
 	ID3D11DepthStencilState* DefaultDepthStencilState = nullptr;
 	ID3D11DepthStencilState* MaskZeroDepthStencilState = nullptr;
 };

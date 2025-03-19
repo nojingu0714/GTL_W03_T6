@@ -41,9 +41,11 @@ void UDXDDepthStencilState::ReleaseDepthStencilState()
     if (DefaultDepthStencilState)
     {
         DefaultDepthStencilState->Release();
+        DefaultDepthStencilState = nullptr;
     }
     if (MaskZeroDepthStencilState)
     {
         MaskZeroDepthStencilState->Release();
+        MaskZeroDepthStencilState = nullptr;
     }
 }

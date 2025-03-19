@@ -12,8 +12,6 @@ void UDXDConstantBuffer::Release()
     {
         ConstantBuffer->Release();
     }
-
-    DXDDevice.Reset();
 }
 
 HRESULT UDXDConstantBuffer::CreateBuffer(EConstantBufferType Type)

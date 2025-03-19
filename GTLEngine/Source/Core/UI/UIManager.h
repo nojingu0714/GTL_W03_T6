@@ -21,6 +21,7 @@ public:
 
 	void RegistUI(UUIBase* NewUI);
 	void RenderUI();
+	void UnRegistUI();
 
 private:
 	TArray<UUIBase*> UIList;

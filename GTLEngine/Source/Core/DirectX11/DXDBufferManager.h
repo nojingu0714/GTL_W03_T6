@@ -13,6 +13,7 @@ public:
 
 	HRESULT CreateASCIITextBuffer(ID3D11Device* Device, const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset);
 
+	void ReleaseBuffers();
 
 };
 

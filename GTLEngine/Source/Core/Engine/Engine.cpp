@@ -157,8 +157,8 @@ void UEngine::ClearEngine()
 
     if (World)
     {
-        delete World;
-        World = nullptr;
+        World->Destroy();
+		FObjectFactory::DestroyObject(World);
     }
 
     if (ResourceManager)

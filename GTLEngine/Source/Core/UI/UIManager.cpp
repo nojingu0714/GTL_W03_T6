@@ -63,11 +63,21 @@ void UUIManager::RenderUI()
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
+void UUIManager::UnRegistUI()
+{
+	for (UUIBase* UI : UIList)
+	{
+		UI->Destroy();
+		FObjectFactory::DestroyObject(UI);
+	}
+}
+
 void UUIManager::Destroy()
 {
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	UnRegistUI();
 }
 
 bool UUIManager::GetObjectTranslation(FVector& outTranslation)

@@ -89,7 +89,7 @@ private:
 	IDXGISwapChain* DXDSwapChain;
 	
 	UDXDRenderTarget* RenderTarget;
-	UDXDDepthStencilView* DepthStencilView; // 여러개 보류.
+	UDXDDepthStencilView* DepthStencilView;
 	UDXDDepthStencilState* DepthStencilState;
 	TMap<FString, UDXDRasterizerState*> RasterizerStates;
 	UDXDShaderManager* ShaderManager;
@@ -103,8 +103,6 @@ private:
 	// TODO: Texture 관리용 객체로 묶어서 관리.
 	ID3D11ShaderResourceView* FontAtlasTexture;
 	ID3D11SamplerState* FontSamplerState;
-	FVertexInfo FontTextureBuffer;
-
 };
 
 template<typename T>

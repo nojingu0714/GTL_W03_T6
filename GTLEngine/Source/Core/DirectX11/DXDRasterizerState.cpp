@@ -20,6 +20,6 @@ void UDXDRasterizerState::ReleaseRasterizerState()
     if (RasterizerState)
     {
         RasterizerState->Release();
-        RasterizerState.Reset();
+		RasterizerState = nullptr;
     }
 }

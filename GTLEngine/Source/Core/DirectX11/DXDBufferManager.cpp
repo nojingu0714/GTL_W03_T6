@@ -70,3 +70,8 @@ HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FSt
 
 	return S_OK;
 }
+
+void UDXDBufferManager::ReleaseBuffers()
+{
+	
+}

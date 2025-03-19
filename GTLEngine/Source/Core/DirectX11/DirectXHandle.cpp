@@ -290,9 +290,94 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		DXDSwapChain = nullptr;
 	}
 
-	RenderTarget->ReleaseRenderTarget();
+	if (RenderTarget)
+	{
+		RenderTarget->ReleaseRenderTarget();
+		delete RenderTarget;
+		RenderTarget = nullptr;
+	}
 
-	ShaderManager->ReleaseAllShader();
+	if (DepthStencilView)
+	{
+		DepthStencilView->ReleaseDepthStencilView();
+		delete DepthStencilView;
+		DepthStencilView = nullptr;
+	}
+
+	if (DepthStencilState)
+	{
+		DepthStencilState->ReleaseDepthStencilState();
+		delete DepthStencilState;
+		DepthStencilState = nullptr;
+	}
+
+	if (!RasterizerStates.empty())
+	{
+		for (auto& Rasterizer : RasterizerStates)
+		{
+			Rasterizer.second->ReleaseRasterizerState();
+			delete Rasterizer.second;
+		}
+		RasterizerStates.clear();
+	}
+	
+	if (ShaderManager)
+	{
+		ShaderManager->ReleaseAllShader();
+		delete ShaderManager;
+		ShaderManager = nullptr;
+	}
+	
+	if (BufferManager)
+	{
+		BufferManager->ReleaseBuffers();
+		delete BufferManager;
+		BufferManager = nullptr;
+	}
+
+	if (!VertexBuffers.empty())
+	{
+		for (auto& VertexBuffer : VertexBuffers)
+		{
+			VertexBuffer.second.VertexBuffer->Release();
+			VertexBuffer.second.VertexBuffer = nullptr;
+		}
+		VertexBuffers.clear();
+	}
+
+	if (IndexBuffers.empty())
+	{
+		for (auto& IndexBuffer : IndexBuffers)
+		{
+			IndexBuffer.second.IndexBuffer->Release();
+			IndexBuffer.second.IndexBuffer = nullptr;
+		}
+		VertexBuffers.clear();
+	}
+	
+	if (!ConstantBuffers.empty())
+	{
+		for (auto& ConstantBuffer : ConstantBuffers)
+		{
+			ConstantBuffer.second->Release();
+			delete ConstantBuffer.second;
+			ConstantBuffer.second = nullptr;
+		}
+		ConstantBuffers.clear();
+	}
+	
+	if (FontAtlasTexture)
+	{
+		FontAtlasTexture->Release();
+		FontAtlasTexture = nullptr;
+	}
+
+	if (FontSamplerState)
+	{
+		FontSamplerState->Release();
+		FontSamplerState = nullptr;
+	}
+	
 }
 
 void UDirectXHandle::UpdateCameraMatrix(ACamera* Camera)
@@ -753,9 +838,9 @@ void UDirectXHandle::InitView()
 
 	DXDDeviceContext->RSSetViewports(1, &ViewportInfo);
 	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
-		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState().Get());
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
 	else
-		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Normal")]->GetRasterizerState().Get());
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Normal")]->GetRasterizerState());
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
 	DXDDeviceContext->OMSetRenderTargets(1, RenderTarget->GetFrameBufferRTV().GetAddressOf(), DepthStencilView->GetDepthStencilView());
