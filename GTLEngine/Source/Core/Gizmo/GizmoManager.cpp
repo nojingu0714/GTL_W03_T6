@@ -18,7 +18,7 @@
 #include "Utils/Math/Geometry.h"
 
 UGizmoManager::UGizmoManager()
-	: GizmoType(EGizmoType::Translate), SelectedActor(nullptr), Gizmo()
+	: SelectedActor(nullptr), Gizmo()
 {
 }
 
@@ -27,7 +27,6 @@ void UGizmoManager::Tick(float DeltaTime)
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
 	for ( auto& g : Gizmo )
 		g->Tick(DeltaTime);
-
 	Picking();
 }
 
@@ -37,8 +36,11 @@ void UGizmoManager::Destroy()
 
 void UGizmoManager::Picking() {
 	UInputManager* inputManager = UEngine::GetEngine().GetInputManager();
-
-
+	if (inputManager->GetKeyDown(VK_SPACE))
+	{
+		auto& mode = UEngine::GetEngine().GizmoModeIndex;
+		mode = static_cast<EGizmoModeIndex>((static_cast<int>(mode) + 1) % 3);
+	}
 	if ( inputManager->GetMouseDown(UInputManager::EMouseButton::LEFT) ) {
 		FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
 		// test pick
@@ -70,44 +72,39 @@ void UGizmoManager::Picking() {
 		if ( picked && (pickedActor = dynamic_cast<AActor*>(picked)) ) {
 			picked->OnClick(static_cast<int>(mouse_x), static_cast<int>(mouse_y));
 			SelectedActor = pickedActor;
-			switch ( Mode ) {
-			case EGizmoType::Translate:
-				UGizmoTranslate* gizmotranslate;
-				gizmotranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
-				gizmotranslate->Init(UGizmoBase::EAxis::X, pickedActor);
-				Gizmo.push_back(gizmotranslate);
-				gizmotranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
-				gizmotranslate->Init(UGizmoBase::EAxis::Y, pickedActor);
-				Gizmo.push_back(gizmotranslate);
-				gizmotranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
-				gizmotranslate->Init(UGizmoBase::EAxis::Z, pickedActor);
-				Gizmo.push_back(gizmotranslate);
-				break;
-			case EGizmoType::Rotate:
-				UGizmoRotate* gizmorotate;
-				gizmorotate = FObjectFactory::ConstructObject<UGizmoRotate>();
-				gizmorotate->Init(UGizmoBase::EAxis::X, pickedActor);
-				Gizmo.push_back(gizmorotate);
-				gizmorotate = FObjectFactory::ConstructObject<UGizmoRotate>();
-				gizmorotate->Init(UGizmoBase::EAxis::Y, pickedActor);
-				Gizmo.push_back(gizmorotate);
-				gizmorotate = FObjectFactory::ConstructObject<UGizmoRotate>();
-				gizmorotate->Init(UGizmoBase::EAxis::Z, pickedActor);
-				Gizmo.push_back(gizmorotate);
-				break;
-			case EGizmoType::Scale:
-				UGizmoScale* gizmoscale;
-				gizmoscale = FObjectFactory::ConstructObject<UGizmoScale>();
-				gizmoscale->Init(UGizmoBase::EAxis::X, pickedActor);
-				Gizmo.push_back(gizmoscale);
-				gizmoscale = FObjectFactory::ConstructObject<UGizmoScale>();
-				gizmoscale->Init(UGizmoBase::EAxis::Y, pickedActor);
-				Gizmo.push_back(gizmoscale);
-				gizmoscale = FObjectFactory::ConstructObject<UGizmoScale>();
-				gizmoscale->Init(UGizmoBase::EAxis::Z, pickedActor);
-				Gizmo.push_back(gizmoscale);
-				break;
-			}
+
+			UGizmoTranslate* GizmoTranslate;
+			GizmoTranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
+			GizmoTranslate->Init(UGizmoBase::EAxis::X, pickedActor);
+			Gizmo.push_back(GizmoTranslate);
+			GizmoTranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
+			GizmoTranslate->Init(UGizmoBase::EAxis::Y, pickedActor);
+			Gizmo.push_back(GizmoTranslate);
+			GizmoTranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
+			GizmoTranslate->Init(UGizmoBase::EAxis::Z, pickedActor);
+			Gizmo.push_back(GizmoTranslate);
+
+			UGizmoRotate* GizmoRotate;
+			GizmoRotate = FObjectFactory::ConstructObject<UGizmoRotate>();
+			GizmoRotate->Init(UGizmoBase::EAxis::X, pickedActor);
+			Gizmo.push_back(GizmoRotate);
+			GizmoRotate = FObjectFactory::ConstructObject<UGizmoRotate>();
+			GizmoRotate->Init(UGizmoBase::EAxis::Y, pickedActor);
+			Gizmo.push_back(GizmoRotate);
+			GizmoRotate = FObjectFactory::ConstructObject<UGizmoRotate>();
+			GizmoRotate->Init(UGizmoBase::EAxis::Z, pickedActor);
+			Gizmo.push_back(GizmoRotate);
+
+			UGizmoScale* GizmoScale;
+			GizmoScale = FObjectFactory::ConstructObject<UGizmoScale>();
+			GizmoScale->Init(UGizmoBase::EAxis::X, pickedActor);
+			Gizmo.push_back(GizmoScale);
+			GizmoScale = FObjectFactory::ConstructObject<UGizmoScale>();
+			GizmoScale->Init(UGizmoBase::EAxis::Y, pickedActor);
+			Gizmo.push_back(GizmoScale);
+			GizmoScale = FObjectFactory::ConstructObject<UGizmoScale>();
+			GizmoScale->Init(UGizmoBase::EAxis::Z, pickedActor);
+			Gizmo.push_back(GizmoScale);
 			return;
 		}
 	} else if ( inputManager->GetMouseUp(UInputManager::EMouseButton::LEFT) ) {

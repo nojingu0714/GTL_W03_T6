@@ -11,11 +11,8 @@
 #include "GameFrameWork/Shapes/Cone.h"
 
 #include "Engine.h"
-#include "UI/UIManager.h"
-#include "UI/ControlPanel.h"
-#include "UI/ConsolePanel.h"
-#include "UI/PropertyPanel.h"
-#include "UI/SceneManager.h"
+#include "Core/Gizmo/GizmoManager.h"
+
 
 UWorld* UWorld::CreateWorld()
 {
@@ -63,19 +60,4 @@ void UWorld::InitViewInfo()
 	CachedViewInfo.ViewProjectionMatrix = FMatrix();
 }
 
-void UWorld::CreateDefaultUI()
-{
-	UUIManager* UIManager = UEngine::GetEngine().GetUIManager();
-	if (UIManager)
-	{
-		
-		//UIManager->RegistUI(new UControlPanel());
-		//UIManager->RegistUI(new UConsolePanel());
-		//UIManager->RegistUI(new UPropertyPanel());
-		//UIManager->RegistUI(new USceneManager());
-		UIManager->RegistUI(FObjectFactory::ConstructObject<UControlPanel>());
-		UIManager->RegistUI(FObjectFactory::ConstructObject<UConsolePanel>());
-		UIManager->RegistUI(FObjectFactory::ConstructObject<UPropertyPanel>());
-		UIManager->RegistUI(FObjectFactory::ConstructObject<USceneManager>());
-	}
-}
+

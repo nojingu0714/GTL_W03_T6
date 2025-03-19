@@ -7,7 +7,7 @@ UGizmoRotate::UGizmoRotate() : UGizmoBase() {
 void UGizmoRotate::Init(EAxis axis, AActor* Target) {
 	this->axis = axis;
 	this->Target = Target;
-
+	GizmoMode = EGizmoModeIndex::GMI_GizmoRotate;
 	FVector Min = FVector(-0.120000f, -2.170000f, -2.170000f);	//하드코딩 min, max
 	FVector Max = FVector(0.120000f, 2.170000f, 2.170000f);
 

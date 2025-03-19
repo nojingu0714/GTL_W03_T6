@@ -76,7 +76,7 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     InputManager = new UInputManager();
 
     // 월드 추가.
-    ResourceManager->LoadScene("Resource/Scenes/DefaultScene");
+    ResourceManager->LoadScene("DefaultScene");
 
     return true;
 }
@@ -188,31 +188,6 @@ void UEngine::ClearEngine()
 	}
 }
 
-//void UEngine::Log(FString s, ...) {
-//    //std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-//    //Log(myconv.to_bytes(s));
-//    wchar_t buf[256];
-//    char cbuf[256];
-//    va_list args;
-//    va_start(args, s);
-//    _vsnwprintf_s(buf, IM_ARRAYSIZE(buf), s.c_str(), args);
-//    buf[IM_ARRAYSIZE(buf) - 1] = 0;
-//    va_end(args);
-//    WideCharToMultiByte(CP_ACP, 0, buf, -1, cbuf, 256, NULL, NULL);
-//    Log(cbuf);
-//}
-
-// TODO: std::string -> char*
-//void UEngine::Log(std::string s, ...) {
-//    char buf[256];
-//    va_list args;
-//    va_start(args, s);
-//    vsnprintf_s(buf, IM_ARRAYSIZE(buf), s.c_str(), args);
-//    buf[IM_ARRAYSIZE(buf) - 1] = 0;
-//    va_end(args);
-//    ULogManager::GetLogManager().AddLog(buf);
-//}
-
 HRESULT UEngine::AddAllVertexBuffers()
 {
     HRESULT hr = S_OK;
@@ -246,7 +221,7 @@ void UEngine::CreateNewWorld()
         DestroyWorld();
     }
     World = UWorld::CreateWorld();
-    World->CreateDefaultUI();
+    //World->CreateDefaultUI();
 }
 
 void UEngine::DestroyWorld()

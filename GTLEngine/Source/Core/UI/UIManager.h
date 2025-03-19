@@ -20,6 +20,7 @@ public:
 	void Destroy();
 
 	void RegistUI(UUIBase* NewUI);
+	void CreateDefaultUI();
 	void RenderUI();
 	void UnRegistUI();
 
@@ -39,13 +40,6 @@ public:
 	void OnObjectRotationChanged(FVector& inRotation);
 
 	bool GetObjectScale(FVector& outScale);
-	void OnObjectScaleChanged(FVector& inScale);
-
-	void SpawnPrimitive();
-
-	void MakeNewScene();
-	void SaveScene(char* inSceneName);
-	void LoadScene(char* inSceneName);
 
 	bool GetFOV(float& outFOV);
 	void OnFOVChanged(float& inFOV);

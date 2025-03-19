@@ -80,33 +80,39 @@ void UControlPanel::Tick(float DeltaTime)
     if (Camera)
         UCameraComponent* camera = Camera->GetCameraComponent();
 
-
-    //if (isTranslationActive)
-    //    ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
+    bool IsTranslateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoTranslate;
+    if(IsTranslateActive)
+        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
     if (ImGui::Button(ICON_GIZMO_TRANSLATE, ControlButtonSize)) // 기즈모 이동버튼
     {
-		//UEngine::GetEngine().GetGizmoManager()->SetCurrentGizmo(EGizmoType::Translation);
+        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoTranslate;
     }
-    //if (isTranslationActive)
-    //    ImGui::PopStyleColor();
+    if (IsTranslateActive)
+        ImGui::PopStyleColor();
 
     ImGui::SameLine(0, 5.0f);
 
-    //bool isRotationActive = (PrimaryGizmo && PrimaryGizmo->GetCurrentGizmo() == EGizmoType::Rotation);
-    //if (isRotationActive)
-    //    ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_ROTATE, ControlButtonSize));
-    //if (isRotationActive)
-    //    ImGui::PopStyleColor();
+    bool IsRotateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoRotate;
+    if (IsRotateActive)
+        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
+    if (ImGui::Button(ICON_GIZMO_ROTATE, ControlButtonSize))
+    {
+        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoRotate;
+    }
+    if (IsRotateActive)
+        ImGui::PopStyleColor();
 
     ImGui::SameLine(0, 5.0f);
 
-    //bool isScaleActive = (PrimaryGizmo && PrimaryGizmo->GetCurrentGizmo() == EGizmoType::Scale);
-    //if (isScaleActive)
-    //    ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_SCALE, ControlButtonSize));
-    //if (isScaleActive)
-    //    ImGui::PopStyleColor();
+    bool IsScaleActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoScale;
+    if (IsScaleActive)
+        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
+    if (ImGui::Button(ICON_GIZMO_SCALE, ControlButtonSize))
+    {
+        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoScale;
+    }
+    if (IsScaleActive)
+        ImGui::PopStyleColor();
 
     ImGui::SameLine();
     float windowContentWidth = ImGui::GetWindowContentRegionMax().x;

@@ -39,4 +39,5 @@ public:
 	virtual bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint) override;
 	EGizmoViewType GetGizmoViewType() const { return GizmoViewType; }
 	AActor* GetTargetActor() { return Target; }
+	EGizmoModeIndex GizmoMode;
 };

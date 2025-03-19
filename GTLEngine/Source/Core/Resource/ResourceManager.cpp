@@ -265,7 +265,7 @@ const TArray<uint32> UResourceManager::GetGizmoIndexData(EGizmoViewType Type) co
 
 void UResourceManager::NewScene()
 {
-    LoadScene("NewScene");
+    LoadScene("DefaultScene");
     UE_LOG(TEXT("Create New Scene"));
     //ULogManager::AddLog(TEXT("Create New Scene"));
     
@@ -273,11 +273,11 @@ void UResourceManager::NewScene()
 
 void UResourceManager::LoadScene(std::string SceneName)
 {
-    std::ifstream inFile(SceneName + ".Scene");
+    std::ifstream inFile("Resource/Scenes/" + SceneName + ".Scene");
     if (!inFile.is_open())
     {
         // 파일 열기 실패 처리
-        UE_LOG(TEXT("Can't access %s"), (SceneName + ".Scene").c_str())
+        UE_LOG(TEXT("Can't access %s"), ("Resource/Scenes/" + SceneName + ".Scene").c_str())
         //ULogManager::AddLog(TEXT("Can't access %s"), (SceneName + ".Scene").c_str());
         return;
     }
@@ -340,7 +340,7 @@ void UResourceManager::LoadScene(std::string SceneName)
             }
         }
     }
-    std::string str = (SceneName + ".Scene");
+    std::string str = ("Resource/Scenes/" + SceneName + ".Scene");
     wchar_t wbuf[1024];
     MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size() + 1, wbuf, ARRAYSIZE(wbuf));
     UE_LOG(TEXT("Success to Load %s"), wbuf);
@@ -421,7 +421,7 @@ void UResourceManager::SaveScene(std::string SceneName)
         key++;
     }
     std::string jsonData = Scene.dump();
-    std::ofstream outFile(SceneName + ".Scene");
+    std::ofstream outFile("Resource/Scenes/" + SceneName + ".Scene");
     if (outFile.is_open())
     {
         outFile << jsonData;

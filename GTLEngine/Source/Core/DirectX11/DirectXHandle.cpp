@@ -589,7 +589,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
     DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
     if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
     {
-		if (Gizmos.back()->IsAbsoluteCoord)
+		if (Gizmos.front()->IsAbsoluteCoord)
 			Buffer->WorldMatrix = Comp->GetTranslateMatrix();
 		else
 			Buffer->WorldMatrix = Comp->GetRotationMatrix() * Comp->GetTranslateMatrix();
@@ -601,6 +601,8 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
     DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetMaskZeroDepthStencilState(), 0);
     for (UGizmoBase* Gizmo : Gizmos)
     {
+		if (Gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
+			continue;
         EGizmoViewType Type = Gizmo->GetGizmoViewType();
         uint Stride = sizeof(FVertexSimple);
         UINT offset = 0;

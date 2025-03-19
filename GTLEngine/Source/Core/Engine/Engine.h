@@ -17,6 +17,12 @@ enum class EViewModeIndex : uint32 {
     VMI_Wireframe
 };
 
+enum class EGizmoModeIndex : uint32 {
+    GMI_GizmoTranslate,
+    GMI_GizmoRotate,
+    GMI_GizmoScale
+};
+
 enum class EEngineShowFlags : uint64 {
     SF_Primitives = 1 << 0,
     SF_Line = 1 << 1,
@@ -83,6 +89,7 @@ private:
 
 public:
     EViewModeIndex ViewModeIndex;
+    EGizmoModeIndex GizmoModeIndex;
     EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives;
 
 public:

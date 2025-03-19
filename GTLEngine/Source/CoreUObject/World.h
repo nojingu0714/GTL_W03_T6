@@ -74,10 +74,5 @@ private:
 private:
 	TArray<AActor*> ActiveActors;
 	ACamera* MainCamera;
-
-public:
-	void CreateDefaultUI();
-
-
 };
 

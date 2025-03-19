@@ -7,7 +7,7 @@ UGizmoScale::UGizmoScale() : UGizmoBase() {
 void UGizmoScale::Init(EAxis axis, AActor* Target) {
 	this->axis = axis;
 	this->Target = Target;
-
+	GizmoMode = EGizmoModeIndex::GMI_GizmoScale;
 	FVector Min = FVector(0.000016f, -0.100000f, -0.100000f);	//하드코딩 min, max
 	FVector Max = FVector(1.796750f, 0.100000f, 0.100000f);
 

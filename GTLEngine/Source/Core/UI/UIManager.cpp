@@ -3,7 +3,11 @@
 
 #include "Math/Matrix.h"
 #include "UI/UIBase.h"
+#include "UI/UIManager.h"
+#include "UI/ControlPanel.h"
 #include "UI/ConsolePanel.h"
+#include "UI/PropertyPanel.h"
+#include "UI/SceneManager.h"
 
 #include "Asset/IconDefs.h"
 #include "Asset/RawFonts.h"
@@ -18,6 +22,7 @@
 #include "ImGui/imgui_impl_win32.h"
 
 
+
 void UUIManager::InitUI(const FWindowInfo& WindowInfo, ID3D11Device* DXDDevice, ID3D11DeviceContext* DXDDeviceContext)
 {
 	// ImGui 생성.
@@ -27,6 +32,7 @@ void UUIManager::InitUI(const FWindowInfo& WindowInfo, ID3D11Device* DXDDevice, 
 	ImGui_ImplDX11_Init(DXDDevice, DXDDeviceContext);
 	ImGui_ImplWin32_Init((void*)WindowInfo.WindowHandle);
 
+	CreateDefaultUI();
 	CreateUsingFont();
 }
 
@@ -38,6 +44,14 @@ void UUIManager::RegistUI(UUIBase* NewUI)
 	UConsolePanel* downcast;
 	if ( downcast = Cast<UConsolePanel>(NewUI) )
 		Console = downcast;
+}
+
+void UUIManager::CreateDefaultUI() {
+
+	RegistUI(FObjectFactory::ConstructObject<UControlPanel>());
+	RegistUI(FObjectFactory::ConstructObject<UConsolePanel>());
+	RegistUI(FObjectFactory::ConstructObject<UPropertyPanel>());
+	RegistUI(FObjectFactory::ConstructObject<USceneManager>());
 }
 
 void UUIManager::Tick(float DeltaTime)
