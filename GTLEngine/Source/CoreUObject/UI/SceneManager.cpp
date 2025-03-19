@@ -102,6 +102,9 @@ void USceneManager::DebugLineToggle()
 
 void USceneManager::SceneHierarchy()
 {
+    ImGui::Checkbox("Show Hierachy", &bShowActorList);
+    if ( !bShowActorList )
+        return;
     ImGui::BeginChild("ScrollingRegion");
 
     // create node for child
@@ -124,6 +127,8 @@ void USceneManager::SceneHierarchy()
 
         };
     for (AActor* obj : UEngine::GetEngine().GetWorld()->GetActors()) {
+        if ( Cast<ALine>(obj) )
+            continue;
         if (obj) {
             FString ws = obj->GetName();
             std::string s;
