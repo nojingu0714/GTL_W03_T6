@@ -41,7 +41,7 @@ public:
 
 	void UpdateCameraMatrix(ACamera* Camera);
 	void RenderWorldPlane(ACamera* Camera);
-	void RenderPrimitive(UPrimitiveComponent* PrimitiveComp);
+	void RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
 	void RenderObject(const TArray<AActor*> Actors);

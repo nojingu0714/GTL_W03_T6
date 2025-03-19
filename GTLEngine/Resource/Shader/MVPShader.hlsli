@@ -11,4 +11,6 @@ cbuffer CbChangesEveryFrame : register(b1)
 cbuffer CbChangesEveryObject : register(b2)
 {
     row_major matrix WorldMatrix; // 오브젝트 스페이스 -> 월드 스페이스
+    int ColorFlag;
+    int Padding[3];
 };

@@ -229,7 +229,6 @@
     <ClCompile Include="Source\Core\Resource\Types.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\UI\ConsolePanel.cpp" />
     <ClCompile Include="Source\Core\Engine\EngineStatics.cpp">
       <Filter>Source\Core\Engine</Filter>
     </ClCompile>
@@ -257,17 +256,42 @@
     <ClCompile Include="Source\Core\DirectX11\DirectXHandle.cpp">
       <Filter>Source\Core\DirectX11</Filter>
     </ClCompile>
-    <ClCompile Include="Plugins\ImGui\imgui.cpp" />
-    <ClCompile Include="Plugins\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="Plugins\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="Plugins\ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Plugins\ImGui\imgui_impl_win32.cpp" />
-    <ClCompile Include="Plugins\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="Plugins\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Line.cpp" />
-    <ClCompile Include="Source\CoreUObject\UI\SceneManager.cpp" />
-    <ClCompile Include="Source\Core\UI\UIInterface.cpp" />
-    <ClCompile Include="Source\Core\Engine\LogManager.cpp" />
+    <ClCompile Include="Source\CoreUObject\UI\ConsolePanel.cpp">
+      <Filter>Source\CoreUObject\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui_widgets.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui_tables.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui_demo.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui_impl_dx11.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui_draw.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\ImGui\imgui_impl_win32.cpp">
+      <Filter>Plugins\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Line.cpp">
+      <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\UI\SceneManager.cpp">
+      <Filter>Source\CoreUObject\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Engine\LogManager.cpp">
+      <Filter>Source\Core\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\UI\UIInterface.cpp">
+      <Filter>Source\CoreUObject\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Utils\EnginePch.h">
@@ -459,15 +483,33 @@
     <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScale.h">
       <Filter>Source\CoreUObject\Gizmo</Filter>
     </ClInclude>
-    <ClInclude Include="Plugins\ImGui\imconfig.h" />
-    <ClInclude Include="Plugins\ImGui\imgui.h" />
-    <ClInclude Include="Plugins\ImGui\imgui_impl_dx11.h" />
-    <ClInclude Include="Plugins\ImGui\imgui_impl_win32.h" />
-    <ClInclude Include="Plugins\ImGui\imgui_internal.h" />
-    <ClInclude Include="Plugins\ImGui\imstb_rectpack.h" />
-    <ClInclude Include="Plugins\ImGui\imstb_textedit.h" />
-    <ClInclude Include="Plugins\ImGui\imstb_truetype.h" />
-    <ClInclude Include="Source\CoreUObject\UI\SceneManager.h" />
+    <ClInclude Include="Plugins\ImGui\imstb_truetype.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imstb_textedit.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imstb_rectpack.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imgui_internal.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imgui_impl_win32.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imgui.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imconfig.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\ImGui\imgui_impl_dx11.h">
+      <Filter>Plugins\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\UI\SceneManager.h">
+      <Filter>Source\CoreUObject\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\PrimitiveShader.hlsl">

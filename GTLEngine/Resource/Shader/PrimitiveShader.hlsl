@@ -24,8 +24,11 @@ PS_INPUT mainVS(VS_INPUT Input)
     Output.Position = mul(Output.Position, ViewMatrix); // 월드 스페이스 -> 뷰 스페이스
     Output.Position = mul(Output.Position, ProjectionMatrix); // 뷰 스페이스 -> NDC
     
-    Output.Color = Input.Color;
-    
+    if (ColorFlag == true)
+        Output.Color = Input.Color + float4(0.5f, 0.5f, 0.5f, 0.0f);
+    else
+        Output.Color = Input.Color;
+
     return Output;
 }
 

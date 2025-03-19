@@ -95,6 +95,8 @@ struct alignas(16) FCbChangesEveryFrame
 struct alignas(16)  FCbChangesEveryObject
 {
     FMatrix WorldMatrix;
+    int Flag;
+    int Padding[3];
 };
 
 struct alignas(16) FMVP

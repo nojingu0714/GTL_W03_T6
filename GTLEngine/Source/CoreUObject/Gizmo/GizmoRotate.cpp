@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "GizmoRotate.h"
 
+#include "Input/InputManager.h"
+#include "CoreUObject/GameFrameWork/Camera.h"
+
 UGizmoRotate::UGizmoRotate() : UGizmoBase() {
 }
 
@@ -80,7 +83,7 @@ void UGizmoRotate::OnDragTick(int dmx, int dmy)
 	FRotator deltaRotator(orgDir);
 	deltaRotator = deltaRotator * deltaAngle;
 	FRotator currentRotation = Target->GetActorRotation();
-	FRotator newRotation = FRotator(mat.TransformDirectionVector(orgDir)) * deltaRotator + currentRotation;
+	FRotator newRotation = currentRotation - (FRotator(mat.TransformDirectionVector(orgDir)) * deltaRotator);
 	/*OutputDebugString((
 		L"(" + std::to_wstring(directionInScreen.GetSafeNormal().X) +
 		L"," + std::to_wstring(directionInScreen.GetSafeNormal().Y) +

@@ -19,7 +19,7 @@ public:
 		Z
 	};
 	static bool IsAbsoluteCoord;
-protected:
+protected:	
 	FVector OriginalAABB[8];
 	EGizmoViewType GizmoViewType;
 	EAxis axis = EAxis::X;

@@ -7,7 +7,6 @@
 #include "DXDShaderManager.h"
 #include "DXDConstantBuffer.h"
 #include "State/DXDDepthStencilState.h"
-#include "State/DXDDepthStencilState.h"
 #include "DXDBufferManager.h"
 
 #include "CoreUObject/GameFrameWork/Actor.h"
@@ -468,7 +467,7 @@ void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
 
 }
 
-void UDirectXHandle::RenderPrimitive(UPrimitiveComponent* PrimitiveComp)
+void UDirectXHandle::RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag)
 {
     if (!PrimitiveComp)
         return;
@@ -491,6 +490,10 @@ void UDirectXHandle::RenderPrimitive(UPrimitiveComponent* PrimitiveComp)
     if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
     {
         Buffer->WorldMatrix = PrimitiveComp->GetWorldMatrix();
+		if (flag)
+			Buffer->Flag = true;
+		else
+			Buffer->Flag = false;
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
@@ -589,6 +592,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
     DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
     if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
     {
+		Buffer->Flag = false;
 		if (Gizmos.front()->IsAbsoluteCoord)
 			Buffer->WorldMatrix = Comp->GetTranslateMatrix();
 		else
@@ -599,8 +603,8 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
 
 	// 깊이 테스트 무시하는 DepthStencilState로 변경.
     DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetMaskZeroDepthStencilState(), 0);
-    for (UGizmoBase* Gizmo : Gizmos)
-    {
+	for (UGizmoBase* Gizmo : Gizmos)
+	{
 		if (Gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
 			continue;
         EGizmoViewType Type = Gizmo->GetGizmoViewType();
@@ -634,9 +638,16 @@ void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
 
     for (AActor* Actor : Actors)
     {
-        for (UActorComponent* Comp : Actor->GetOwnedComponent())
-        {
-            RenderPrimitive(Cast<UPrimitiveComponent>(Comp));
+		for (UActorComponent* Comp : Actor->GetOwnedComponent())
+		{
+			if (Actor->IsSelected)
+			{
+				RenderPrimitive(Cast<UPrimitiveComponent>(Comp), true);
+			}
+			else
+			{
+				RenderPrimitive(Cast<UPrimitiveComponent>(Comp), false);
+			}
 			// TODO: 컴포넌트 별 UUID 렌더링 구현하기. 컴포넌트의 변환된 위치를 찾는 부분에서 문제 생김.
 			//RenderComponentUUID(dynamic_cast<USceneComponent*>(Comp));
         }
