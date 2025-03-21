@@ -24,4 +24,6 @@ struct alignas(16) FQuat : public FVector4 {
 
 	static FQuat MakeFromRotationMatrix(const struct FMatrix& M); // 회전 행렬로부터 쿼터니언을 생성합니다.
 	FVector GetEuler() const { return QuaternionToEuler(*this); } // 쿼터니언을 오일러 각으로 변환합니다.
+
+	void Normalize();
 };

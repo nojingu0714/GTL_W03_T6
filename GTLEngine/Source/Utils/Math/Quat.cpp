@@ -132,3 +132,12 @@ FQuat FQuat::MakeFromRotationMatrix(const FMatrix& M)
 
     return Q;
 }
+
+void FQuat::Normalize()
+{
+    float Norm = X * X + Y * Y + Z * Z + W * W;
+    X /= Norm;
+    Y /= Norm;
+    Z /= Norm;
+    W /= Norm;
+}
