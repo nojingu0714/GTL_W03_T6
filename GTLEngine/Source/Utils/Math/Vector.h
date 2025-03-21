@@ -236,4 +236,9 @@ struct alignas(16) FVector4 : public FVector
 		: FVector(InX, InY, InZ), W(InW)
 	{
 	}
+	FVector4(FVector InVec3, float InW)
+		: FVector(InVec3), W(InW) {
+	}
+	FORCEINLINE FVector xyz() { return static_cast<FVector>(*this); }
+	FORCEINLINE FVector XYZ() { return static_cast<FVector>(*this); }
 };

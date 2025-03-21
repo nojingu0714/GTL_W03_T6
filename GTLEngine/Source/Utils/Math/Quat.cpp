@@ -70,6 +70,7 @@ FQuat FQuat::AddQuaternions(const FQuat& q1, const FQuat& q2) {
     );
 }
 
+// q2 -> q2 + q1. rotation order is q2 -> q1
 FQuat FQuat::MultiplyQuaternions(const FQuat& q1, const FQuat& q2) {
     return FQuat(
         q1.W * q2.X + q1.X * q2.W + q1.Y * q2.Z - q1.Z * q2.Y, // X
@@ -131,4 +132,13 @@ FQuat FQuat::MakeFromRotationMatrix(const FMatrix& M)
     }
 
     return Q;
+}
+
+void FQuat::Normalize()
+{
+    float Norm = X * X + Y * Y + Z * Z + W * W;
+    X /= Norm;
+    Y /= Norm;
+    Z /= Norm;
+    W /= Norm;
 }

@@ -84,9 +84,11 @@ void UGizmoManager::Picking() {
 
 	} else if ( inputManager->GetMouseButton(UInputManager::EMouseButton::LEFT) ) {
 		if ( DragTarget ) {
+			int mouse_x = inputManager->GetMouseClientX();
+			int mouse_y = inputManager->GetMouseClientY();
 			int mouse_dx = inputManager->GetMouseDeltaX();
 			int mouse_dy = inputManager->GetMouseDeltaY();
-			DragTarget->OnDragTick(mouse_dx, mouse_dy);
+			DragTarget->OnDragTick(mouse_x, mouse_y, mouse_dx, mouse_dy);
 		}
 	}
 }

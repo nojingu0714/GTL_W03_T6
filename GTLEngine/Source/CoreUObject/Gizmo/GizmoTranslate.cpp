@@ -51,7 +51,7 @@ void UGizmoTranslate::OnClick(int mx, int my) {
 	startMouseY = my;
 }
 
-void UGizmoTranslate::OnDragTick(int dmx, int dmy) {
+void UGizmoTranslate::OnDragTick(int mx, int my, int dmx, int dmy) {
 	const float sensitive = 20.f;
 	FVector orgDir;
 	switch(axis) {

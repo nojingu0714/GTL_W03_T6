@@ -91,18 +91,15 @@ FRay Geometry::CreateRayWithMouse(float NDCMouseX, float NDCMouseY) {
 	FMatrix InvProjMat = UEngine::GetEngine().GetWorld()->GetProjectionMatrix().Inverse();
 
 	RayOrigin = InvProjMat.TransformVector4(RayOrigin);
-	RayOrigin.W = 1.0f;
 	RayEnd = InvProjMat.TransformVector4(RayEnd);
-	RayEnd *= 1000.0f;
-	RayEnd.W = 1.0f;
 
 	FMatrix InvViewMat = UEngine::GetEngine().GetWorld()->GetViewMatrix().Inverse();
 	RayOrigin = InvViewMat.TransformVector4(RayOrigin);
-	RayOrigin /= RayOrigin.W = 1.0f;
 	RayEnd = InvViewMat.TransformVector4(RayEnd);
-	RayEnd /= RayEnd.W = 1.0f;
+	RayOrigin /= RayOrigin.W;
+	RayEnd /= RayEnd.W;
 
-	FVector RayDir = (RayEnd - RayOrigin).GetSafeNormal();
+	FVector RayDir = (RayEnd - RayOrigin);
 
 	return FRay(RayOrigin, RayDir);
 }

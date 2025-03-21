@@ -18,7 +18,8 @@ struct FRotator
 	FRotator(float InPitch, float InYaw, float InRoll) : Pitch(InPitch), Yaw(InYaw), Roll(InRoll) {}
 	FRotator(const FVector& InVector) : Pitch(FMath::RadiansToDegrees(InVector.Y)), Yaw(FMath::RadiansToDegrees(InVector.Z)), Roll(FMath::RadiansToDegrees(InVector.X)) {}
 	FRotator(const FRotator& InRotator) : Pitch(InRotator.Pitch), Yaw(InRotator.Yaw), Roll(InRotator.Roll) {}
-	FRotator(const FQuat& InQuat) : FRotator(InQuat.GetEuler()) {}
+	//FRotator(const FQuat& InQuat) : FRotator(InQuat.GetEuler()) {}
+	FRotator(const FQuat& InQuat); // 언리얼 코드로 수정
 	FRotator(const FMatrix InMatrix);
 
 	FRotator operator+(const FRotator& Other) const;
@@ -66,6 +67,42 @@ inline FRotator FRotator::MakeFromDirection(const FVector& normal) {
 	return FRotator();
 }
 
+
+inline FRotator::FRotator(const FQuat& InQuat)
+{
+	const float SingularityTest = InQuat.Z * InQuat.X - InQuat.W * InQuat.Y;
+	const float YawY = 2.f * (InQuat.W * InQuat.Z + InQuat.X * InQuat.Y);
+	const float YawX = (1.f - 2.f * (FMath::Square(InQuat.Y) + FMath::Square(InQuat.Z)));
+
+	// reference 
+	// http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
+
+	// this value was found from experience, the above websites recommend different values
+	// but that isn't the case for us, so I went through different testing, and finally found the case 
+	// where both of world lives happily. 
+	const float SINGULARITY_THRESHOLD = 0.4999995f;
+	const float RAD_TO_DEG = (180.f / PI);
+
+	if (SingularityTest < -SINGULARITY_THRESHOLD)
+	{
+		Pitch = -90.f;
+		Yaw = (FMath::Atan2(YawY, YawX) * RAD_TO_DEG);
+		Roll = (-Yaw - (2.f * atan2(InQuat.X, InQuat.W) * RAD_TO_DEG));
+	}
+	else if (SingularityTest > SINGULARITY_THRESHOLD)
+	{
+		Pitch = 90.f;
+		Yaw = (FMath::Atan2(YawY, YawX) * RAD_TO_DEG);
+		Roll = (Yaw - (2.f * FMath::Atan2(InQuat.X, InQuat.W) * RAD_TO_DEG));
+	}
+	else
+	{
+		Pitch = (asin(2.f * SingularityTest) * RAD_TO_DEG);
+		Yaw = (FMath::Atan2(YawY, YawX) * RAD_TO_DEG);
+		Roll = (FMath::Atan2(-2.f * (InQuat.W * InQuat.X + InQuat.Y * InQuat.Z), (1.f - 2.f * (FMath::Square(InQuat.X) + FMath::Square(InQuat.Y)))) * RAD_TO_DEG);
+	}
+}
 
 inline FRotator FRotator::operator+(const FRotator& Other) const
 {
@@ -177,13 +214,13 @@ inline FQuat FRotator::Quaternion() const
 	FMath::SinCos(&SY, &CY, Yaw * Div);
 	FMath::SinCos(&SR, &CR, Roll * Div);
 	
-	FQuat Result;
-	Result.W = CR * CP * CY + SR * SP * SY;
-	Result.X = CR * SP * CY + SR * CP * SY;
-	Result.Y = CR * SP * SY - SR * CP * CY;
-	Result.Z = CR * CP * SY - SR * SP * CY;
+	FQuat RotationQuat;
+	RotationQuat.X = CR * SP * SY - SR * CP * CY;
+	RotationQuat.Y = -CR * SP * CY - SR * CP * SY;
+	RotationQuat.Z = CR * CP * SY - SR * SP * CY;
+	RotationQuat.W = CR * CP * CY + SR * SP * SY;
 
-	return Result;
+	return RotationQuat;
 }
 
 inline FVector FRotator::Euler() const
