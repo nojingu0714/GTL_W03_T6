@@ -11,5 +11,5 @@ public:
 
 class IDragable: public IClickable {
 public:
-	virtual void OnDragTick(int dmx, int dmy) abstract;
+	virtual void OnDragTick(int mx, int my, int dmx, int dmy) abstract;
 };
