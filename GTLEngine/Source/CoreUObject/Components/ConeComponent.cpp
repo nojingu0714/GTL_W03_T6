@@ -15,7 +15,7 @@ UConeComponent::UConeComponent()
 	OriginalAABB[7] = FVector(0.5f, 0.5f, 1.f);
 }
 
-void UConeComponent::Tick(float TickTime)
+void UConeComponent::TickComponent(float TickTime)
 {
 }
 

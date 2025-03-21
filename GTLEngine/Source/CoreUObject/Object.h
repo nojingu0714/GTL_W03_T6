@@ -21,7 +21,6 @@ public:
 	~UObject() = default;
 
 public:
-	virtual void Tick(float TickTime);
 	virtual void Destroy();
 
 public:

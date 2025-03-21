@@ -15,7 +15,7 @@ public:
 	{
 	}
 
-	virtual void Tick(float TickTime) override;
+	virtual void TickComponent(float TickTime);
 	virtual void Destroy() override;
 	virtual FBoundingBox GetAABB() const;
 	virtual bool IsRayIntersect(FRay ray, float hitDistance, FVector& hitPoint) const;

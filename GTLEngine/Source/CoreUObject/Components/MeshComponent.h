@@ -2,11 +2,10 @@
 
 #include "PrimitiveComponent.h"
 
-class UCylinderComponent: public UPrimitiveComponent
+class UMeshComponent: public UPrimitiveComponent
 {
-	DECLARE_CLASS(UCylinderComponent, UPrimitiveComponent)
+	DECLARE_CLASS(UMeshComponent, UPrimitiveComponent)
 public:
-	UCylinderComponent();
 	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
 };

@@ -9,7 +9,7 @@ private:
 
 public:
 	ULineComponent();
-	virtual void Tick(float TickTime) override;
+	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
 	virtual FBoundingBox GetAABB() const override;
 	virtual bool IsRayIntersect(FRay ray, float hitDistance, FVector& hitPoint) const override;

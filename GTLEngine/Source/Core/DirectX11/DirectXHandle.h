@@ -46,7 +46,6 @@ public:
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderLines(const TArray<AActor*> Actors);
-	void RenderLine(ULineComponent* comp);
 	void RenderActorUUID(AActor* TargetActor);
 	void RenderComponentUUID(USceneComponent* TargetComponent);
 

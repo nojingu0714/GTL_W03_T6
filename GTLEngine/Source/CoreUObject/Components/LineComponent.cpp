@@ -5,7 +5,7 @@ ULineComponent::ULineComponent() {
 	PrimitiveType = EPrimitiveType::Line;
 }
 
-void ULineComponent::Tick(float TickTime) {}
+void ULineComponent::TickComponent(float TickTime) {}
 
 void ULineComponent::Destroy() {}
 

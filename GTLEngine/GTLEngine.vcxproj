@@ -79,6 +79,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp" />
     <ClCompile Include="Source\CoreUObject\Components\PrimitiveComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -91,6 +92,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\StaticMeshComponent.cpp" />
     <ClCompile Include="Source\CoreUObject\Components\TriangleComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -127,6 +129,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\CoreUObject\GameFrameWork\StaticMeshActor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotate.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -140,6 +146,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\Gizmo\GizmoBase.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Mesh\UStaticMesh.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -293,7 +303,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Utils\pch.cpp" />
+    <ClCompile Include="Source\Utils\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Plugins\ImGui\imconfig.h" />
@@ -313,9 +326,11 @@
     <ClInclude Include="Source\CoreUObject\Components\CubeComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\CylinderComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\LineComponent.h" />
+    <ClInclude Include="Source\CoreUObject\Components\MeshComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\PrimitiveComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\SceneComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\SphereComponent.h" />
+    <ClInclude Include="Source\CoreUObject\Components\StaticMeshComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\TriangleComponent.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Actor.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Camera.h" />
@@ -324,10 +339,12 @@
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Cylinder.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Sphere.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Triangle.h" />
+    <ClInclude Include="Source\CoreUObject\GameFrameWork\StaticMeshActor.h" />
     <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotate.h" />
     <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScale.h" />
     <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslate.h" />
     <ClInclude Include="Source\CoreUObject\Gizmo\GizmoBase.h" />
+    <ClInclude Include="Source\CoreUObject\Mesh\UStaticMesh.h" />
     <ClInclude Include="Source\CoreUObject\NameTypes.h" />
     <ClInclude Include="Source\CoreUObject\Object.h" />
     <ClInclude Include="Source\CoreUObject\ObjectFactory.h" />
@@ -354,6 +371,8 @@
     <ClInclude Include="Source\Core\Gizmo\GizmoManager.h" />
     <ClInclude Include="Source\Core\HAL\PlatformMemory.h" />
     <ClInclude Include="Source\Core\Input\InputManager.h" />
+    <ClInclude Include="Source\Core\Resource\Archive.h" />
+    <ClInclude Include="Source\Core\Resource\Mesh\StaticMeshAsset.h" />
     <ClInclude Include="Source\Core\Resource\ResourceManager.h" />
     <ClInclude Include="Source\Core\Resource\Shape\PrimitiveShape.h" />
     <ClInclude Include="Source\Core\Resource\Types.h" />
@@ -495,7 +514,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Source\Utils;$(ProjectDir)Source\CoreUObject;$(ProjectDir)Source\Core;$(ProjectDir)Source\Core\Engine</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -514,7 +533,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Source\Utils;$(ProjectDir)Source\CoreUObject;$(ProjectDir)Source\Core;$(ProjectDir)Source\Core\Engine</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>

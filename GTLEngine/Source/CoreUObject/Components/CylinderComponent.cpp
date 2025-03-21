@@ -15,7 +15,7 @@ UCylinderComponent::UCylinderComponent()
 	OriginalAABB[7] = FVector(0.5f, 0.5f, 1.f);
 }
 
-void UCylinderComponent::Tick(float TickTime)
+void UCylinderComponent::TickComponent(float TickTime)
 {
 }
 

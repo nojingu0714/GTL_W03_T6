@@ -17,10 +17,6 @@ UClass* UObject::StaticClass()
     return StaticClassInfo.get();
 }
 
-void UObject::Tick(float TickTime)
-{
-}
-
 void UObject::Destroy()
 {
 }

@@ -16,7 +16,7 @@ UCubeComponent::UCubeComponent()
 	PrimitiveType = EPrimitiveType::Cube;
 }
 
-void UCubeComponent::Tick(float TickTime)
+void UCubeComponent::TickComponent(float TickTime)
 {
 
 }

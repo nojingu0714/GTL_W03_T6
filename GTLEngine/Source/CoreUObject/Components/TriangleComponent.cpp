@@ -15,8 +15,9 @@ UTriangleComponent::UTriangleComponent()
 	OriginalAABB[7] = FVector(0.f, 0.5f, 0.5f);
 }
 
-void UTriangleComponent::Tick(float TickTime)
+void UTriangleComponent::TickComponent(float TickTime)
 {
+	Super::TickComponent(TickTime);
 }
 
 void UTriangleComponent::Destroy()

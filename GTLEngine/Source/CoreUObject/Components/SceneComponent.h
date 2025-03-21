@@ -11,6 +11,7 @@ class USceneComponent : public UActorComponent
 public:
 	USceneComponent();
 
+	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
 
 public:

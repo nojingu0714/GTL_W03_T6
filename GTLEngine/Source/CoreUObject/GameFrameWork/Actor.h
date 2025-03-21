@@ -17,7 +17,7 @@ public:
 	AActor();
 
 public:
-	virtual void Tick(float TickTime) override;
+	virtual void Tick(float TickTime);
 	virtual void Destroy() override;
 
 public:

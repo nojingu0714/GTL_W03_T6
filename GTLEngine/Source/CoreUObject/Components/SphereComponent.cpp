@@ -8,7 +8,7 @@ USphereComponent::USphereComponent()
 	PrimitiveType = EPrimitiveType::Sphere;
 }
 
-void USphereComponent::Tick(float TickTime)
+void USphereComponent::TickComponent(float TickTime)
 {
 }
 

@@ -9,7 +9,7 @@ UPrimitiveComponent::UPrimitiveComponent()
 {
 }
 
-void UPrimitiveComponent::Tick(float TickTime)
+void UPrimitiveComponent::TickComponent(float TickTime)
 {
 }
 

@@ -27,6 +27,7 @@ ACamera::ACamera() : MouseSensitive(5.f)
 
 void ACamera::Tick(float TickTime)
 {
+	Super::Tick(TickTime);
 	FVector CameraLocation = GetActorLocation();
 	FRotator CameraRotation = GetActorRotation();
 
@@ -86,6 +87,7 @@ void ACamera::Tick(float TickTime)
 
 void ACamera::Destroy()
 {
+	Super::Destroy();
 	SaveConfig();
 }
 

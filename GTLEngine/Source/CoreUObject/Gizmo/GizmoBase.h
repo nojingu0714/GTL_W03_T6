@@ -31,7 +31,7 @@ public:
 
 	void Init(EAxis axis, AActor* Target);
 
-	virtual void Tick(float TickTime) override;
+	virtual void Tick(float TickTime);
 	virtual void Destroy() override;
 
 	virtual FBoundingBox GetAABB() const;

@@ -7,7 +7,7 @@ class UCameraComponent : public USceneComponent
 	DECLARE_CLASS(UCameraComponent, USceneComponent)
 public:
 	UCameraComponent();
-	virtual void Tick(float TickTime) override;
+	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
 
 public:

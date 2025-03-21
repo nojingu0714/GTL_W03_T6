@@ -9,7 +9,7 @@ class UPrimitiveComponent : public USceneComponent
 public:
 	UPrimitiveComponent();
 
-	virtual void Tick(float TickTime) override;
+	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
 
 public:
@@ -18,6 +18,7 @@ public:
 	virtual FBoundingBox GetAABB() const override;
 	virtual bool IsRayIntersect(FRay ray, float hitDistance, FVector& hitPoint) const override;
 protected:
+	// Object 로드 방식으로 변경 시 삭제.
 	EPrimitiveType PrimitiveType;
 	FVector OriginalAABB[8] = {
 		FVector(-0.5f, -0.5f, -0.5f),
@@ -29,4 +30,8 @@ protected:
 		FVector(-0.5f, 0.5f, 0.5f),
 		FVector(0.5f, 0.5f, 0.5f),
 	};
+
+public:
+
+
 };

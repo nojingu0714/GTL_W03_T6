@@ -10,6 +10,11 @@ USceneComponent::USceneComponent()
 	AttachParent = nullptr;
 }
 
+void USceneComponent::TickComponent(float TickTime)
+{
+	Super::TickComponent(TickTime);
+}
+
 void USceneComponent::Destroy()
 {
 	for (USceneComponent* Child : AttachChildren)

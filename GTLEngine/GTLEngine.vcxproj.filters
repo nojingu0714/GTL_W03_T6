@@ -83,6 +83,12 @@
     <Filter Include="Source\Core\HAL">
       <UniqueIdentifier>{290e5c06-bae0-4ca3-ac17-0073e4665b2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\CoreUObject\Mesh">
+      <UniqueIdentifier>{fd7cc281-7b24-443e-86f9-93d75af6adb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Resource\Mesh">
+      <UniqueIdentifier>{396a4816-bb14-4a03-9dae-81d0fc306fa1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\EnginePch.cpp">
@@ -291,6 +297,18 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Engine\LogManager.cpp">
       <Filter>Source\Core\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\StaticMeshComponent.cpp">
+      <Filter>Source\CoreUObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\GameFrameWork\StaticMeshActor.cpp">
+      <Filter>Source\CoreUObject\GameFrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Mesh\UStaticMesh.cpp">
+      <Filter>Source\CoreUObject\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp">
+      <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -509,6 +527,24 @@
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\UI\SceneManager.h">
       <Filter>Source\CoreUObject\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Components\StaticMeshComponent.h">
+      <Filter>Source\CoreUObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\GameFrameWork\StaticMeshActor.h">
+      <Filter>Source\CoreUObject\GameFrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Mesh\UStaticMesh.h">
+      <Filter>Source\CoreUObject\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Resource\Mesh\StaticMeshAsset.h">
+      <Filter>Source\Core\Resource\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Components\MeshComponent.h">
+      <Filter>Source\CoreUObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Resource\Archive.h">
+      <Filter>Source\Core\Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,9 +6,9 @@ UCameraComponent::UCameraComponent()
 {
 }
 
-void UCameraComponent::Tick(float TickTime)
+void UCameraComponent::TickComponent(float TickTime)
 {
-	UActorComponent::Tick(TickTime);
+	UActorComponent::TickComponent(TickTime);
 	// TODO: Log 추가.
 }
 
