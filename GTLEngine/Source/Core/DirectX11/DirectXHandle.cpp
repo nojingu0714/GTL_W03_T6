@@ -779,6 +779,12 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
+	/*
+		AStaticMeshActor->GetStaticMeshComponent()->GetMaterial();
+		Mat->GetTexture();
+	
+	*/
+
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
 	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
 

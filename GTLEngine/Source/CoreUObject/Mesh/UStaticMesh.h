@@ -17,4 +17,6 @@ public:
 private:
 	FStaticMesh* StaticMeshAsset;
 
+	//TMap<slotnum, FMaterial> Materials;s
+
 };
