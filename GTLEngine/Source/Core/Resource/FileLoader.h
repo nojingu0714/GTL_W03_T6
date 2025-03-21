@@ -2,11 +2,11 @@
 
 #include "Mesh/StaticMeshAsset.h"
 
-class UFileLoader
+class FFileLoader
 {
 
 public:
-	FObjInfo LoadObjFile(const FString& FileName);
+	static FObjInfo ImportObj(const FString& FileName);
 	
 
 };

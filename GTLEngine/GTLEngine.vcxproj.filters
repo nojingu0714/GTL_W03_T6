@@ -310,6 +310,12 @@
     <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Resource\FileLoader.cpp">
+      <Filter>Source\Core\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Resource\ObjManager.cpp">
+      <Filter>Source\Core\Resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Utils\EnginePch.h">
@@ -544,6 +550,12 @@
       <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Resource\Archive.h">
+      <Filter>Source\Core\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Resource\FileLoader.h">
+      <Filter>Source\Core\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Resource\ObjManager.h">
       <Filter>Source\Core\Resource</Filter>
     </ClInclude>
   </ItemGroup>
