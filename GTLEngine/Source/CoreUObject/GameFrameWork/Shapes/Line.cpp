@@ -7,11 +7,12 @@ ALine::ALine() {
 }
 
 void ALine::SetRay(FRay ray) {
+	float Length = ray.Direction.Length();
 	LineComponent = AddComponent<ULineComponent>(
 		this,
 		ray.Origin,
 		FRotator::ZeroRotator,
-		FVector(100.f, 0.f, 0.f)
+		FVector(Length, 0.f, 0.f)
 	);
 	LineComponent->SetDirection(FMatrix::MakeFromDirection(ray.Direction, FVector::UpVector));
 }
