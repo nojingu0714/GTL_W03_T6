@@ -57,39 +57,90 @@ void UGizmoRotate::OnClick(int mx, int my)
 	startMouseY = my;
 }
 
-void UGizmoRotate::OnDragTick(int dmx, int dmy)
+void UGizmoRotate::OnDragTick(int mx, int my, int dmx, int dmy)
 {
-	const float sensitive = 0.3f;
-	FVector orgDir;
+	// 단순 yaw pitch roll 변경
+	//const float sensitive = 0.3f;
+	//FVector orgDir;
+	//switch (axis) {
+	//case EAxis::X:
+	//	orgDir = FVector(1, 0, 0);
+	//	break;
+	//case EAxis::Y:
+	//	orgDir = FVector(0, 1, 0);
+	//	break;
+	//case EAxis::Z:
+	//	orgDir = FVector(0, 0, 1);
+	//	break;
+	//}
+
+	//FMatrix view = UEngine::GetEngine().GetWorld()->GetViewMatrix();
+	//FMatrix proj = UEngine::GetEngine().GetWorld()->GetProjectionMatrix();
+	//FVector directionInScreen = (mat * view * proj).TransformDirectionVector(orgDir);
+	//float dx = dmx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width);
+	//float dy = -dmy / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height);
+	//float movement = FVector(dx, dy, 0).Dot(directionInScreen);
+	//float deltaAngle = movement * sensitive;
+	//FRotator deltaRotator(orgDir);
+	//deltaRotator = deltaRotator * deltaAngle;
+	//FRotator currentRotation = Target->GetActorRotation();
+	//FRotator newRotation = currentRotation - (FRotator(mat.TransformDirectionVector(orgDir)) * deltaRotator);
+	///*OutputDebugString((
+	//	L"(" + std::to_wstring(directionInScreen.GetSafeNormal().X) +
+	//	L"," + std::to_wstring(directionInScreen.GetSafeNormal().Y) +
+	//	L"," + std::to_wstring(directionInScreen.GetSafeNormal().Z) + L")\n"
+	//).c_str());*/
+	//Target->SetActorRotation(newRotation);
+
+	// Rotation Gizmo의 방향으로 움직이게 수정
+	FRotator ActorRotation = Target->GetActorRotation();
+	const float sensitive = 1.f;
+	FVector RotationAxis;
 	switch (axis) {
 	case EAxis::X:
-		orgDir = FVector(1, 0, 0);
+		RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(1, 0, 0));
 		break;
 	case EAxis::Y:
-		orgDir = FVector(0, 1, 0);
+		RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(0,1,0));
 		break;
 	case EAxis::Z:
-		orgDir = FVector(0, 0, 1);
+		RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(0,0,1));
 		break;
 	}
 
+	// screen 상에서의 회전.
 	FMatrix view = UEngine::GetEngine().GetWorld()->GetViewMatrix();
 	FMatrix proj = UEngine::GetEngine().GetWorld()->GetProjectionMatrix();
-	FVector directionInScreen = (mat * view * proj).TransformDirectionVector(orgDir);
+	float x = mx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width)*2 - 1.0f;
+	float y = my / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height)*(-2) + 1.0f;
 	float dx = dmx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width);
 	float dy = -dmy / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height);
-	float movement = FVector(dx, dy, 0).Dot(directionInScreen);
-	float deltaAngle = movement * sensitive;
-	FRotator deltaRotator(orgDir);
-	deltaRotator = deltaRotator * deltaAngle;
-	FRotator currentRotation = Target->GetActorRotation();
-	FRotator newRotation = currentRotation - (FRotator(mat.TransformDirectionVector(orgDir)) * deltaRotator);
-	/*OutputDebugString((
-		L"(" + std::to_wstring(directionInScreen.GetSafeNormal().X) +
-		L"," + std::to_wstring(directionInScreen.GetSafeNormal().Y) +
-		L"," + std::to_wstring(directionInScreen.GetSafeNormal().Z) + L")\n"
-	).c_str());*/
-	Target->SetActorRotation(newRotation);
+	FVector MousePosNDC(x, y, 0);
+	FVector MouseDeltaPosNDC(dx, dy, 0);
+	FVector4 TargetPosNDC4((view * proj).TransformVector4(FVector4(Target->GetActorLocation(), 1.f)));
+	FVector TargetPosNDC = TargetPosNDC4 / TargetPosNDC4.W;
+	TargetPosNDC.Z = 0;
+	FVector Displacement = MousePosNDC - TargetPosNDC;
+	FVector RotationDirection = Displacement.Cross(MouseDeltaPosNDC); // z > 0 for clockwise, z < 0 for counter-clockwise.
+
+	// direction of axis : toward or backward the screen.
+    FVector AxisNDC = (view * proj).TransformVector4(FVector4(RotationAxis, 0.f)).xyz();
+	RotationDirection.Z *= AxisNDC.Z;
+
+	// slow rotation when the cursor is far from the gizmo.
+	RotationDirection.Z /= Displacement.LengthSquared();
+
+	// quaternions.
+	RotationAxis.Normalize();
+	FVector v = RotationAxis * sin(RotationDirection.Z * sensitive);
+	FQuat RotationQuat(v.X, v.Y, v.Z, cos(RotationDirection.Z * sensitive));
+	//RotationQuat.Normalize(); // already normalized.
+	FQuat PreviousQuat = Target->GetActorRotation().Quaternion();
+	//PreviousQuat.Normalize(); // already normalized.
+	FQuat NewQuat = FQuat::MultiplyQuaternions(RotationQuat, PreviousQuat);
+	//NewQuat.Normalize(); // already normalized.
+	FRotator NewRotator(NewQuat);
+	Target->SetActorRotation(NewRotator);
 }
 
 void UGizmoRotate::OnRelease(int mx, int my) {}

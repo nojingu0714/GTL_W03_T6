@@ -54,7 +54,7 @@ void UGizmoScale::OnClick(int mx, int my)
 	startMouseY = my;
 }
 
-void UGizmoScale::OnDragTick(int dmx, int dmy)
+void UGizmoScale::OnDragTick(int mx, int my, int dmx, int dmy)
 {
 	const float sensitive = 20.f;
 	FVector orgDir;
