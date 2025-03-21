@@ -12,7 +12,7 @@ public:
 	virtual void Destroy() override;
 
 public:
-	// 
+	// Primitive
 	//void Serialize(bool bIsLoading, Json Handle);
 
 private:

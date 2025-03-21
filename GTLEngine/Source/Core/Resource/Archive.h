@@ -48,15 +48,6 @@ public:
 		}
 	}
 
-	template<typename T>
-	FJsonArchive& operator<<(const T& Value)
-	{
-		if (Mode == EMode::Saving)
-		{
-			JsonData[Value.first] = Value.second;
-		}
-		return *this;
-	}
 
 
 
