@@ -16,6 +16,6 @@ public:
 	virtual void Destroy() override;
 private:
 	UCubeComponent* CubeComponent;
-	UCubeComponent* CubeComponent2;
+	//UCubeComponent* CubeComponent2;
 
 };
