@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "Utils/GTLStringLibrary.h"
+
 struct FNormalVertex
 {
     FVector Pos;      // 버텍스 포지션.
@@ -81,7 +83,10 @@ struct FObjImporter
         FObjInfo NewObjInfo;
 
 
-        while (std::getline(ObjFile, line)) {
+        while (std::getline(ObjFile, line))
+        {
+			line = UGTLStringLibrary::StringRemoveNoise(line);
+
             std::stringstream ss(line);
             std::string token;
 
