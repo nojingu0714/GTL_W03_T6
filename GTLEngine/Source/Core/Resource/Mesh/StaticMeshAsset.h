@@ -10,10 +10,10 @@
 
 struct FNormalVertex
 {
-    FVector Pos;      // 버텍스 포지션.
+    FVector Position;      // 버텍스 포지션.
     FVector Normal;   // 버텍스 노말.
     FVector4 Color;
-    FVector2 Tex;     // 버텍스 텍스쳐 좌표.
+    FVector2 UV;     // 버텍스 텍스쳐 좌표.
 };
 
 struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처 / c : 노멀 )
@@ -24,18 +24,12 @@ struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처
 };
 
 
-// 스태틱 메시 정보.
+
 struct FStaticMesh
 {
-    // Mesh obj 파일 경로 이름.
-	FString PathFileName;
-
-	// 버텍스 정보.
-	TArray<FNormalVertex> Vertices;
-    // 인덱스 정보.
-	TArray<uint32> Indices;
-
-    // 사용할 텍스처 로드 해놓기.
+    FString PathFileName; // Mesh obj 파일 경로 이름.
+    TArray<FNormalVertex> Vertices; // 버텍스 정보 (위치, 색상)
+    TArray<uint32> Indices; // 인덱스 정보 (여기서는 비워둠)
 };
 
 struct FObjMaterialInfo
