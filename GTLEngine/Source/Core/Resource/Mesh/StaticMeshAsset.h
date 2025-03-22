@@ -18,9 +18,9 @@ struct FNormalVertex
 
 struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처 / c : 노멀 )
 {
-    int VertexIndex;   // 정점 인덱스
-    int TextureIndex;  // 텍스처 인덱스
-    int NormalIndex;   // 노멀 인덱스
+    TArray<int> Vertices;      // 정점 인덱스
+    TArray<int> TexCoords;     // 텍스처 좌표 인덱스
+    TArray<int> Normals;       // 노멀 벡터 인덱스
 };
 
 
@@ -36,17 +36,6 @@ struct FStaticMesh
 	TArray<uint32> Indices;
 };
 
-// Raw Data. Obj 원본 데이터.
-struct FObjInfo
-{
-    TArray<FVector> Vertices;      // 버텍스 포지션.
-    TArray<FVector> Normals;   // 버텍스 노말.
-    TArray<FVector4> Colors;
-    TArray<FFace> Indices;
-    //FVector2 UVs; 
-
-    TArray<FObjMaterialInfo> Materials;
-};
 
 struct FObjMaterialInfo
 {
@@ -70,6 +59,19 @@ struct FObjMaterialInfo
     // 필요에 따라 추가: 예) map_d, refl, bump scale(-bm), Tf 등.
 };
 
+// Raw Data. Obj 원본 데이터.
+struct FObjInfo
+{
+    TArray<FVector> Vertices;      // 버텍스 포지션.
+    TArray<FVector> Normals;   // 버텍스 노말.
+    TArray<FVector4> Colors;
+    TArray<FFace> Indices;
+    //FVector2 UVs; 
+
+    TArray<FObjMaterialInfo> Materials;
+    TMap<FString, FFace> Faces;
+};
+
 struct FObjImporter
 {
     // Obj Parsing (*.obj to FObjInfo)
@@ -79,15 +81,14 @@ struct FObjImporter
     {
         std::string FileName = InPath + "/" + InFileName;
         std::ifstream ObjFile(FileName.c_str());
-     
+        FString CurrentMaterial;  // 현재 활성화된 텍스처 이름
+        std::string line;
+
         if (!ObjFile.is_open()) {
             throw std::runtime_error("Failed to open OBJ file.");
+            return false;
         }
-        
-        std::string line;
-        FString currentMaterial;
-
-
+       
         while (std::getline(ObjFile, line))
         {
 			line = UGTLStringLibrary::StringRemoveNoise(line);
@@ -100,20 +101,20 @@ struct FObjImporter
 
             // Handle vertices (v)
             if (line.substr(0, 2) == "v ") {
-                FVector vertex;
-                FVector4 color(1.0f, 1.0f, 1.0f, 1.0f); // Default color: white
+                FVector Vertex;
+                FVector4 Color(1.0f, 1.0f, 1.0f, 1.0f); // Default color: white
 
                 // Parse vertex coordinates
-                ss >> token >> vertex.X >> vertex.Y >> vertex.Z;
+                ss >> token >> Vertex.X >> Vertex.Y >> Vertex.Z;
 
                 // Check if color (RGBA) is provided (i.e., 4 components)
-                if (ss >> color.X >> color.Y >> color.Z >> color.W) {
+                if (ss >> Color.X >> Color.Y >> Color.Z >> Color.W) {
                     // If we successfully read 4 components, this means we have RGBA color
-                    OutObjInfo.Vertices.push_back(FVector{ vertex });
+                    OutObjInfo.Colors.push_back(Color);
                 }
                 else {
                     // If no color was provided, use default color (white)
-                    OutObjInfo.Vertices.push_back({vertex});
+                    OutObjInfo.Vertices.push_back({Vertex});
                 }
             }
             // Handle normals (vn)
@@ -129,18 +130,6 @@ struct FObjImporter
              //   OutObjInfo.UVs.push_back(uv});  // 0 is a placeholder for index
             }
             // Handle face (f) which contains vertex indices
-            else if (line.substr(0, 2) == "f ") {
-                int VertexIndex, TextureIndex, NormalIndex;
-                while (ss >> token) 
-                { 
-                    if (sscanf(token.c_str(), "%zu/%zu/%zu", &VertexIndex, &TextureIndex, &NormalIndex) != 3) {
-                        throw std::runtime_error("Face parsing error. Incorrect face format.");
-                    }
-                    FFace Face = { VertexIndex - 1, TextureIndex - 1, NormalIndex - 1 };
-                    OutObjInfo.Indices.push_back(Face);  // 0-based index adjustment
-                }
-            
-            }
             // Handle material library (mtllib)
             else if (line.substr(0, 7) == "mtllib ") {
                 std::string MtlFileName;  // std::string으로 먼저 읽고
@@ -148,22 +137,73 @@ struct FObjImporter
                 MtlFileName = InPath + "/" + MtlFileName;
                 FObjMaterialInfo NewMtlInfo;
                 if (!ParseMtlFile(MtlFileName, NewMtlInfo))
+                {
                     return false;
+                }
+                    
                 OutObjInfo.Materials.push_back(NewMtlInfo);
             }
             // Handle material usage (usemtl)
-            else if (line.substr(0, 7) == "usemtl ") {
-                ss >> token >> currentMaterial;
+            else if (line.substr(0, 7) == "usemtl ")
+            {
+                std::string MtlName;
+                ss >> token >> MtlName;
+
+                CurrentMaterial = UGTLStringLibrary::StringToWString(MtlName);
+
+                if (!OutObjInfo.Faces.contains(CurrentMaterial)) {
+                    OutObjInfo.Faces.insert(make_pair(CurrentMaterial, FFace()));
+                }
+
+            }
+            else if (line.substr(0, 2) == "f ") {
+                TArray<int> faceVertices;
+                TArray<int> faceTexCoords;
+                TArray<int> faceNormals;
+
+                // 면 정보 파싱
+                std::stringstream faceStream(line);
+                std::string faceToken;
+                while (faceStream >> faceToken) {
+                    std::vector<std::string> parts;
+                    std::stringstream tokenStream(faceToken);
+                    std::string part;
+                    while (std::getline(tokenStream, part, '/')) {
+                        parts.push_back(part);
+                    }
+
+                    if (parts.size() == 1) {
+                        // 정점만 있는 경우
+                        faceVertices.push_back(std::stoi(parts[0]) - 1);
+                    }
+                    else if (parts.size() == 2) {
+                        // 정점 + 텍스처
+                        faceVertices.push_back(std::stoi(parts[0]) - 1);
+                        faceTexCoords.push_back(std::stoi(parts[1]) - 1);
+                    }
+                    else if (parts.size() == 3) {
+                        // 정점 + 텍스처 + 노멀
+                        faceVertices.push_back(std::stoi(parts[0]) - 1);
+                        faceTexCoords.push_back(std::stoi(parts[1]) - 1);
+                        faceNormals.push_back(std::stoi(parts[2]) - 1);
+                    }
+                }
+
+                // 활성화된 텍스처에 해당하는 face 추가
+                FFace newFace;
+                newFace.Vertices = TArray<int>(faceVertices.begin(), faceVertices.end());
+                newFace.TexCoords = TArray<int>(faceTexCoords.begin(), faceTexCoords.end());
+                newFace.Normals = TArray<int>(faceNormals.begin(), faceNormals.end());
+
+                if(CurrentMaterial.length()!=0)
+                    OutObjInfo.Faces[CurrentMaterial]=newFace;
+                else
+                    OutObjInfo.Faces[L"None"] = newFace;
             }
         }
         ObjFile.close();
 
-        // If we have a material library, parse the materials
-        if (!NewObjInfo.MaterialLib.IsEmpty()) {
-            ParseMaterialFile(NewObjInfo.MaterialLib, NewObjInfo);
-        }
-
-        return NewObjInfo;
+        return true;
     }
 
     static bool ParseMtlFile(const std::string& InFileName, FObjMaterialInfo& OutInfo)
