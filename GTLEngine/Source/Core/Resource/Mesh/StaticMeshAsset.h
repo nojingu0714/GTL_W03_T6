@@ -13,7 +13,7 @@ struct FNormalVertex
     FVector Pos;      // 버텍스 포지션.
     FVector Normal;   // 버텍스 노말.
     FVector4 Color;
-    //FVector2 Tex;     // 버텍스 텍스쳐 좌표.
+    FVector2 Tex;     // 버텍스 텍스쳐 좌표.
 };
 
 struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처 / c : 노멀 )
@@ -65,11 +65,9 @@ struct FObjInfo
     TArray<FVector> Vertices;      // 버텍스 포지션.
     TArray<FVector> Normals;   // 버텍스 노말.
     TArray<FVector4> Colors;
-    TArray<FFace> Indices;
-    //FVector2 UVs; 
-
+    TArray<FVector2> UVs;
     TArray<FObjMaterialInfo> Materials;
-    TMap<FString, FFace> Faces;
+    TMap<FString, TArray<FFace>> FaceMap;
 };
 
 struct FObjImporter
@@ -91,13 +89,13 @@ struct FObjImporter
        
         while (std::getline(ObjFile, line))
         {
-			line = UGTLStringLibrary::StringRemoveNoise(line);
 
             std::stringstream ss(line);
             std::string token;
 
             // Skip empty lines and comment lines (lines starting with #)
             if (line.empty() || line[0] == '#') continue;
+			line = UGTLStringLibrary::StringRemoveNoise(line);
 
             // Handle vertices (v)
             if (line.substr(0, 2) == "v ") {
@@ -106,16 +104,14 @@ struct FObjImporter
 
                 // Parse vertex coordinates
                 ss >> token >> Vertex.X >> Vertex.Y >> Vertex.Z;
+                OutObjInfo.Vertices.push_back({Vertex});
 
                 // Check if color (RGBA) is provided (i.e., 4 components)
                 if (ss >> Color.X >> Color.Y >> Color.Z >> Color.W) {
                     // If we successfully read 4 components, this means we have RGBA color
                     OutObjInfo.Colors.push_back(Color);
                 }
-                else {
-                    // If no color was provided, use default color (white)
-                    OutObjInfo.Vertices.push_back({Vertex});
-                }
+                // If no color was provided, use default color (white)
             }
             // Handle normals (vn)
             else if (line.substr(0, 3) == "vn ") {
@@ -125,9 +121,9 @@ struct FObjImporter
             }
             // Handle texture coordinates (vt)
             else if (line.substr(0, 3) == "vt ") {
-             //   FVector2 uv;
-             //   ss >> token >> uv.X >> uv.Y;
-             //   OutObjInfo.UVs.push_back(uv});  // 0 is a placeholder for index
+                 FVector2 uv;
+                 ss >> token >> uv.X >> uv.Y;
+                  OutObjInfo.UVs.push_back({uv});  // 0 is a placeholder for index
             }
             // Handle face (f) which contains vertex indices
             // Handle material library (mtllib)
@@ -146,13 +142,15 @@ struct FObjImporter
             // Handle material usage (usemtl)
             else if (line.substr(0, 7) == "usemtl ")
             {
-                std::string MtlName;
-                ss >> token >> MtlName;
+                // "usemtl " 이후의 모든 텍스트를 메터리얼 이름으로 사용
+                std::string MtlName = line.substr(7);  // "usemtl " 이후부터 끝까지
 
+                // 메터리얼 이름을 WString으로 변환
                 CurrentMaterial = UGTLStringLibrary::StringToWString(MtlName);
 
-                if (!OutObjInfo.Faces.contains(CurrentMaterial)) {
-                    OutObjInfo.Faces.insert(make_pair(CurrentMaterial, FFace()));
+                // FaceMap에 메터리얼이 없으면 새로 추가
+                if (!OutObjInfo.FaceMap.contains(CurrentMaterial)) {
+                    OutObjInfo.FaceMap.insert(make_pair(CurrentMaterial, TArray<FFace>()));
                 }
 
             }
@@ -164,6 +162,9 @@ struct FObjImporter
                 // 면 정보 파싱
                 std::stringstream faceStream(line);
                 std::string faceToken;
+
+                faceStream >> faceToken; // f 날리기
+
                 while (faceStream >> faceToken) {
                     std::vector<std::string> parts;
                     std::stringstream tokenStream(faceToken);
@@ -195,10 +196,9 @@ struct FObjImporter
                 newFace.TexCoords = TArray<int>(faceTexCoords.begin(), faceTexCoords.end());
                 newFace.Normals = TArray<int>(faceNormals.begin(), faceNormals.end());
 
-                if(CurrentMaterial.length()!=0)
-                    OutObjInfo.Faces[CurrentMaterial]=newFace;
-                else
-                    OutObjInfo.Faces[L"None"] = newFace;
+                if (CurrentMaterial.length() != 0)
+                    OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
+                
             }
         }
         ObjFile.close();
@@ -217,115 +217,158 @@ struct FObjImporter
 		std::string line;
         while (std::getline(MtlFile, line))
         {
-			line = UGTLStringLibrary::StringRemoveNoise(line);
-			if (line.empty() || line[0] == '#') continue;
+            if (line.empty() || line[0] == '#') continue;
+            line = UGTLStringLibrary::StringRemoveNoise(line);  // 기존 노이즈 제거 코드 유지
 
-			std::istringstream ss(line);
-			std::string token;
-			ss >> token;
+            size_t pos = 0;
+            while (pos < line.length() && line[pos] == ' ') pos++;  // 앞쪽 공백 제거
 
-            if (token == "newmtl ")
+            if (pos >= line.length()) continue;  // 공백만 있는 라인은 건너뛰기
+
+            // 새로운 메터리얼 처리
+            if (line.compare(pos, 6, "newmtl") == 0)
             {
-				std::string matName;
-				ss >> matName;
-				OutInfo.MatName = UGTLStringLibrary::StringToWString(matName);
+                pos += 7;  // "newmtl" 뒤의 공백 건너뛰기
+                while (pos < line.length() && line[pos] == ' ') pos++;  // 공백 건너뛰기
+
+                // 메터리얼 이름에 공백이 있을 수 있으므로, 한 줄에서 나머지 부분을 다 읽어오기
+                size_t endPos = line.find_first_of("\r\n", pos);  // 개행문자나 캐리지 리턴을 만나면 끝
+                if (endPos == std::string::npos) endPos = line.length();  // 개행문자가 없으면 끝까지
+
+                std::string matName = line.substr(pos, endPos - pos);
+                OutInfo.MatName = UGTLStringLibrary::StringToWString(matName);
+                continue;
             }
-            else if (token == "Ka ")
+
+            // Ka, Kd, Ks 등 메터리얼의 다른 속성들 처리
+            if (line.compare(pos, 2, "Ka") == 0)
             {
-				float r, g, b;
-				ss >> r >> g >> b;
-				OutInfo.Ka = FVector(r, g, b);
-			}
-			else if (token == "Kd ")
-			{
-				float r, g, b;
-				ss >> r >> g >> b;
-				OutInfo.Kd = FVector(r, g, b);
-            }
-            else if (token == "Ks ")
-            {
+                pos += 3;
                 float r, g, b;
-                ss >> r >> g >> b;
+                sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
+                OutInfo.Ka = FVector(r, g, b);
+                continue;
+            }
+            else if (line.compare(pos, 2, "Kd") == 0)
+            {
+                pos += 3;
+                float r, g, b;
+                sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
+                OutInfo.Kd = FVector(r, g, b);
+                continue;
+            }
+            else if (line.compare(pos, 2, "Ks") == 0)
+            {
+                pos += 3;
+                float r, g, b;
+                sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
                 OutInfo.Ks = FVector(r, g, b);
+                continue;
             }
-            else if (token == "Ke ")
+            else if (line.compare(pos, 2, "Ke") == 0)
             {
-				float r, g, b;
-				ss >> r >> g >> b;
-				OutInfo.Ke = FVector(r, g, b);
-			}
-            else if (token == "illum ")
-            {
-				int illum;
-				ss >> illum;
-				OutInfo.Illum = illum;
+                pos += 3;
+                float r, g, b;
+                sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
+                OutInfo.Ke = FVector(r, g, b);
+                continue;
             }
-            else if (token == "Ns ")
+
+            // 추가적인 속성들 처리
+            else if (line.compare(pos, 5, "illum") == 0)
             {
+                pos += 6;
+                int illum;
+                sscanf_s(line.substr(pos).c_str(), "%d", &illum);
+                OutInfo.Illum = illum;
+                continue;
+            }
+            else if (line.compare(pos, 2, "Ns") == 0)
+            {
+                pos += 3;
                 float ns;
-				ss >> ns;
-				OutInfo.Ns = ns;
-			}
-			else if (token == "d ")
-			{
-				float d;
-				ss >> d;
-				OutInfo.d = d;
+                sscanf_s(line.substr(pos).c_str(), "%f", &ns);
+                OutInfo.Ns = ns;
+                continue;
             }
-            else if (token == "Tr ")
+            else if (line.compare(pos, 1, "d") == 0)
             {
-				float tr;
-				ss >> tr;
-				OutInfo.Tr = tr;
-			}
-			else if (token == "Ni ")
-			{
-				float ni;
-				ss >> ni;
-				OutInfo.Ni = ni;
-			}
-			else if (token == "map_Ka ")
-			{
-				std::string mapKa;
-				ss >> mapKa;
-				OutInfo.MapKa = UGTLStringLibrary::StringToWString(mapKa);
-			}
-			else if (token == "map_Kd ")
-			{
-				std::string mapKd;
-				ss >> mapKd;
-				OutInfo.MapKd = UGTLStringLibrary::StringToWString(mapKd);
-			}
-			else if (token == "map_Ks ")
-			{
-				std::string mapKs;
-				ss >> mapKs;
-				OutInfo.MapKs = UGTLStringLibrary::StringToWString(mapKs);
-			}
-			else if (token == "map_Ke ")
-			{
-				std::string mapKe;
-				ss >> mapKe;
-				OutInfo.MapKe = UGTLStringLibrary::StringToWString(mapKe);
-			}
-			else if (token == "map_Bump ")
-			{
-				std::string mapBump;
-				ss >> mapBump;
-				OutInfo.MapBump = UGTLStringLibrary::StringToWString(mapBump);
-			}
-			else if (token == "map_Displace ")
-			{
-				std::string mapDisplace;
-				ss >> mapDisplace;
-				OutInfo.MapDisplace = UGTLStringLibrary::StringToWString(mapDisplace);
-			}
+                pos += 2;
+                float d;
+                sscanf_s(line.substr(pos).c_str(), "%f", &d);
+                OutInfo.d = d;
+                continue;
+            }
+            else if (line.compare(pos, 2, "Tr") == 0)
+            {
+                pos += 3;
+                float tr;
+                sscanf_s(line.substr(pos).c_str(), "%f", &tr);
+                OutInfo.Tr = tr;
+                continue;
+            }
+            else if (line.compare(pos, 2, "Ni") == 0)
+            {
+                pos += 3;
+                float ni;
+                sscanf_s(line.substr(pos).c_str(), "%f", &ni);
+                OutInfo.Ni = ni;
+                continue;
+            }
+            else if (line.compare(pos, 6, "map_Ka") == 0)
+            {
+                pos += 7;
+                size_t endPos = line.find_first_of(" \t", pos);
+                std::string mapKa = line.substr(pos, endPos - pos);
+                OutInfo.MapKa = UGTLStringLibrary::StringToWString(mapKa);
+                continue;
+            }
+            else if (line.compare(pos, 6, "map_Kd") == 0)
+            {
+                pos += 7;
+                size_t endPos = line.find_first_of(" \t", pos);
+                std::string mapKd = line.substr(pos, endPos - pos);
+                OutInfo.MapKd = UGTLStringLibrary::StringToWString(mapKd);
+                continue;
+            }
+            else if (line.compare(pos, 6, "map_Ks") == 0)
+            {
+                pos += 7;
+                size_t endPos = line.find_first_of(" \t", pos);
+                std::string mapKs = line.substr(pos, endPos - pos);
+                OutInfo.MapKs = UGTLStringLibrary::StringToWString(mapKs);
+                continue;
+            }
+            else if (line.compare(pos, 6, "map_Ke") == 0)
+            {
+                pos += 7;
+                size_t endPos = line.find_first_of(" \t", pos);
+                std::string mapKe = line.substr(pos, endPos - pos);
+                OutInfo.MapKe = UGTLStringLibrary::StringToWString(mapKe);
+                continue;
+            }
+            else if (line.compare(pos, 8, "map_Bump") == 0)
+            {
+                pos += 9;
+                size_t endPos = line.find_first_of(" \t", pos);
+                std::string mapBump = line.substr(pos, endPos - pos);
+                OutInfo.MapBump = UGTLStringLibrary::StringToWString(mapBump);
+                continue;
+            }
+            else if (line.compare(pos, 12, "map_Displace") == 0)
+            {
+                pos += 13;
+                size_t endPos = line.find_first_of(" \t", pos);
+                std::string mapDisplace = line.substr(pos, endPos - pos);
+                OutInfo.MapDisplace = UGTLStringLibrary::StringToWString(mapDisplace);
+                continue;
+            }
             else
-			{
-				// Unknown token
-				OutInfo = FObjMaterialInfo();
+            {
+                // Unknown token 처리
+                OutInfo = FObjMaterialInfo();
                 return false;
-			}
+            }
 
         }
 		MtlFile.close();

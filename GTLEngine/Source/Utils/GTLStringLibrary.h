@@ -7,11 +7,18 @@
 class UGTLStringLibrary
 {
 public:
-	static std::wstring StringToWString(const std::string& str) {
+	static FString StringToWString(const std::string& str) {
 		int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), nullptr, 0);
-		std::wstring wstr(size_needed, 0);
+		FString wstr(size_needed, 0);
 		MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), &wstr[0], size_needed);
 		return wstr;
+	}
+
+	static std::string WStringToString(const FString& wstr) {
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), nullptr, 0, nullptr, nullptr);
+		std::string str(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.length(), &str[0], size_needed, nullptr, nullptr);
+		return str;
 	}
 
 	static std::string StringTrimFrontBack(const std::string& InString)

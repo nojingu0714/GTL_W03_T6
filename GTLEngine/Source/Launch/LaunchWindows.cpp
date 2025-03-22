@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <Windows.h>
-
 #include "Engine/Engine.h"
-
 #include "ImGui/imgui_impl_win32.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -70,6 +68,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     UEngine& Engine = UEngine::GetEngine();
     bool GameLoopState = Engine.InitEngine(WindowInfo);
+
+
 
     while (GameLoopState)
     {
