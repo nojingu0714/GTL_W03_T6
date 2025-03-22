@@ -35,7 +35,7 @@ struct FObjInfo
     FVector V;      // 버텍스 포지션.
     FVector Normal;   // 버텍스 노말.
     FVector4 Color;
-    //FVector2 Tex; 
+    //FVector2 Tex;
 
     TArray<FObjMaterialInfo> Materials;
 
@@ -44,24 +44,23 @@ struct FObjInfo
 struct FObjMaterialInfo
 {
     FString MatName;
-    // 텍스쳐 정보.
-    // Diffuse Scalar
-    // Diffuse Texture
     FVector Ka; // Ambient Reflection
     FVector Kd; // Diffuse Reflection
     FVector Ks; // Specular Reflection
-    FVector Ke; // Emissive reflectivity
-    float Ns; // Specular Exponent
-    int Illum; // Illumination Model 
-    FString MapKd; // Diffuse Texture
-    FString MapKa; // Ambient Texture
-    FString MapKs; // Specular Texture
-    FString MapKe; // Emissive Texture
-    float d; // 투명도.
-    float Tr; // 반비례 투명도.
-    float Ni; // Refractive index.
-    FString MapBump; // Bump map.
-    FString MapDisplace; // Displacement Map.
+    FVector Ke; // Emissive Reflectivity
+    float Ns = 0.0f; // Specular Exponent
+    int Illum = 0; // Illumination Model
+    float d = 1.0f; // 투명도 (opacity)
+    float Tr = 0.0f; // 반비례 투명도 (Transparency)
+    float Ni = 1.0f; // Refractive Index
+    FString MapKa; // Ambient Texture Map
+    FString MapKd; // Diffuse Texture Map
+    FString MapKs; // Specular Texture Map
+    FString MapKe; // Emissive Texture Map
+    FString MapBump; // Bump Map
+    FString MapDisplace; // Displacement Map
+
+    // 필요에 따라 추가: 예) map_d, refl, bump scale(-bm), Tf 등.
 };
 
 struct FObjImporter
@@ -156,6 +155,132 @@ struct FObjImporter
         }
 
         return NewObjInfo;
+    }
+
+    static bool ParseMtlFile(const std::string& InFileName, FObjMaterialInfo& OutInfo)
+    {
+        std::ifstream MtlFile(InFileName.c_str());
+
+        if (!MtlFile.is_open()) {
+            throw std::runtime_error("Failed to open OBJ file.");
+        }
+
+		std::string line;
+        while (std::getline(MtlFile, line))
+        {
+			line = UGTLStringLibrary::StringRemoveNoise(line);
+			if (line.empty() || line[0] == '#') continue;
+
+			std::istringstream ss(line);
+			std::string token;
+			ss >> token;
+
+            if (token == "newmtl ")
+            {
+				std::string matName;
+				ss >> matName;
+				OutInfo.MatName = UGTLStringLibrary::StringToWString(matName);
+            }
+            else if (token == "Ka ")
+            {
+				float r, g, b;
+				ss >> r >> g >> b;
+				OutInfo.Ka = FVector(r, g, b);
+			}
+			else if (token == "Kd ")
+			{
+				float r, g, b;
+				ss >> r >> g >> b;
+				OutInfo.Kd = FVector(r, g, b);
+            }
+            else if (token == "Ks ")
+            {
+                float r, g, b;
+                ss >> r >> g >> b;
+                OutInfo.Ks = FVector(r, g, b);
+            }
+            else if (token == "Ke ")
+            {
+				float r, g, b;
+				ss >> r >> g >> b;
+				OutInfo.Ke = FVector(r, g, b);
+			}
+            else if (token == "illum ")
+            {
+				int illum;
+				ss >> illum;
+				OutInfo.Illum = illum;
+            }
+            else if (token == "Ns ")
+            {
+                float ns;
+				ss >> ns;
+				OutInfo.Ns = ns;
+			}
+			else if (token == "d ")
+			{
+				float d;
+				ss >> d;
+				OutInfo.d = d;
+            }
+            else if (token == "Tr ")
+            {
+				float tr;
+				ss >> tr;
+				OutInfo.Tr = tr;
+			}
+			else if (token == "Ni ")
+			{
+				float ni;
+				ss >> ni;
+				OutInfo.Ni = ni;
+			}
+			else if (token == "map_Ka ")
+			{
+				std::string mapKa;
+				ss >> mapKa;
+				OutInfo.MapKa = UGTLStringLibrary::StringToWString(mapKa);
+			}
+			else if (token == "map_Kd ")
+			{
+				std::string mapKd;
+				ss >> mapKd;
+				OutInfo.MapKd = UGTLStringLibrary::StringToWString(mapKd);
+			}
+			else if (token == "map_Ks ")
+			{
+				std::string mapKs;
+				ss >> mapKs;
+				OutInfo.MapKs = UGTLStringLibrary::StringToWString(mapKs);
+			}
+			else if (token == "map_Ke ")
+			{
+				std::string mapKe;
+				ss >> mapKe;
+				OutInfo.MapKe = UGTLStringLibrary::StringToWString(mapKe);
+			}
+			else if (token == "map_Bump ")
+			{
+				std::string mapBump;
+				ss >> mapBump;
+				OutInfo.MapBump = UGTLStringLibrary::StringToWString(mapBump);
+			}
+			else if (token == "map_Displace ")
+			{
+				std::string mapDisplace;
+				ss >> mapDisplace;
+				OutInfo.MapDisplace = UGTLStringLibrary::StringToWString(mapDisplace);
+			}
+            else
+			{
+				// Unknown token
+				OutInfo = FObjMaterialInfo();
+                return false;
+			}
+
+        }
+		MtlFile.close();
+		return true;
     }
     
 };
