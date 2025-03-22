@@ -1,5 +1,8 @@
 #include "MVPShader.hlsli"
 
+Texture2D g_txColor : register(t0);
+SamplerState g_Sample : register(s0);
+
 // StaticMeshShader
 struct VS_INPUT
 {
@@ -8,6 +11,3 @@ struct VS_INPUT
     float4 c : COLOR; // Input color from vertex buffer
     float2 t : TEXTURE;
 };
-
-Texture2D g_txColor : register(t0);
-SamplerState g_Sample : register(s0);
