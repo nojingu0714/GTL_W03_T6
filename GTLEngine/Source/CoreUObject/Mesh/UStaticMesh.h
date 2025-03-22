@@ -11,12 +11,10 @@ public:
 	virtual void Destroy() override;
 
 public:
-	const FString& GetAssetPathName();
+	const FString& GetAssetPathFileName();
 	void SetStaticMeshAsset(FStaticMesh* InStaticMeshAsset);
 
 private:
 	FStaticMesh* StaticMeshAsset;
-
-	//TMap<slotnum, FMaterial> Materials;s
 
 };

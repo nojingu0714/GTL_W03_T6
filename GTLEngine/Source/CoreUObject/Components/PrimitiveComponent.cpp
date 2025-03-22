@@ -4,6 +4,8 @@
 #include "Core/Resource/ResourceManager.h"
 #include "Utils/Math/Geometry.h"
 
+#include "SimpleJSON/json.hpp"
+
 UPrimitiveComponent::UPrimitiveComponent()
 	: USceneComponent(), PrimitiveType(EPrimitiveType::None)
 {
@@ -15,6 +17,11 @@ void UPrimitiveComponent::TickComponent(float TickTime)
 
 void UPrimitiveComponent::Destroy()
 {
+}
+
+void UPrimitiveComponent::Serialize(bool bIsLoading, json::JSON Handle)
+{
+
 }
 
 FBoundingBox UPrimitiveComponent::GetAABB() const {

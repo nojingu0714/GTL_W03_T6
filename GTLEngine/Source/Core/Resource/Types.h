@@ -48,6 +48,16 @@ struct FVertexUV
 	float U = 0.f, V = 0.f;
 };
 
+// Vertex Layout
+// Position, Normal, Color, Texture coord
+struct FVertexPNCT
+{
+    FVector Position;
+    FVector Normal;
+    FVector4 Color;
+    FVector2 UV;
+};
+
 struct FVertexInfo
 {
     uint NumVertices;

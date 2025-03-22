@@ -566,6 +566,9 @@
     <FxCompile Include="Resource\Shader\MVPShader.hlsli">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\Shader\StaticMeshShader.hlsl">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Source\CoreUObject\UI\ConsolePanel.h">

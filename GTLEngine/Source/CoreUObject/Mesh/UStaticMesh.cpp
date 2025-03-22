@@ -6,7 +6,7 @@ void UStaticMesh::Destroy()
 	Super::Destroy();
 }
 
-const FString& UStaticMesh::GetAssetPathName()
+const FString& UStaticMesh::GetAssetPathFileName()
 {
 	return StaticMeshAsset->PathFileName;
 }
