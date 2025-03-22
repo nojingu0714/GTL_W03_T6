@@ -7,6 +7,7 @@ std::unordered_map<std::wstring, FStaticMesh*> FObjManager::ObjStaticMeshMap;
 
 FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
 {
+    // 이미 있으면 바로 반환.
     if (ObjStaticMeshMap.contains(PathFileName))
     {
         return ObjStaticMeshMap[PathFileName];
@@ -14,6 +15,7 @@ FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
     // OBJ Parsing and create a new FStaticMesh
     // PathFileName으로 Obj 파싱하고 나온 ObjInfo로 FStaticMesh 생성해서 Map에 추가.
 
+    // 없으면 만들어서 map에 캐싱 후 반환.
     size_t offset = PathFileName.find_last_of(L"/");
     std::string PathName = UGTLStringLibrary::WStringToString(PathFileName.substr(0, offset));
     std::string FileName = UGTLStringLibrary::WStringToString(PathFileName.substr(offset + 1, PathFileName.size()));
@@ -21,18 +23,34 @@ FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
     FObjInfo NewObj;
     FObjImporter::ParseObjFile(PathName, FileName, NewObj);
 
-    FStaticMesh test = FObjManager::ConvertObjToStaticMesh(NewObj);
+    FStaticMesh* NewStaticMesh = FObjManager::ConvertObjToStaticMesh(NewObj);
+	ObjStaticMeshMap.emplace(NewStaticMesh->PathFileName, NewStaticMesh);
+	return ObjStaticMeshMap[PathFileName];
+}
 
+UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName)
+{
     
+    for (auto It = GUObjectArray.begin(); It != GUObjectArray.end(); ++It)
+    {
+        UStaticMesh* StaticMesh = Cast<UStaticMesh>(*It);
+        if (StaticMesh && StaticMesh->GetAssetPathFileName() == PathFileName)
+            return StaticMesh;
+    }
+
+    FStaticMesh* Asset = FObjManager::LoadObjStaticMeshAsset(PathFileName);
+    UStaticMesh* StaticMesh = FObjectFactory::ConstructObject<UStaticMesh>();
+	StaticMesh->SetStaticMeshAsset(Asset);
+	return StaticMesh;
 }
 
 
-FStaticMesh FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
+FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
 {
-    FStaticMesh NewStaticMesh;
+    FStaticMesh* NewStaticMesh = new FStaticMesh();
 
     // StaticMesh의 PathFileName을 설정 (예시로 설정)
-    NewStaticMesh.PathFileName = TEXT("Example.obj");
+    NewStaticMesh->PathFileName = ObjInfo.PathFileName;
 
     // FNormalVertex 배열을 생성
     TArray<FNormalVertex> NormalVertices;
@@ -48,7 +66,7 @@ FStaticMesh FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
     }
 
     // Vertices를 StaticMesh에 추가
-    NewStaticMesh.Vertices = NormalVertices;
+    NewStaticMesh->Vertices = NormalVertices;
 
     // FaceMap에서 면 인덱스를 추출하여 인덱스 배열을 생성
     TArray<uint32> Indices;
@@ -67,7 +85,7 @@ FStaticMesh FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
     }
 
     // StaticMesh에 인덱스 추가
-    NewStaticMesh.Indices = Indices;
+    NewStaticMesh->Indices = Indices;
 
     return NewStaticMesh;;
 }

@@ -12,6 +12,10 @@
 #include "CoreUObject/GameFrameWork/Actor.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
 
+#include "Mesh/UStaticMesh.h"
+#include "Components/StaticMeshComponent.h"
+#include "Resource/ObjManager.h"
+
 #include "CoreUObject/Components/PrimitiveComponent.h"
 #include "CoreUObject/Components/CameraComponent.h"
 #include "CoreUObject/Components/LineComponent.h"
@@ -75,14 +79,16 @@ HRESULT UDirectXHandle::CreateShaderManager()
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXTURE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    HRESULT hr = ShaderManager->AddVertexShaderAndInputLayout(L"DefaultVS", L"Resource/Shader/PrimitiveShader.hlsl", "mainVS", layout, ARRAYSIZE(layout));
+    HRESULT hr = ShaderManager->AddVertexShaderAndInputLayout(L"DefaultVS", L"Resource/Shader/StaticMeshShader.hlsl", "mainVS", layout, ARRAYSIZE(layout));
     if (FAILED(hr))
         return hr;
 
-    hr = ShaderManager->AddPixelShader(L"DefaultPS", L"Resource/Shader/PrimitiveShader.hlsl", "mainPS");
+    hr = ShaderManager->AddPixelShader(L"DefaultPS", L"Resource/Shader/StaticMeshShader.hlsl", "mainPS");
     if (FAILED(hr))
         return hr;
 
@@ -631,6 +637,46 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
     DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetDefaultDepthStencilState(), 0);
 }
 
+void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
+{
+	if (!Comp)
+		return;
+
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("DefaultPS")), NULL, 0);
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
+	
+	// Begin Object Matrix Update. 
+	ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
+	if (!CbChangesEveryObject)
+	{
+		return;
+	}
+	D3D11_MAPPED_SUBRESOURCE MappedData = {};
+	DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+	if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
+	{
+		Buffer->WorldMatrix = Comp->GetWorldMatrix();
+	}
+	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
+
+	uint Stride = sizeof(FVertexPNCT);
+	UINT offset = 0;
+
+	UStaticMesh* Mesh = Comp->GetStaticMesh();
+	
+	FStaticMesh* MeshInfo = FObjManager::LoadObjStaticMeshAsset(Comp->GetStaticMesh()->GetAssetPathFileName());
+
+	FVertexInfo VertexInfo;
+	FIndexInfo IndexInfo;
+	BufferManager->CreateVertexBuffer(DXDDevice, MeshInfo->Vertices, VertexInfo);
+	BufferManager->CreateIndexBuffer(DXDDevice, MeshInfo->Indices, IndexInfo);
+
+	DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &offset);
+	DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
+}
+
 void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
 {
 	if ( !GetFlag(UEngine::GetEngine().ShowFlags, EEngineShowFlags::SF_Primitives) )
@@ -640,16 +686,7 @@ void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
     {
 		for (UActorComponent* Comp : Actor->GetOwnedComponent())
 		{
-			if (Actor->IsSelected)
-			{
-				RenderPrimitive(Cast<UPrimitiveComponent>(Comp), true);
-			}
-			else
-			{
-				RenderPrimitive(Cast<UPrimitiveComponent>(Comp), false);
-			}
-			// TODO: 컴포넌트 별 UUID 렌더링 구현하기. 컴포넌트의 변환된 위치를 찾는 부분에서 문제 생김.
-			//RenderComponentUUID(dynamic_cast<USceneComponent*>(Comp));
+			RenderStaticMesh(Cast<UStaticMeshComponent>(Comp));
         }
 		RenderActorUUID(Actor);
 

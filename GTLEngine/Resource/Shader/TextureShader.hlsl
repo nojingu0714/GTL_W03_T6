@@ -1,3 +1,4 @@
+#include "MVPShader.hlsli"
 
 Texture2D AtlasTexture : register(t0);
 SamplerState AtlasSampler : register(s0);

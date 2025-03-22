@@ -21,6 +21,7 @@ struct FObjImporter
             return false;
         }
 
+        OutObjInfo.PathFileName = UGTLStringLibrary::StringToWString(FileName);
         while (std::getline(ObjFile, line))
         {
 
@@ -318,12 +319,12 @@ private:
     static TMap<FString, FStaticMesh*> ObjStaticMeshMap; // TMap 기반의 메시 데이터
 
 public:
-
-   
-    static FStaticMesh ConvertObjToStaticMesh(const FObjInfo& ObjInfo);;
+    static FStaticMesh* ConvertObjToStaticMesh(const FObjInfo& ObjInfo);;
 
     // FStaticMesh를 로드하는 함수 (Cooked Data)
     static FStaticMesh* LoadObjStaticMeshAsset(const FString& PathFileName);
+
+    static UStaticMesh* LoadObjStaticMesh(const FString& PathFileName);
 
 };
 

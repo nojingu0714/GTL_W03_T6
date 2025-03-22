@@ -23,6 +23,7 @@ class UGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
 class USceneComponent;
+class UStaticMeshComponent;
 
 class UDirectXHandle
 {
@@ -44,6 +45,7 @@ public:
 	void RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
+	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderLines(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);

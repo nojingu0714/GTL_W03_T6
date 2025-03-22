@@ -8,6 +8,8 @@ class UStaticMesh : public UObject
 	DECLARE_CLASS(UStaticMesh, UObject)
 
 public:
+	UStaticMesh();
+
 	virtual void Destroy() override;
 
 public:

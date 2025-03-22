@@ -57,6 +57,7 @@ struct FObjMaterialInfo
 // Raw Data. Obj 원본 데이터.
 struct FObjInfo
 {
+	FString PathFileName; // Mesh obj 파일 경로 이름.
     TArray<FVector> Vertices;      // 버텍스 포지션.
     TArray<FVector> Normals;   // 버텍스 노말.
     TArray<FVector4> Colors;
