@@ -3,13 +3,6 @@
 #include "SceneComponent.h"
 #include "Core/Resource/Types.h"
 
-#include "SimpleJSON/json.hpp"
-
-namespace json
-{
-	class JSON;
-};
-
 class UPrimitiveComponent : public USceneComponent
 {
 	DECLARE_CLASS(UPrimitiveComponent, USceneComponent)
@@ -21,7 +14,7 @@ public:
 
 public:
 
-	virtual void Serialize(bool bIsLoading, json::JSON Handle);
+	//virtual void Serialize(bool bIsLoading, json::JSON Handle);
 
 
 	// 아래 사항은 Object 로드 방식으로 변경 시 삭제.

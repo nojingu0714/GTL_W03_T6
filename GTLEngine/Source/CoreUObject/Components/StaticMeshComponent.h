@@ -13,7 +13,7 @@ public:
 
 public:
 	// Primitive
-	void Serialize(bool bIsLoading, json::JSON Handle);
+	//void Serialize(bool bIsLoading, json::JSON Handle);
 
 private:
 	// 스태틱 메시 데이터.
