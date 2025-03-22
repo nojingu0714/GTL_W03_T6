@@ -17,14 +17,20 @@
 #include "GameFrameWork/Shapes/Cylinder.h"
 #include "GameFrameWork/Shapes/Cone.h"
 
+#include "ObjManager.h"
+
 UResourceManager::UResourceManager()
 {
+
+    FObjManager::LoadObjStaticMeshAsset(TEXT("Contents/cube-tex.obj"));
+
     // 평면형 UV 데이터 생성.
     UVQuadData = TArray<FVertexUV>(QuadVertices, QuadVertices + sizeof(QuadVertices) / sizeof(FVertexUV));
     LoadPrimitives();
     LoadTranslateGizmos();
     LoadRotateGizmos();
     LoadScaleGizmos();
+
 }
 
 UResourceManager::~UResourceManager()
