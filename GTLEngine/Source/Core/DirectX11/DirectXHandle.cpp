@@ -129,45 +129,61 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 		return hr;
 
 	// 래스터라이저 스테이트 생성.
-	{
-		// 일반 메시용 레스터라이저
-		UDXDRasterizerState* NormalRasterizer = new UDXDRasterizerState();
-		if (NormalRasterizer == nullptr)
-			return S_FALSE;
-		D3D11_RASTERIZER_DESC NormalRasterizerDesc = {};
-		NormalRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-		NormalRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
-		hr = NormalRasterizer->CreateRasterizerState(DXDDevice, &NormalRasterizerDesc);
-		if (FAILED(hr))
-			return hr;
-		RasterizerStates[TEXT("Normal")] = NormalRasterizer;
-	}
-	{
-		// 기즈모 레스터라이저
-		UDXDRasterizerState* GizmoRasterizer = new UDXDRasterizerState();
-		if (GizmoRasterizer == nullptr)
-			return S_FALSE;
-		D3D11_RASTERIZER_DESC GizmoRasterizerDesc = {};
-		GizmoRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-		GizmoRasterizerDesc.CullMode = D3D11_CULL_FRONT; // 백 페이스 컬링
-		hr = GizmoRasterizer->CreateRasterizerState(DXDDevice, &GizmoRasterizerDesc);
-		if (FAILED(hr))
-			return hr;
-		RasterizerStates[TEXT("Gizmo")] = GizmoRasterizer;
+	//{
+	//	// 일반 메시용 레스터라이저
+	//	UDXDRasterizerState* NormalRasterizer = new UDXDRasterizerState();
+	//	if (NormalRasterizer == nullptr)
+	//		return S_FALSE;
+	//	D3D11_RASTERIZER_DESC NormalRasterizerDesc = {};
+	//	NormalRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	//	NormalRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	//	hr = NormalRasterizer->CreateRasterizerState(DXDDevice, &NormalRasterizerDesc);
+	//	if (FAILED(hr))
+	//		return hr;
+	//	RasterizerStates[TEXT("Normal")] = NormalRasterizer;
+	//}
+
+	D3D11_RASTERIZER_DESC NormalRasterizerDesc = {};
+	NormalRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	NormalRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	AddRasterizerState(TEXT("Default"), NormalRasterizerDesc);
+
+	//{
+	//	// 기즈모 레스터라이저
+	//	UDXDRasterizerState* GizmoRasterizer = new UDXDRasterizerState();
+	//	if (GizmoRasterizer == nullptr)
+	//		return S_FALSE;
+	//	D3D11_RASTERIZER_DESC GizmoRasterizerDesc = {};
+	//	GizmoRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	//	GizmoRasterizerDesc.CullMode = D3D11_CULL_FRONT; // 백 페이스 컬링
+	//	hr = GizmoRasterizer->CreateRasterizerState(DXDDevice, &GizmoRasterizerDesc);
+	//	if (FAILED(hr))
+	//		return hr;
+	//	RasterizerStates[TEXT("Gizmo")] = GizmoRasterizer;
 
 
-		// 와이어프레임 레스터라이저
-		UDXDRasterizerState* WireframeRasterizer = new UDXDRasterizerState();
-		if ( WireframeRasterizer == nullptr )
-			return S_FALSE;
-		D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
-		WireframeRasterizerDesc.FillMode = D3D11_FILL_WIREFRAME; // 채우기 모드
-		WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
-		hr = WireframeRasterizer->CreateRasterizerState(DXDDevice, &WireframeRasterizerDesc);
-		if ( FAILED(hr) )
-			return hr;
-		RasterizerStates[TEXT("Wireframe")] = WireframeRasterizer;
-	}
+	//	// 와이어프레임 레스터라이저
+	//	UDXDRasterizerState* WireframeRasterizer = new UDXDRasterizerState();
+	//	if ( WireframeRasterizer == nullptr )
+	//		return S_FALSE;
+	//	D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
+	//	WireframeRasterizerDesc.FillMode = D3D11_FILL_WIREFRAME; // 채우기 모드
+	//	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	//	hr = WireframeRasterizer->CreateRasterizerState(DXDDevice, &WireframeRasterizerDesc);
+	//	if ( FAILED(hr) )
+	//		return hr;
+	//	RasterizerStates[TEXT("Wireframe")] = WireframeRasterizer;
+	//}
+
+	D3D11_RASTERIZER_DESC GizmoRasterizerDesc = {};
+	GizmoRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	GizmoRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	AddRasterizerState(TEXT("Gizmo"), GizmoRasterizerDesc);
+
+	D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
+	WireframeRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	AddRasterizerState(TEXT("Wireframe"), WireframeRasterizerDesc);
 
 	// 셰이더 초기화. VertexShader, PixelShader, InputLayout 생성.
 	// VertexShader, InputLayout 는 쌍으로 생성 및 이름으로 관리.
@@ -220,11 +236,14 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	}
 
     // 뎁스 스텐실 뷰 생성.
-    DepthStencilView = new UDXDDepthStencilView();
-    FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
-    hr = DepthStencilView->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(winInfo.Width), static_cast<float>(winInfo.Height));
-    if (FAILED(hr))
-        return hr;
+    //DepthStencilView = new UDXDDepthStencilView();
+    //FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
+    //hr = DepthStencilView->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(winInfo.Width), static_cast<float>(winInfo.Height));
+    //if (FAILED(hr))
+    //    return hr;
+
+	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
+	AddDepthStencilView(TEXT("Default"), winInfo.WindowHandle, (winInfo.Width), (winInfo.Height));
 
 	BufferManager = new UDXDBufferManager();
 
@@ -237,13 +256,26 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	*         깊이 쓰기 = TRUE
 	*         스텐실 테스트 = FALSE
 	*/
+    //DepthStencilState = new UDXDDepthStencilState();
+    //hr = DepthStencilState->CreateDepthStencilState(DXDDevice);
+    //if (FAILED(hr))
+    //    return hr;
 
     // 뎁스 스텐실 스테이트 생성.
-    DepthStencilState = new UDXDDepthStencilState();
-    hr = DepthStencilState->CreateDepthStencilState(DXDDevice);
-    if (FAILED(hr))
-        return hr;
+	// 기본.
+	D3D11_DEPTH_STENCIL_DESC DepthStencilDesc = {};
+	memset(&DepthStencilDesc, 0, sizeof(DepthStencilDesc));
+	DepthStencilDesc.DepthEnable = TRUE;
+	DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	AddDepthStencilState(TEXT("Default"), DepthStencilDesc);
 
+	// 깊이 무시하는 DepthStencilState
+	memset(&DepthStencilDesc, 0, sizeof(DepthStencilDesc));
+	DepthStencilDesc.DepthEnable = FALSE;
+	DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	DepthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	AddDepthStencilState(TEXT("Always"), DepthStencilDesc);
 
     // 텍스쳐 불러오기.
     // TODO: 텍스쳐 클래스로 묶기
@@ -289,25 +321,38 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		DXDSwapChain = nullptr;
 	}
 
-	if (RenderTarget)
-	{
+	//if (RenderTarget)
+	//{
+	//	RenderTarget->ReleaseRenderTarget();
+	//	delete RenderTarget;
+	//	RenderTarget = nullptr;
+	//}
+	for (const auto& [String, RenderTarget] : RenderTargets) {
 		RenderTarget->ReleaseRenderTarget();
-		delete RenderTarget;
-		RenderTarget = nullptr;
 	}
 
-	if (DepthStencilView)
-	{
+
+	//if (DepthStencilView)
+	//{
+	//	DepthStencilView->ReleaseDepthStencilView();
+	//	delete DepthStencilView;
+	//	DepthStencilView = nullptr;
+	//}
+
+	for (const auto& [String, DepthStencilView] : DepthStencilViews) {
 		DepthStencilView->ReleaseDepthStencilView();
-		delete DepthStencilView;
-		DepthStencilView = nullptr;
 	}
 
-	if (DepthStencilState)
-	{
+
+	//if (DepthStencilStates)
+	//{
+	//	DepthStencilStates->ReleaseDepthStencilState();
+	//	delete DepthStencilStates;
+	//	DepthStencilStates = nullptr;
+	//}
+
+	for (const auto& [String, DepthStencilState] : DepthStencilStates) {
 		DepthStencilState->ReleaseDepthStencilState();
-		delete DepthStencilState;
-		DepthStencilState = nullptr;
 	}
 
 	if (!RasterizerStates.empty())
@@ -554,6 +599,144 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
     DXDDeviceContext->Draw(Num, 0);
 }
 
+HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0})
+{
+	if (RenderTargets.find(InName) != RenderTargets.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddRenderTarget::Duplicate Name"));
+		return S_OK;
+	}
+
+	UDXDRenderTarget* RenderTarget = new UDXDRenderTarget();
+
+	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, InRenderTargetViewDesc);
+	if (FAILED(hr))
+		return hr;
+
+	RenderTargets[InName] = RenderTarget;
+	return S_OK;
+}
+
+HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight)
+{
+	if (DepthStencilViews.find(InName) != DepthStencilViews.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilView::Duplicate Name"));
+		return S_OK;
+	}
+
+	UDXDDepthStencilView* DepthStencilView = new UDXDDepthStencilView();
+
+	HRESULT hr = DepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
+	if (FAILED(hr))
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilView::Create Failed"));
+		return hr;
+	}
+
+	DepthStencilViews[InName] = DepthStencilView;
+	return S_OK;
+}
+
+HRESULT UDirectXHandle::AddDepthStencilState(const FString& InName, const D3D11_DEPTH_STENCIL_DESC& InDesc)
+{
+	if (DepthStencilStates.find(InName) != DepthStencilStates.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilState::Duplicate Name"));
+		return S_OK;
+	}
+
+	UDXDDepthStencilState* DepthStencilState = new UDXDDepthStencilState();
+
+	HRESULT hr = DepthStencilState->CreateDepthStencilState(DXDDevice, InDesc);
+	if (FAILED(hr))
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilState::Create Failed"));
+		return hr;
+	}
+
+	DepthStencilStates[InName] = DepthStencilState;
+	return S_OK;
+}
+//
+//HRESULT UDirectXHandle::InitializeDepthStencilState()
+//{
+//	if (DepthStencilStates)
+//	{
+//		UE_LOG(TEXT("UDirectXHandle::InitializeDepthStencilState::Already Initialized"));
+//		return S_OK;
+//	}
+//
+//	DepthStencilStates = new UDXDDepthStencilState();
+//	HRESULT hr = DepthStencilStates->Create(DXDDevice);
+//	if (FAILED(hr))
+//		return hr;
+//
+//	return S_OK;
+//}
+
+HRESULT UDirectXHandle::AddRasterizerState(const FString& InName, const D3D11_RASTERIZER_DESC& InDesc)
+{
+	if (RasterizerStates.find(InName) != RasterizerStates.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilView::Duplicate Name"));
+		return S_OK;
+	}
+
+	UDXDRasterizerState* RasterizerState = new UDXDRasterizerState();
+
+	HRESULT hr = RasterizerState->CreateRasterizerState(DXDDevice, InDesc);
+	if (FAILED(hr))
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddRasterizerState::Create Failed"));
+		return hr;
+	}
+
+	RasterizerStates[InName] = RasterizerState;
+	return S_OK;
+}
+
+UDXDRenderTarget* UDirectXHandle::GetRenderTarget(const FString& InName)
+{
+	if (RenderTargets.find(InName) == RenderTargets.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::GetRenderTarget::Invalid Name"));
+		return nullptr;
+	}
+	return RenderTargets[InName];
+}
+
+UDXDDepthStencilView* UDirectXHandle::GetDepthStencilView(const FString& InName)
+{
+	if (DepthStencilViews.find(InName) == DepthStencilViews.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::GetDepthStencilView::Invalid Name"));
+		return nullptr;
+	}
+	return DepthStencilViews[InName];
+}
+
+UDXDDepthStencilState* UDirectXHandle::GetDepthStencilStates(const FString& InName)
+{
+	if (DepthStencilStates.find(InName) == DepthStencilStates.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::GetDepthStencilStates::Invalid Name"));
+		return nullptr;
+	}
+	return DepthStencilStates[InName];
+}
+
+UDXDRasterizerState* UDirectXHandle::GetRasterizerState(const FString& InName)
+{
+	if (RasterizerStates.find(InName) == RasterizerStates.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::GetRasterizerState::Invalid Name"));
+		return nullptr;
+	}
+	return RasterizerStates[InName];
+}
+
+
 void UDirectXHandle::RenderBoundingBox(const TArray<AActor*> Actors) {
 
 	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
@@ -601,8 +784,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
 
-	// 깊이 테스트 무시하는 DepthStencilState로 변경.
-    DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetMaskZeroDepthStencilState(), 0);
+    DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Always"))->GetDepthStencilState(), 0);
 	for (UGizmoBase* Gizmo : Gizmos)
 	{
 		if (Gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
@@ -627,8 +809,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
         }
     }
 
-	// DepthStencilState 기본으로 변경
-    DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetDefaultDepthStencilState(), 0);
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Default"))->GetDepthStencilState(), 0);
 }
 
 void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
@@ -748,7 +929,8 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("TextureVS")), NULL, 0);
 	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("TexturePS")), NULL, 0);
 	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("TextureVS")));
-	DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetMaskZeroDepthStencilState(), 0);
+	// 깊이 테스트 무시하는 DepthStencilState로 변경.
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Always"))->GetDepthStencilState(), 0);
 
     // Begin Object Matrix Update. 
     ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
@@ -790,7 +972,9 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 	DXDDeviceContext->IASetIndexBuffer(Info.IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	DXDDeviceContext->DrawIndexed(Info.IndexInfo.NumIndices, 0, 0);
 
-	DXDDeviceContext->OMSetDepthStencilState(DepthStencilState->GetDefaultDepthStencilState(), 0);
+	// DepthStencilState 기본으로 변경
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Default"))->GetDepthStencilState(), 0);
+
 
 	Info.VertexInfo.VertexBuffer->Release();
 	Info.IndexInfo.IndexBuffer->Release();
@@ -852,10 +1036,10 @@ void UDirectXHandle::InitView()
 	// 렌더 타겟 클리어 및 클리어에 적용할 색.
 	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	DXDDeviceContext->ClearRenderTargetView(RenderTarget->GetFrameBufferRTV().Get(), ClearColor);
+	DXDDeviceContext->ClearRenderTargetView(RenderTargets[TEXT("Default")]->GetFrameBufferRTV().Get(), ClearColor);
 
 	// 뎁스/스텐실 뷰 클리어. 뷰, DEPTH만 클리어, 깊이 버퍼 클리어 할 값, 스텐실 버퍼 클리어 할 값.
-	DXDDeviceContext->ClearDepthStencilView(DepthStencilView->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	DXDDeviceContext->ClearDepthStencilView(DepthStencilViews[TEXT("Default")]->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     //DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -863,21 +1047,10 @@ void UDirectXHandle::InitView()
 	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
 		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
 	else
-		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Normal")]->GetRasterizerState());
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
-	DXDDeviceContext->OMSetRenderTargets(1, RenderTarget->GetFrameBufferRTV().GetAddressOf(), DepthStencilView->GetDepthStencilView());
-}
-
-HRESULT UDirectXHandle::AddRenderTarget(FString TargetName, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc)
-{
-	RenderTarget = new UDXDRenderTarget();
-
-	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, RenderTargetViewDesc);
-	if (FAILED(hr))
-		return hr;
-
-	return S_OK;
+	DXDDeviceContext->OMSetRenderTargets(1, RenderTargets[TEXT("Default")]->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
 }
 
 HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)
@@ -932,8 +1105,8 @@ void UDirectXHandle::ResizeViewport(int width, int height) {
 
 HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 
-	RenderTarget->ReleaseRenderTarget();
-	DepthStencilView->ReleaseDepthStencilView();
+	RenderTargets[TEXT("Default")]->ReleaseRenderTarget();
+	DepthStencilViews[TEXT("Default")]->ReleaseDepthStencilView();
 	
 	HRESULT hr = DXDSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_UNKNOWN, 0);
 	if ( FAILED(hr) )
@@ -942,12 +1115,12 @@ HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 	D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
 	framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
 	framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
-	hr = AddRenderTarget(TEXT("MainRenderTarget"), framebufferRTVdesc);
+	hr = AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
 	if ( FAILED(hr) )
 		return hr;
 
 	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
-	hr = DepthStencilView->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(width), static_cast<float>(height));
+	hr = DepthStencilViews[TEXT("Default")]->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(width), static_cast<float>(height));
 	if ( FAILED(hr) )
 		return hr;
 

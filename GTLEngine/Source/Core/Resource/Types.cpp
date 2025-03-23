@@ -57,3 +57,37 @@ FString GetGizmoViewTypeAsString(EGizmoViewType Type)
         return FString();
     }
 }
+
+FString GetDepthComparisonModeAsString(EDepthComparisonMode Mode)
+{
+    switch (Mode)
+    {
+    case EDepthComparisonMode::Less:
+		return FString(TEXT("Less"));
+    case EDepthComparisonMode::Always:
+		return FString(TEXT("Always"));
+    default:
+		return FString(TEXT("None"));
+    }
+}
+
+FString GetERasterizerModeAsString(ERasterizerMode Mode)
+{
+	switch (Mode)
+	{
+	case ERasterizerMode::Solid_None:
+		return FString(TEXT("Solid_None"));
+	case ERasterizerMode::Solid_Front:
+		return FString(TEXT("Solid_Front"));
+	case ERasterizerMode::Solid_Back:
+		return FString(TEXT("Solid_Back"));
+	case ERasterizerMode::Wireframe_None:
+		return FString(TEXT("Wireframe_None"));
+	case ERasterizerMode::Wireframe_Front:
+		return FString(TEXT("Wireframe_Front"));
+	case ERasterizerMode::Wireframe_Back:
+		return FString(TEXT("Wireframe_Back"));
+	default:
+		return FString(TEXT("None"));
+	}
+}

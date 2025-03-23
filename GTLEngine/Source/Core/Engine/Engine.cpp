@@ -37,7 +37,7 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
     framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
     framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
-    hr = DirectX11Handle->AddRenderTarget(TEXT("MainRenderTarget"), framebufferRTVdesc);
+    hr = DirectX11Handle->AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
     if (FAILED(hr))
     {
         MessageBox(WindowInfo.WindowHandle, TEXT("렌더 타겟 추가 실패"), TEXT("Error"), MB_OK);

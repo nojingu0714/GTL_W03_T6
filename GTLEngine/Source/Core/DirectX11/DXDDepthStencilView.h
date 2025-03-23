@@ -6,7 +6,8 @@ public:
 	UDXDDepthStencilView() = default;
 	~UDXDDepthStencilView();
 
-	HRESULT CreateDepthStencilView(ComPtr<ID3D11Device> DXDDevice, HWND hWnd, float width, float height);
+	// TODO: desc 받도록 수정. 
+	HRESULT CreateDepthStencilView(ComPtr<ID3D11Device> DXDDevice, HWND hWnd, UINT width, UINT height);
 	void ReleaseDepthStencilView();
 
 	ID3D11DepthStencilView* GetDepthStencilView() const { return DepthStencilView; }

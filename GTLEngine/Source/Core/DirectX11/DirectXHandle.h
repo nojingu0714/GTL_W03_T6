@@ -23,6 +23,7 @@ class UGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
 class USceneComponent;
+class FViewport;
 
 class UDirectXHandle
 {
@@ -59,15 +60,25 @@ public:
 private:
 	D3D11_VIEWPORT ViewportInfo;
 
+
+	////////////////////////////////////////
+	// D3D11 / DXGI 
 public:
 	ID3D11Device*	GetD3DDevice() const { return DXDDevice; }
 	ID3D11DeviceContext* GetD3DDeviceContext() const { return DXDDeviceContext; }
 	IDXGISwapChain* GetDXDSwapChain() const { return DXDSwapChain; }
 
-	HRESULT AddRenderTarget(FString TargetName, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc);
+private:
+	ID3D11Device* DXDDevice;
+	ID3D11DeviceContext* DXDDeviceContext;
+	IDXGISwapChain* DXDSwapChain;
 
+
+	////////////////////////////////////////
+	// Buffers
 	// TODO: Name으로 버텍스 버퍼 저장.
 	// Array 타입을 다른 방식으로 바꿔서 저장.
+public:
 	template<typename T>
 	HRESULT AddVertexBuffer(FString KeyName, const TArray<T> vertices, const TArray<uint32>& indices);
 
@@ -79,21 +90,44 @@ public:
 
 	void ResizeViewport(int width, int height);
 	HRESULT ResizeWindow(int width, int height);
+
 private:
 	void UpdateWorldViewMatrix(ACamera* Camera);
 	void UpdateWorldProjectionMatrix(ACamera* Camera);
 
 	void RenderAABB(FBoundingBox aabb);
 
-private:
-	ID3D11Device* DXDDevice;
-	ID3D11DeviceContext* DXDDeviceContext;
-	IDXGISwapChain* DXDSwapChain;
 	
-	UDXDRenderTarget* RenderTarget;
-	UDXDDepthStencilView* DepthStencilView;
-	UDXDDepthStencilState* DepthStencilState;
-	TMap<FString, UDXDRasterizerState*> RasterizerStates;
+	//UDXDRenderTarget* RenderTarget;
+	//UDXDDepthStencilView* DepthStencilView;
+	//UDXDDepthStencilState* DepthStencilState;
+	//TMap<FString, UDXDRasterizerState*> RasterizerStates;	
+
+
+	////////////////////////////////////////
+	// Renderings
+public:
+	HRESULT AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc);
+	HRESULT AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight);
+	HRESULT AddDepthStencilState(const FString& InName, const D3D11_DEPTH_STENCIL_DESC& InDesc);
+	HRESULT AddRasterizerState(const FString& InName, const D3D11_RASTERIZER_DESC& InDesc);
+
+	UDXDRenderTarget* GetRenderTarget(const FString& InName);
+	UDXDDepthStencilView* GetDepthStencilView(const FString& InName);
+	UDXDDepthStencilState* GetDepthStencilStates(const FString& InName);
+	UDXDRasterizerState* GetRasterizerState(const FString& InName);
+
+	FViewport CreateViewport();
+
+private:
+	// TMap으로 관리
+	TMap<FString, UDXDRenderTarget*> RenderTargets; // viewport당 하나
+	TMap<FString, UDXDDepthStencilView*> DepthStencilViews; // viewport당 하나
+	TMap<FString, UDXDDepthStencilState*> DepthStencilStates; // 특정 오브젝트당 하나 : 깊이비교 테스트
+	TMap<FString, UDXDRasterizerState*> RasterizerStates; // 특정 오브젝트당 하나 : 와이퍼프레임 or 솔리드
+	
+	////////////////////////////////////////
+	// Resources
 	UDXDShaderManager* ShaderManager;
 	UDXDBufferManager* BufferManager;
 

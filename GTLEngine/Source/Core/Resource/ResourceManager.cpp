@@ -266,7 +266,7 @@ const TArray<uint32> UResourceManager::GetGizmoIndexData(EGizmoViewType Type) co
 void UResourceManager::NewScene()
 {
     LoadScene("DefaultScene");
-    UE_LOG(TEXT("Create New Scene"));
+    UE_LOG(TEXT("CreateDepthStencilState New Scene"));
     //ULogManager::AddLog(TEXT("Create New Scene"));
     
 }

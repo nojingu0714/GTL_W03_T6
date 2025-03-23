@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Vector.h"
+#include "Window/FViewport.h"
 
 class UDirectXHandle;
 class UResourceManager;
@@ -78,6 +79,9 @@ public:
 
 private:
     FWindowInfo WindowInfo;
+
+private:
+    TMap<FString, FViewport> Viewports;
 
 public:
 	float GetFPS() const { return FPS; }

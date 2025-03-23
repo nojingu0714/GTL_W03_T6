@@ -6,9 +6,9 @@ UDXDRasterizerState::~UDXDRasterizerState()
     ReleaseRasterizerState();
 }
 
-HRESULT UDXDRasterizerState::CreateRasterizerState(ComPtr<ID3D11Device> Device, D3D11_RASTERIZER_DESC* Desc)
+HRESULT UDXDRasterizerState::CreateRasterizerState(ComPtr<ID3D11Device> Device, const D3D11_RASTERIZER_DESC& Desc)
 {
-    HRESULT hr = Device->CreateRasterizerState(Desc, &RasterizerState);
+    HRESULT hr = Device->CreateRasterizerState(&Desc, &RasterizerState);
     if (FAILED(hr))
         return hr;
     

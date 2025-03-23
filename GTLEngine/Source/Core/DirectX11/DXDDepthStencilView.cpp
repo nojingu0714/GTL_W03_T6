@@ -9,7 +9,7 @@ UDXDDepthStencilView::~UDXDDepthStencilView()
     ReleaseDepthStencilView();
 }
 
-HRESULT UDXDDepthStencilView::CreateDepthStencilView(ComPtr<ID3D11Device> Device, HWND hWnd, float width, float height)
+HRESULT UDXDDepthStencilView::CreateDepthStencilView(ComPtr<ID3D11Device> Device, HWND hWnd, UINT width, UINT height)
 {
     uint32 Width = static_cast<uint32>(width);
     uint32 Height = static_cast<uint32>(height);

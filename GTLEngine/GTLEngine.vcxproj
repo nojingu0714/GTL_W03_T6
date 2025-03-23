@@ -271,6 +271,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Core\Window\FViewport.cpp" />
     <ClCompile Include="Source\Launch\LaunchWindows.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -379,6 +380,7 @@
     <ClInclude Include="Source\Core\Time\TimeManager.h" />
     <ClInclude Include="Source\Core\UI\UIInterface.h" />
     <ClInclude Include="Source\Core\UI\UIManager.h" />
+    <ClInclude Include="Source\Core\Window\FViewport.h" />
     <ClInclude Include="Source\Utils\EnginePch.h" />
     <ClInclude Include="Source\Utils\GTLStringLibrary.h" />
     <ClInclude Include="Source\Utils\Math\Geometry.h" />

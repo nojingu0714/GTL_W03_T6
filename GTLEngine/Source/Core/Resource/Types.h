@@ -123,3 +123,24 @@ struct FBoundingBox {
     FBoundingBox(FVector min, FVector max) : min(min), max(max) {};
     FVector GetGap() { return max - min; }
 };
+
+enum class EDepthComparisonMode
+{
+    Less,
+    Always,
+};
+
+enum class ERasterizerMode
+{
+    Solid_None,
+    Solid_Front,
+    Solid_Back,
+    Wireframe_None,
+    Wireframe_Front,
+    Wireframe_Back,
+};
+
+
+FString GetDepthComparisonModeAsString(enum class EDepthComparisonMode Mode);
+
+FString GetGizmoViewTypeAsString(enum class EGizmoViewType Type);
