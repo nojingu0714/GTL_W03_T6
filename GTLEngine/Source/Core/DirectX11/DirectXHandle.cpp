@@ -29,7 +29,8 @@
 #include "Math/Matrix.h"
 
 #include "DirectXTex/DirectXTex.h"
-#include "DirectXTex/DirectXTex.inl"
+
+#include "Resource/Texture/TextureManager.h"
 
 UDirectXHandle::~UDirectXHandle()
 {
@@ -257,17 +258,14 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
     // 내부에서 map<string,SRV> 쌍으로 관리.
     DirectX::ScratchImage TextureImage;
 
-	hr =  DirectX::LoadFromDDSFile(L"Resource/Texture/Fonts/DejaVu_Sans_Mono.dds", DirectX::DDS_FLAGS_NONE, nullptr, TextureImage);
+	ID3D11ShaderResourceView* NewSRV = nullptr;
+	FString FileName = TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds");
+	hr = UTextureManager::LoadTextureFromFile(FileName, DXDDevice, &NewSRV);
 	if (FAILED(hr))
 	{
 		return hr;
 	}
-
-	hr = DirectX::CreateShaderResourceView(DXDDevice, TextureImage.GetImages(), TextureImage.GetImageCount(), TextureImage.GetMetadata(), &FontAtlasTexture);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+	TextureSRVs[FileName] = NewSRV;
 
 	DynamicVertexBufferSize = 1024;
 
@@ -371,10 +369,13 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		ConstantBuffers.clear();
 	}
 	
-	if (FontAtlasTexture)
+	for (auto& TextureSRV : TextureSRVs)
 	{
-		FontAtlasTexture->Release();
-		FontAtlasTexture = nullptr;
+		if (TextureSRV.second)
+		{
+			TextureSRV.second->Release();
+			TextureSRV.second = nullptr;
+		}
 	}
 
 	if (FontSamplerState)
@@ -816,12 +817,7 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-	/*
-		AStaticMeshActor->GetStaticMeshComponent()->GetMaterial();
-		Mat->GetTexture();
-	
-	*/
-
+	ID3D11ShaderResourceView* FontAtlasTexture = TextureSRVs[TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds")];
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
 	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
 
@@ -875,6 +871,7 @@ void UDirectXHandle::RenderComponentUUID(USceneComponent* TargetComponent)
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
+	ID3D11ShaderResourceView* FontAtlasTexture = TextureSRVs[TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds")];
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
 	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
 

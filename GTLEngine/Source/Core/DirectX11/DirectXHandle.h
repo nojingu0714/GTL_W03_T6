@@ -105,7 +105,7 @@ private:
 	TMap<EConstantBufferType, UDXDConstantBuffer*> ConstantBuffers;
 
 	// TODO: Texture 관리용 객체로 묶어서 관리.
-	ID3D11ShaderResourceView* FontAtlasTexture;
+	TMap<FString, ID3D11ShaderResourceView*> TextureSRVs;
 	ID3D11SamplerState* FontSamplerState;
 	FVertexInfo FontTextureBuffer;
 
