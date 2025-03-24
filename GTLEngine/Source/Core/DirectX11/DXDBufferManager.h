@@ -21,7 +21,7 @@ private:
 	TMap<FString, FVertexInfo> StaticVertexBufferPool;
 	TMap<FString, FVertexInfo> DynamicVertexBufferPool;
 	TMap<FString, FIndexInfo> IndexBufferPool;
-	TMap<FString, 
+
 
 };
 

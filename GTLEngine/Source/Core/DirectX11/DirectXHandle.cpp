@@ -79,7 +79,7 @@ HRESULT UDirectXHandle::CreateShaderManager()
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXTURE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     HRESULT hr = ShaderManager->AddVertexShaderAndInputLayout(L"DefaultVS", L"Resource/Shader/StaticMeshShader.hlsl", "mainVS", layout, ARRAYSIZE(layout));
@@ -598,15 +598,12 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 	// 각 섹션별로 처리
 	for (const FStaticMeshSection& Section : MeshInfo->Sections)
 	{
-		ID3D11ShaderResourceView* FontAtlasTexture = ResourceManager->TryGetTextureSRV(TEXT("Contents/Texture/texture.dds"));
+		ID3D11ShaderResourceView* FontAtlasTexture = ResourceManager->TryGetTextureSRV(TEXT("Contents/texture.dds"));
 		DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
-		// 메터리얼 설정
-		//FTexture* Texture = TextureManager->GetTexture(Section.MaterialName); // 섹션에 맞는 텍스처 가져오기
-		//if (Texture)
-		//{
-		//	DXDDeviceContext->PSSetShaderResources(0, 1, Texture->GetShaderResourceView());
-		//}
-
+		
+		ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
+		DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
+	
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;
 		FIndexInfo IndexInfo;

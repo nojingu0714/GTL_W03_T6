@@ -26,14 +26,14 @@ struct VS_INPUT
     float4 Pos : POSITION; // Input position from vertex buffer
     float3 Nor : NORMAL;
     float4 Color : COLOR; // Input color from vertex buffer
-    float2 Tex : TEXTURE;
+    float2 Tex : TEXCOORD;
 };
 
 struct PS_INPUT
 {
     float4 Pos : SV_POSITION; // Transformed position to pass to the pixel shader
     float4 Color : COLOR; // Color to pass to the pixel shader
-    float2 Tex : TexCoord;
+    float2 Tex : TEXCOORD;
 };
 
 PS_INPUT mainVS(VS_INPUT Input)
@@ -48,7 +48,7 @@ PS_INPUT mainVS(VS_INPUT Input)
     Output.Pos = mul(Output.Pos, ViewMatrix); // 월드 스페이스 -> 뷰 스페이스
     Output.Pos = mul(Output.Pos, ProjectionMatrix); // 뷰 스페이스 -> NDC
     
-    Output.Color = Input.Color;
+    
     Output.Tex = Input.Tex;
 
     return Output;
@@ -56,7 +56,8 @@ PS_INPUT mainVS(VS_INPUT Input)
 
 float4 mainPS(PS_INPUT Input) : SV_TARGET
 {
-    float Texture = Input.Color.Sample(g_Sampler, Input.Tex);
-    
-    return Texture;
+    float4 TextureColor = g_DiffuseMap.Sample(g_Sampler, Input.Tex);
+
+// 디버깅용: 색상이 제대로 나오는지 확인
+    return TextureColor;
 }

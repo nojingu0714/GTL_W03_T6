@@ -4,6 +4,8 @@
 #include "ObjectFactory.h"
 #include "Texture.h"
 
+TMap<FString, UMaterial*> FMaterialManager::MaterialPool;
+
 void UMaterial::InitMaterial(const FObjMaterialInfo& InMatInfo)
 {
 	Ambient = InMatInfo.Ka;
