@@ -614,13 +614,8 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 	{
 		ID3D11ShaderResourceView* FontAtlasTexture = TextureSRVs[TEXT("Contents/Texture/texture.dds")];
 		DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
-		// 메터리얼 설정
-		//FTexture* Texture = TextureManager->GetTexture(Section.MaterialName); // 섹션에 맞는 텍스처 가져오기
-		//if (Texture)
-		//{
-		//	DXDDeviceContext->PSSetShaderResources(0, 1, Texture->GetShaderResourceView());
-		//}
-
+		
+	
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;
 		FIndexInfo IndexInfo;

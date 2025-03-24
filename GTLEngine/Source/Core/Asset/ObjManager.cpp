@@ -6,7 +6,13 @@ TMap<FString, FStaticMesh*> FObjManager::ObjStaticMeshMap;
 TMap<FString, UMaterial*> FObjManager::MaterialMap;
 TMap<FString, UTexture*> FObjManager::TextureMap;
 
+const int RenderMode = 3; // Triangle Render
 
+std::string CreateVertexKey(int VertexIndex, int NormalIndex, int UVIndex)
+{
+    std::string key;
+    return key.append(std::to_string(VertexIndex)).append(std::to_string(NormalIndex)).append(std::to_string(UVIndex));
+}
 
 FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
 {
@@ -33,7 +39,7 @@ FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
 
 UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName)
 {
-    
+   
     for (auto It = GUObjectArray.begin(); It != GUObjectArray.end(); ++It)
     {
         UStaticMesh* StaticMesh = Cast<UStaticMesh>(*It);
@@ -59,6 +65,8 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
     FStaticMesh* NewStaticMesh = new FStaticMesh();
     NewStaticMesh->PathFileName = ObjInfo.PathFileName;
 
+    int IndexCount = 0;
+
     for (const auto& MaterialFacePair : ObjInfo.FaceMap)
     {
         FString MaterialName = MaterialFacePair.first;
@@ -67,36 +75,50 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
         FStaticMeshSection NewSection;
         NewSection.MaterialName = MaterialName;
 
-        TMap<int32, int32> VertexMap; // 중복 정점 방지용 맵
         int32 NextIndex = 0;
 
-        for (const FFace& Face : Faces)
+        TMap<std::string, int> UniqueVertexMap;
+
+        for (int b = 0;b < 12;b++)
         {
-            for (int32 i = 0; i < Face.Vertices.size(); ++i)
+            for (int a = 0;a < RenderMode;a++)
             {
-                int32 VertexIndex = Face.Vertices[i];
+            int VertexIndex = Faces[b].Vertices[a];
+            int UVIndex = Faces[b].TexCoords[a];
+            int NormalIndex = Faces[b].Normals[a];
 
-                if (!VertexMap.contains(VertexIndex))
-                {
-                    FVector Position = ObjInfo.Vertices[VertexIndex];
-                    FVector Normal = (VertexIndex < ObjInfo.Normals.size()) ? ObjInfo.Normals[VertexIndex] : FVector(0.0f, 0.0f, 1.0f);
-                    FVector4 Color = (VertexIndex < ObjInfo.Colors.size()) ? ObjInfo.Colors[VertexIndex] : FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                    FVector2 UV = (VertexIndex < ObjInfo.UV.size()) ? ObjInfo.UV[VertexIndex] : FVector2(0.0f, 0.0f);
+            // 정점의 Key 생성 (정점, 노멀, UV를 기반으로 Key 생성)
+            std::string VertexKey = CreateVertexKey(VertexIndex, NormalIndex, UVIndex);
 
-                    NewSection.Vertices.push_back(FNormalVertex(Position, Normal, Color, UV));
-                    VertexMap[VertexIndex] = NextIndex;
-                    NewSection.Indices.push_back(NextIndex++);
-                }
-                else
-                {
-                    NewSection.Indices.push_back(VertexMap[VertexIndex]);
-                }
+            // 이미 존재하는 정점이면 건너뛰기
+            if (UniqueVertexMap.contains(VertexKey)) 
+            {
+                NewSection.Indices.push_back(UniqueVertexMap[VertexKey]);
+                continue;
             }
-        }
 
-        // 하나의 Sub-Mesh(섹션) 추가
+            // 새로운 정점이면 정점 정보를 추가
+            FVector Position = ObjInfo.Vertices[VertexIndex];
+            FVector4 Color = ObjInfo.Colors[VertexIndex];
+            FVector Normal = ObjInfo.Normals[NormalIndex];
+            FVector2 UV = ObjInfo.UV[UVIndex];
+
+            FVertexPNCT Vertex(Position, Normal, Color, UV);
+            NewSection.Vertices.push_back(Vertex);
+
+            // 새로운 정점 인덱스 맵핑
+            UniqueVertexMap[VertexKey]= IndexCount;
+            NewSection.Indices.push_back(IndexCount);  // 새로 추가된 정점의 인덱스를 인덱스 버퍼에 추가
+
+            IndexCount++;  // 인덱스 카운트를 증가
+             }
+        }
+       
         NewStaticMesh->Sections.push_back(NewSection);
+       
     }
+
+
 
     for (const FObjMaterialInfo& MaterialInfo : ObjInfo.Materials)
     {
@@ -108,3 +130,4 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
 
     return NewStaticMesh;
 }
+

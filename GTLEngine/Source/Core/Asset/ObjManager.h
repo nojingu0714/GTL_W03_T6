@@ -46,6 +46,8 @@ struct FObjImporter
                     // If we successfully read 4 components, this means we have RGBA color
                     OutObjInfo.Colors.push_back(Color);
                 }
+                else
+                    OutObjInfo.Colors.push_back(Color);
                 // If no color was provided, use default color (white)
             }
             // Handle normals (vn)

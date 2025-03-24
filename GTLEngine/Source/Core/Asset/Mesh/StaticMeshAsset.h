@@ -8,14 +8,6 @@
 
 #include "Utils/GTLStringLibrary.h"
 
-struct FNormalVertex
-{
-    FVector Position;      // 버텍스 포지션.
-    FVector Normal;   // 버텍스 노말.
-    FVector4 Color;
-    FVector2 UV;     // 버텍스 텍스쳐 좌표.
-};
-
 struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처 / c : 노멀 )
 {
     TArray<int> Vertices;      // 정점 인덱스
@@ -27,7 +19,7 @@ struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처
 struct FStaticMeshSection
 {
     FString MaterialName;  // 이 섹션에서 사용할 Material
-    TArray<FNormalVertex> Vertices; // 정점 데이터
+    TArray<FVertexPNCT> Vertices; // 정점 데이터
     TArray<uint32> Indices; // 인덱스 데이터
 };
 
