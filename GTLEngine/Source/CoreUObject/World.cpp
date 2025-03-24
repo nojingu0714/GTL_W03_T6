@@ -23,6 +23,7 @@ UWorld* UWorld::CreateWorld()
 	NewWorld->MainCamera = NewWorld->SpawnActor<ACamera>(TEXT("MainCamera"), FVector(0.f, 2.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
 	NewWorld->MainCamera->SetActorLocation(FVector(-10.f, 0.f, 0.0f));
 
+	NewWorld->SpawnActor<ACube>(TEXT("asd"), FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
     return NewWorld;
 }
 

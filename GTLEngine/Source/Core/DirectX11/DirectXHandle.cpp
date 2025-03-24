@@ -624,8 +624,19 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	// rendertarget
 	WindowRenderTarget = new UDXDRenderTarget();
 	// 자동으로 swapchain을 target framebuffer로 하도록 설정.
-	WindowRenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, {}, { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
-
+	D3D11_TEXTURE2D_DESC TextureDesc = {};
+	TextureDesc.Width = 0;
+	TextureDesc.Height = 0;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	TextureDesc.SampleDesc.Count = 1;
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.CPUAccessFlags = 0;
+	TextureDesc.MiscFlags = 0;
+	WindowRenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, TextureDesc, { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
 	// depth stencil view
 	WindowDepthStencilView = new UDXDDepthStencilView();
 	WindowDepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
@@ -652,6 +663,7 @@ void UDirectXHandle::PrepareWindow()
 	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 
 	SetFaceMode();
+	
 
 	DXDDeviceContext->OMSetRenderTargets(1, WindowRenderTarget->GetFrameBufferRTV().GetAddressOf(), WindowDepthStencilView->GetDepthStencilView());
 }

@@ -138,9 +138,9 @@ void UEngine::Render()
         DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
     }
 
+        DirectX11Handle->PrepareWindow();
     for (const FViewport& Viewport : Viewports)
     {
-        DirectX11Handle->PrepareWindow();
         // Texture2D를 쓰는 Quad를 그리기
         ViewportClient->Draw(Viewport.GetName());
     }
