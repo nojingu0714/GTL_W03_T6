@@ -319,8 +319,6 @@ class FObjManager
 {
 private:
     static TMap<FString, FStaticMesh*> ObjStaticMeshMap; // TMap 기반의 메시 데이터
-    static TMap<FString, UMaterial*> MaterialMap;
-    static TMap<FString, UTexture*> TextureMap;
 
 public:
     static FStaticMesh* ConvertObjToStaticMesh(const FObjInfo& ObjInfo);;

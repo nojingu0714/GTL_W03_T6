@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Material.h"
 
+#include "ObjectFactory.h"
+#include "Texture.h"
+
 void UMaterial::InitMaterial(const FObjMaterialInfo& InMatInfo)
 {
 	Ambient = InMatInfo.Ka;
@@ -12,10 +15,26 @@ void UMaterial::InitMaterial(const FObjMaterialInfo& InMatInfo)
 	Opacity = InMatInfo.d;
 	Transparency = InMatInfo.Tr;
 	RefractiveIndex = InMatInfo.Ni;
-	AmbientTextureMap = InMatInfo.MapKa;
-	DiffuseTextureMap = InMatInfo.MapKd;
-	SpecularTextureMap = InMatInfo.MapKs;
-	EmissiveTextureMap = InMatInfo.MapKe;
-	BumpMap = InMatInfo.MapBump;
-	DisplacementMap = InMatInfo.MapDisplace;
+	AmbientTextureMap = FTextureManager::LoadTexture(InMatInfo.MapKa);
+	DiffuseTextureMap = FTextureManager::LoadTexture(InMatInfo.MapKd);
+	SpecularTextureMap = FTextureManager::LoadTexture(InMatInfo.MapKs);
+	EmissiveTextureMap = FTextureManager::LoadTexture(InMatInfo.MapKe);
+	BumpMap = FTextureManager::LoadTexture(InMatInfo.MapBump);
+	DisplacementMap = FTextureManager::LoadTexture(InMatInfo.MapDisplace);
+}
+
+UMaterial* FMaterialManager::LoadMaterial(const FString& MaterialName)
+{
+	if (MaterialPool.contains(MaterialName))
+	{
+		return MaterialPool[MaterialName];
+	}
+	return nullptr;
+}
+
+void FMaterialManager::CreateMaterial(const FString& MaterialName, const FObjMaterialInfo& InMatInfo)
+{
+	UMaterial* NewMaterial = FObjectFactory::ConstructObject<UMaterial>();
+	NewMaterial->InitMaterial(InMatInfo);
+	MaterialPool.insert({ MaterialName, NewMaterial });
 }

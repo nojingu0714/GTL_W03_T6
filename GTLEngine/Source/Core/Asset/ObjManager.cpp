@@ -3,10 +3,6 @@
 #include "Material.h"
 
 TMap<FString, FStaticMesh*> FObjManager::ObjStaticMeshMap;
-TMap<FString, UMaterial*> FObjManager::MaterialMap;
-TMap<FString, UTexture*> FObjManager::TextureMap;
-
-
 
 FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
 {
@@ -103,7 +99,7 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
         // MaterialInfo를 이용하여 Material을 생성하고 StaticMesh에 추가
         UMaterial* NewMaterial = new UMaterial();
         NewMaterial->InitMaterial(MaterialInfo);
-        MaterialMap.insert({ MaterialInfo.MatName, NewMaterial });
+		FMaterialManager::CreateMaterial(MaterialInfo.MatName, MaterialInfo);
     }
 
     return NewStaticMesh;

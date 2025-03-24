@@ -1,7 +1,24 @@
 #include "MVPShader.hlsli"
 
-Texture2D g_txColor : register(t0);
-SamplerState g_Sample : register(s0);
+// Texture 슬롯.
+Texture2D g_DiffuseMap : register(t0);
+Texture2D g_SpecularMap : register(t1);
+Texture2D g_NormalMap : register(t2);
+SamplerState g_Sampler : register(s0);
+
+cbuffer MaterialCB : register(b1)
+{
+    float3 Ambient;
+    float3 Diffuse;
+    float3 Specular;
+    float3 Emissive;
+    float SpecularExponent;
+    float Opacity;
+    float Transparency;
+    float RefractiveIndex;
+    int IlluminationModel;
+};
+
 
 // StaticMeshShader
 struct VS_INPUT
@@ -31,6 +48,7 @@ PS_INPUT mainVS(VS_INPUT Input)
     Output.Pos = mul(Output.Pos, ViewMatrix); // 월드 스페이스 -> 뷰 스페이스
     Output.Pos = mul(Output.Pos, ProjectionMatrix); // 뷰 스페이스 -> NDC
     
+    Output.Color = Input.Color;
     Output.Tex = Input.Tex;
 
     return Output;
@@ -38,7 +56,7 @@ PS_INPUT mainVS(VS_INPUT Input)
 
 float4 mainPS(PS_INPUT Input) : SV_TARGET
 {
-    float Texture = g_txColor.Sample(g_Sample, Input.Tex);
+    float Texture = Input.Color.Sample(g_Sampler, Input.Tex);
     
     return Texture;
 }
