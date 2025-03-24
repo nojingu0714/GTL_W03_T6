@@ -46,6 +46,12 @@ struct FVertexPNCT
     FVector2 UV;
 };
 
+struct FVertexFont
+{
+    FVector Position;
+    FVector2 UV;
+};
+
 struct FVertexInfo
 {
     uint NumVertices;

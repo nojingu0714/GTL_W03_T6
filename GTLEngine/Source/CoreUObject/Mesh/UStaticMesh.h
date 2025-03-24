@@ -2,7 +2,7 @@
 
 #include "Object.h"
 
-class FStaticMesh;
+struct FStaticMesh;
 
 class UStaticMesh : public UObject
 {

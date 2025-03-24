@@ -159,7 +159,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\UI\SceneManager.cpp">
+    <ClCompile Include="Source\CoreUObject\UI\UISceneManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -196,6 +196,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Core\DirectX11\DXDResourceManager.cpp" />
     <ClCompile Include="Source\Core\DirectX11\DXDShaderManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -334,7 +335,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\UI\PropertyPanel.h" />
-    <ClInclude Include="Source\CoreUObject\UI\SceneManager.h" />
+    <ClInclude Include="Source\CoreUObject\UI\UISceneManager.h" />
     <ClInclude Include="Source\CoreUObject\UI\UIBase.h" />
     <ClInclude Include="Source\CoreUObject\World.h" />
     <ClInclude Include="Source\Core\Asset\AssetManager.h" />
@@ -350,6 +351,7 @@
     <ClInclude Include="Source\Core\DirectX11\DXDDepthStencilView.h" />
     <ClInclude Include="Source\Core\DirectX11\DXDRasterizerState.h" />
     <ClInclude Include="Source\Core\DirectX11\DXDRenderTarget.h" />
+    <ClInclude Include="Source\Core\DirectX11\DXDResourceManager.h" />
     <ClInclude Include="Source\Core\DirectX11\DXDShaderManager.h" />
     <ClInclude Include="Source\Core\DirectX11\DXDBufferManager.h" />
     <ClInclude Include="Source\Core\DirectX11\State\DXDBlendState.h" />
@@ -395,7 +397,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="Resource\Shader\TextureShader.hlsl">
+    <FxCompile Include="Resource\Shader\FontShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

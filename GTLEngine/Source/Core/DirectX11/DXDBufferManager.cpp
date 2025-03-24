@@ -25,7 +25,7 @@ HRESULT UDXDBufferManager::CreateIndexBuffer(ID3D11Device* Device, const TArray<
 
 HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset)
 {
-	TArray<FVertexPNCT> Vertices;
+	TArray<FVertexFont> Vertices;
 	TArray<uint32> Indices;
 
 	
@@ -46,10 +46,10 @@ HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FSt
 		FVector Position;
 		FVector2 UV;
 		
-		Vertices.push_back({ FVector(0.0f, OffsetY + 0.2f, OffsetZ - 0.2f), FVector(), FVector4(), FVector2(u, v + gap) }); // 좌하단.
-		Vertices.push_back({ FVector(0.0f, OffsetY + 0.2f, OffsetZ + 0.2f), FVector(), FVector4(), FVector2(u, v) }); // 좌상단.{ FVector(0.0f, OffsetY - 0.2f, OffsetZ - 0.2f), FVector(), FVector4(), FVector2(u + gap, v + gap) }
-		Vertices.push_back({ FVector(0.0f, OffsetY - 0.2f, OffsetZ + 0.2f), FVector(), FVector4(), FVector2(u + gap, v) }); // 우상단.
-		Vertices.push_back({ FVector(0.0f, OffsetY - 0.2f, OffsetZ - 0.2f), FVector(), FVector4(), FVector2(u + gap, v + gap) }); // 우하단.
+		Vertices.push_back({ FVector(0.0f, OffsetY + 0.2f, OffsetZ - 0.2f), FVector2(u, v + gap) }); // 좌하단.
+		Vertices.push_back({ FVector(0.0f, OffsetY + 0.2f, OffsetZ + 0.2f),  FVector2(u, v) }); // 좌상단.
+		Vertices.push_back({ FVector(0.0f, OffsetY - 0.2f, OffsetZ + 0.2f),  FVector2(u + gap, v) }); // 우상단.
+		Vertices.push_back({ FVector(0.0f, OffsetY - 0.2f, OffsetZ - 0.2f),  FVector2(u + gap, v + gap) }); // 우하단.
 
 		Indices.push_back(baseIndex + 0);
 		Indices.push_back(baseIndex + 1);

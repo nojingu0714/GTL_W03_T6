@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "SceneManager.h"
+#include "UISceneManager.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
@@ -17,15 +17,15 @@
 
 #include <functional>
 
-void USceneManager::DeleteActor(uint32 uuid) {
+void UUISceneManager::DeleteActor(uint32 uuid) {
 
 }
 
-void USceneManager::DeleteActor(FString InName) {
+void UUISceneManager::DeleteActor(FString InName) {
 
 }
 
-void USceneManager::Tick(float TickTime) {
+void UUISceneManager::Tick(float TickTime) {
     ImGui::Begin("Scene Manager");
 
     ActorSpawner();
@@ -57,7 +57,7 @@ void USceneManager::Tick(float TickTime) {
 	}
 }
 
-void USceneManager::ActorSpawner()
+void UUISceneManager::ActorSpawner()
 {
     const char* items[] = { "Triangle", "Sphere", "Cube", "Cylinder", "Cone" };
 
@@ -95,12 +95,12 @@ void USceneManager::ActorSpawner()
     }
 }
 
-void USceneManager::DebugLineToggle()
+void UUISceneManager::DebugLineToggle()
 {
     ImGui::Checkbox("Spawn debug line", &DebugSpawnLine);
 }
 
-void USceneManager::SceneHierarchy()
+void UUISceneManager::SceneHierarchy()
 {
     ImGui::Checkbox("Show Hierachy", &bShowActorList);
     if ( !bShowActorList )
@@ -144,4 +144,4 @@ void USceneManager::SceneHierarchy()
     ImGui::EndChild();
 }
 
-void USceneManager::Destroy() {}
+void UUISceneManager::Destroy() {}
