@@ -60,6 +60,7 @@ struct FObjImporter
             else if (line.substr(0, 3) == "vt ") {
                 FVector2 uv;
                 ss >> token >> uv.X >> uv.Y;
+                uv.Y = -uv.Y;
                 OutObjInfo.UV.push_back({ uv });  // 0 is a placeholder for index
             }
             // Handle face (f) which contains vertex indices
