@@ -33,17 +33,17 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
         return false;
     }
 
-	// Render Target 추가.
-    D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
-    framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
-    framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
-    hr = DirectX11Handle->AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
-    if (FAILED(hr))
-    {
-        MessageBox(WindowInfo.WindowHandle, TEXT("렌더 타겟 추가 실패"), TEXT("Error"), MB_OK);
-        return false;
-    }
-
+	//// Render Target 추가.
+ //   D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
+ //   framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
+ //   framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
+ //   hr = DirectX11Handle->AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
+ //   if (FAILED(hr))
+ //   {
+ //       MessageBox(WindowInfo.WindowHandle, TEXT("렌더 타겟 추가 실패"), TEXT("Error"), MB_OK);
+ //       return false;
+ //   }
+	Viewports[TEXT("Default")].Init(TEXT("Default"), WindowInfo.WindowHandle, 0, 0, WindowInfo.Width/3, WindowInfo.Height/2);
     // 셰이더 추가.
 
     // 버텍스 버퍼 추가.
@@ -122,7 +122,8 @@ void UEngine::TickWindowInfo() {
 void UEngine::Render()
 {
     // 그릴 렌더 타겟뷰 초기화.
-    DirectX11Handle->InitView();
+    //DirectX11Handle->InitView();
+    DirectX11Handle->PrepareViewport(&Viewports[TEXT("Default")]);
     DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
 
     DirectX11Handle->SetLineMode();

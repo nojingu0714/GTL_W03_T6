@@ -12,10 +12,12 @@ public:
     void ReleaseRenderTarget();
 
 
-    ComPtr<ID3D11Texture2D>         GetFrameBuffer() const { return FrameBuffer; }
-    ComPtr<ID3D11RenderTargetView>  GetFrameBufferRTV() const { return FrameBufferRTV; }
+    ComPtr<ID3D11Texture2D>             GetFrameBuffer() const { return FrameBuffer; }
+    ComPtr<ID3D11RenderTargetView>      GetFrameBufferRTV() const { return FrameBufferRTV; }
+    ComPtr<ID3D11ShaderResourceView>    GetFrameBufferResourceView() const { return FrameBufferResourceView; }
 private:
-    ComPtr<ID3D11Texture2D>         FrameBuffer = nullptr;
-    ComPtr<ID3D11RenderTargetView>  FrameBufferRTV = nullptr;
+    ComPtr<ID3D11Texture2D>             FrameBuffer = nullptr;
+    ComPtr<ID3D11RenderTargetView>      FrameBufferRTV = nullptr;
+    ComPtr<ID3D11ShaderResourceView>    FrameBufferResourceView = nullptr;
 };
 

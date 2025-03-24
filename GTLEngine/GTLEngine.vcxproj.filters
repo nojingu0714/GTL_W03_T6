@@ -316,6 +316,9 @@
     <ClCompile Include="Source\Core\Window\FViewport.cpp">
       <Filter>Source\Core\Window</Filter>
     </ClCompile>
+    <ClCompile Include="ViewportShader.hlsl">
+      <Filter>Resource\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Utils\EnginePch.h">

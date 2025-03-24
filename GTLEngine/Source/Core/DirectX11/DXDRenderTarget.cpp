@@ -28,6 +28,15 @@ HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, Com
     if (FAILED(hr))
         return hr;
 
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+    SRVDesc.Format = RenderTargetDesc.Format;
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Texture2D.MipLevels = 1;
+
+    hr = DXDDevice->CreateShaderResourceView(FrameBuffer.Get(), &SRVDesc, FrameBufferResourceView.GetAddressOf());
+    if (FAILED(hr))
+        return hr;
+
     return S_OK;
 }
 

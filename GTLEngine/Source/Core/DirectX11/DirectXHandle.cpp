@@ -243,7 +243,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
     //    return hr;
 
 	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
-	AddDepthStencilView(TEXT("Default"), winInfo.WindowHandle, (winInfo.Width), (winInfo.Height));
+	//AddDepthStencilView(TEXT("Default"), winInfo.WindowHandle, (winInfo.Width), (winInfo.Height));
 
 	BufferManager = new UDXDBufferManager();
 
@@ -628,7 +628,24 @@ void UDirectXHandle::PrepareViewport(FViewport* InViewport)
 
 }
 
-HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
+void UDirectXHandle::RenderViewport(FViewport* InViewport)
+{
+	D3D11_SAMPLER_DESC SamplerDesc = {};
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	ComPtr<ID3D11SamplerState> SamplerState;
+	auto hr = DXDDevice->CreateSamplerState(&SamplerDesc, SamplerState.GetAddressOf());
+
+
+}
+
+HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
 {
 	if (RenderTargets.find(InName) != RenderTargets.end())
 	{
@@ -638,19 +655,7 @@ HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_RENDE
 
 	UDXDRenderTarget* RenderTarget = new UDXDRenderTarget();
 
-	// Render Target Texture 생성
-	D3D11_TEXTURE2D_DESC renderTargetDesc = {};
-	renderTargetDesc.Width = 1024;  // 원하는 가로 크기
-	renderTargetDesc.Height = 768;  // 원하는 세로 크기
-	renderTargetDesc.MipLevels = 1;
-	renderTargetDesc.ArraySize = 1;
-	renderTargetDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	renderTargetDesc.SampleDesc.Count = 1;
-	renderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
-	renderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-
-	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, {}, InRenderTargetViewDesc);
+	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, InRenderTargetDesc ,InRenderTargetViewDesc);
 	if (FAILED(hr))
 		return hr;
 
@@ -1146,6 +1151,7 @@ void UDirectXHandle::ResizeViewport(int width, int height) {
 
 HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 
+	assert(0); // addrendertarget수정중
 	RenderTargets[TEXT("Default")]->ReleaseRenderTarget();
 	DepthStencilViews[TEXT("Default")]->ReleaseDepthStencilView();
 	
@@ -1156,7 +1162,7 @@ HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 	D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
 	framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
 	framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
-	hr = AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
+	//hr = AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
 	if ( FAILED(hr) )
 		return hr;
 
