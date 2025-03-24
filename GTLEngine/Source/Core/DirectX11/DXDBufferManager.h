@@ -17,6 +17,10 @@ public:
 	template<typename T>
 	HRESULT CreateDynamicVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
 
+private:
+	TMap<FString, FVertexInfo> VertexBufferPool;
+	TMap<FString, FIndexInfo> IndexBufferPool;
+
 };
 
 template<typename T>

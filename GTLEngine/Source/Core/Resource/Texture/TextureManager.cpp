@@ -6,7 +6,7 @@
 HRESULT UTextureManager::LoadTextureFromFile(const FString& FileName, ID3D11Device* Device, ID3D11ShaderResourceView** SRV)
 {
 	DirectX::ScratchImage Image;
-	std::wstring ext = FileName.substr(FileName.find_last_of(L".") + 1);
+	std::wstring ext = FileName.substr(FileName.find_last_of(L"."));
 
 	if (ext == L".dds" || ext == L".DDS")
 	{
@@ -24,6 +24,6 @@ HRESULT UTextureManager::LoadTextureFromFile(const FString& FileName, ID3D11Devi
 			return S_FALSE;
 	}
 
-	//HRESULT hr = CreateShaderResourceView(Device, Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), SRV.GetAddressOf());
+	HRESULT hr = CreateShaderResourceView(Device, Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), &*SRV);
 	return S_OK;
 }

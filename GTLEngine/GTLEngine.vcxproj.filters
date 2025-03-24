@@ -92,6 +92,9 @@
     <Filter Include="Source\Core\Resource\Texture">
       <UniqueIdentifier>{2eed16a1-81d3-4c48-a354-5a594a4f59cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core\Resource\Material">
+      <UniqueIdentifier>{14b8a4ca-9c8c-464c-a4e7-eb178ae9b3f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\EnginePch.cpp">
@@ -318,6 +321,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Resource\Texture\TextureManager.cpp">
       <Filter>Source\Core\Resource\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Resource\Material\Material.cpp">
+      <Filter>Source\Core\Resource\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -560,6 +566,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Resource\Texture\TextureManager.h">
       <Filter>Source\Core\Resource\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Resource\Material\Material.h">
+      <Filter>Source\Core\Resource\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

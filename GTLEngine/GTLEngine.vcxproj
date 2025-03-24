@@ -251,6 +251,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Core\Resource\Material\Material.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Core\Resource\ObjManager.cpp" />
     <ClCompile Include="Source\Core\Resource\ResourceManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -374,6 +378,7 @@
     <ClInclude Include="Source\Core\HAL\PlatformMemory.h" />
     <ClInclude Include="Source\Core\Input\InputManager.h" />
     <ClInclude Include="Source\Core\Resource\Archive.h" />
+    <ClInclude Include="Source\Core\Resource\Material\Material.h" />
     <ClInclude Include="Source\Core\Resource\Mesh\StaticMeshAsset.h" />
     <ClInclude Include="Source\Core\Resource\ObjManager.h" />
     <ClInclude Include="Source\Core\Resource\ResourceManager.h" />
