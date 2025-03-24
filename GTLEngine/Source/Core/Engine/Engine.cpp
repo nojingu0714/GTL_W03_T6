@@ -45,25 +45,10 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     }
 
     // 셰이더 추가.
-
-    // 버텍스 버퍼 추가.
-    hr = AddAllVertexBuffers();
-    if (FAILED(hr))
-    {
-        MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
-        return false;
-    }
-
     // 텍스쳐용 UV 버퍼 추가.
-    hr = DirectX11Handle->AddVertexBuffer<FVertexUV>(L"FontAtlas", ResourceManager->GetUVData(), TArray<uint32>());
-	if (FAILED(hr))
-	{
-		MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
-		return false;
-	}
 
     // for batch line rendering
-    hr = DirectX11Handle->CheckAndAddDynamicVertexBuffer<FVertexSimple>(L"Dynamic", 1024);
+    hr = DirectX11Handle->CheckAndAddDynamicVertexBuffer<FVertexPNCT>(L"Dynamic", 1024);
     if ( FAILED(hr) ) {
         MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
         return false;
@@ -193,32 +178,6 @@ void UEngine::ClearEngine()
 		delete TimeManager;
 		TimeManager = nullptr;
 	}
-}
-
-HRESULT UEngine::AddAllVertexBuffers()
-{
-    HRESULT hr = S_OK;
-
-    for (uint32 i = 0; i < static_cast<uint32>(EPrimitiveType::Max); ++i)
-    {
-        EPrimitiveType Type = static_cast<EPrimitiveType>(i);
-        if (Type != EPrimitiveType::None)
-        {
-            hr = DirectX11Handle->AddVertexBuffer(GetPrimitiveTypeAsString(Type), ResourceManager->GetPrimitiveVertexData(Type), ResourceManager->GetPrimitiveIndexData(Type));
-            if (FAILED(hr))
-            {
-                return hr;
-            }
-        }
-    }
-
-    for (uint32 i = 0; i < static_cast<uint32>(EGizmoViewType::Max); ++i)
-    {
-        EGizmoViewType Type = static_cast<EGizmoViewType>(i);
-        hr = DirectX11Handle->AddVertexBuffer(GetGizmoViewTypeAsString(Type), ResourceManager->GetGizmoVertexData(Type), ResourceManager->GetGizmoIndexData(Type));
-    }
-    
-    return S_OK;
 }
 
 void UEngine::CreateNewWorld()

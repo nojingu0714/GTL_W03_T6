@@ -462,7 +462,7 @@ void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexSimple);
+    uint Stride = sizeof(FVertexPNCT);
     uint offset = 0;
     FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::Grid)];
     ID3D11Buffer* VB = Info.VertexBuffer;
@@ -470,63 +470,6 @@ void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
     DXDDeviceContext->Draw(Num, 0);
 
-}
-
-void UDirectXHandle::RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag)
-{
-    if (!PrimitiveComp)
-        return;
-
-	if (PrimitiveComp->GetPrimitiveType() == EPrimitiveType::None || PrimitiveComp->GetPrimitiveType() == EPrimitiveType::Line || PrimitiveComp->GetPrimitiveType() == EPrimitiveType::Grid)
-		return;
-
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("DefaultPS")), NULL, 0);
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
-
-    // Begin Object Matrix Update. 
-    ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
-    if (!CbChangesEveryObject)
-    {
-        return;
-    }
-    D3D11_MAPPED_SUBRESOURCE MappedData = {};
-    DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-    if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
-    {
-        Buffer->WorldMatrix = PrimitiveComp->GetWorldMatrix();
-		if (flag)
-			Buffer->Flag = true;
-		else
-			Buffer->Flag = false;
-    }
-    DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
-
-    EPrimitiveType Type = PrimitiveComp->GetPrimitiveType();
-    uint Stride = sizeof(FVertexSimple);
-    //uint Stride = 84;6
-    UINT offset = 0;
-	FVertexInfo Info;
-	//if ( !PrimitiveVertexBuffers.contains(Type) )
-	Info = VertexBuffers[GetPrimitiveTypeAsString(Type)];
-	//else 
-	//	Info = PrimitiveVertexBuffers[Type];
-    ID3D11Buffer* VB = Info.VertexBuffer;
-    uint Num = Info.NumVertices;
-    DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
-
-    // IndexBuffer가 존재하는지 확인하고, DrawIndexed 호출
-    auto indexIt = IndexBuffers.find(GetPrimitiveTypeAsString(Type));
-    if (indexIt != IndexBuffers.end())
-    {
-        FIndexInfo IndexInfo = indexIt->second;
-        DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
-    }
-    else
-    {  
-        DXDDeviceContext->Draw(Num, 0);
-    }
 }
 
 void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
@@ -549,7 +492,7 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexSimple);
+    uint Stride = sizeof(FVertexPNCT);
     UINT offset = 0;
     FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
     ID3D11Buffer* VB = Info.VertexBuffer;
@@ -613,7 +556,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
 		if (Gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
 			continue;
         EGizmoViewType Type = Gizmo->GetGizmoViewType();
-        uint Stride = sizeof(FVertexSimple);
+        uint Stride = sizeof(FVertexPNCT);
         UINT offset = 0;
         FVertexInfo Info = VertexBuffers[GetGizmoViewTypeAsString(Type)];
         ID3D11Buffer* VB = Info.VertexBuffer;
@@ -730,29 +673,24 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
 
 	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
 
-	UINT stride = sizeof(FVertexSimple);
+	UINT stride = sizeof(FVertexPNCT);
 	UINT number = 0;
 	UINT offset = 0;
 
     // TODO: 인풋 레이아웃을 line 전용으로 변경해야하는데 지금은 동일한 정보이므로 바꾸지 않아도 될듯함.
     //       for 루프로 순회하면서 버텍스 버퍼 업데이트 및 draw.
     
-	TArray<FVertexSimple> vertices;
+	TArray<FVertexPNCT> vertices;
     for ( AActor* Actor : Actors ) {
         for ( UActorComponent* Comp : Actor->GetOwnedComponent() ) {
 			ULineComponent* line = Cast<ULineComponent>(Comp);
 			if (line) {
 				FVector StartVector = line->GetStartPoint();
-				FVertexSimple StartVertex = {
-					StartVector.X, StartVector.Y, StartVector.Z,
-					1.0f, 0.0f, 0.0f, 1.0f
-
-				};
+				
+				FVertexPNCT StartVertex = { FVector(StartVector.X, StartVector.Y, StartVector.Z), FVector(), FVector4(1.0f, 0.0f, 0.0f, 1.0f), FVector2() };
 				FVector EndVector = line->GetEndPoint();
-				FVertexSimple EndVertex = {
-					EndVector.X, EndVector.Y, EndVector.Z,
-					1.0f, 0.0f, 0.0f, 1.0f
-				};
+				
+				FVertexPNCT EndVertex = { FVector(EndVector.X, EndVector.Y, EndVector.Z), FVector(), FVector4(1.0f, 0.0f, 0.0f, 1.0f), FVector2() };
 				vertices.push_back(StartVertex);
 				vertices.push_back(EndVertex);
 				number += 2;
@@ -761,7 +699,7 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
         }
     }
 
-	HRESULT hr = CheckAndAddDynamicVertexBuffer<FVertexSimple>(L"Dynamic", number);
+	HRESULT hr = CheckAndAddDynamicVertexBuffer<FVertexPNCT>(L"Dynamic", number);
 	if ( FAILED(hr) ) {
 		// MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
 		return;
@@ -784,7 +722,7 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
 	FVertexInfo Info = VertexBuffers[L"Dynamic"];
 	ID3D11Buffer* vertexBuffer = Info.VertexBuffer;
 	DXDDeviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-	memcpy(MappedData.pData, vertices.data(), sizeof(FVertexSimple) * vertices.size());
+	memcpy(MappedData.pData, vertices.data(), sizeof(FVertexPNCT) * vertices.size());
 	DXDDeviceContext->Unmap(vertexBuffer, 0);
 
 
@@ -838,7 +776,7 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
 	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
 
-    uint Stride = sizeof(FVertexUV);
+    uint Stride = sizeof(FVertexPNCT);
     UINT offset = 0;
 	FBufferInfo Info;
 	BufferManager->CreateASCIITextBuffer(DXDDevice, TargetActor->GetName(), Info, 0.0f, 0.0f);
@@ -892,7 +830,7 @@ void UDirectXHandle::RenderComponentUUID(USceneComponent* TargetComponent)
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
 	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
 
-	uint Stride = sizeof(FVertexUV);
+	uint Stride = sizeof(FVertexPNCT);
 	UINT offset = 0;
 	FBufferInfo Info;
 	BufferManager->CreateASCIITextBuffer(DXDDevice, TargetComponent->GetName(), Info, 0.0f, -1.0f);

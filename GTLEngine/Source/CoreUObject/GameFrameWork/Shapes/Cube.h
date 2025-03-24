@@ -1,21 +1,16 @@
 #pragma once
 
-#include "GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
 
-class UCubeComponent;
-class USphereComponent;
 
-class ACube : public AActor
+class ACube : public AStaticMeshActor
 {
-	DECLARE_CLASS(ACube, AActor)
+	DECLARE_CLASS(ACube, AStaticMeshActor)
 public:
 	ACube();
 
 public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
-private:
-	UCubeComponent* CubeComponent;
-	UCubeComponent* CubeComponent2;
 
 };

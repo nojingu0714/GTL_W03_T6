@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "Cylinder.h"
-#include "Components/CylinderComponent.h"
+
+#include "Components/StaticMeshComponent.h"
+#include "Asset/ObjManager.h"
 
 ACylinder::ACylinder()
-	: AActor()
+	: Super()
 {
-	CylinderComponent = AddComponent<UCylinderComponent>(this);
-	CylinderComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Cylinder.obj")));
 }
 
 void ACylinder::Tick(float TickTime)

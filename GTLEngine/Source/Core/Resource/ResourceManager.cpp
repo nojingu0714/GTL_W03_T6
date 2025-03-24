@@ -20,12 +20,6 @@
 UResourceManager::UResourceManager()
 {
 
-    // 평면형 UV 데이터 생성.
-    UVQuadData = TArray<FVertexUV>(QuadVertices, QuadVertices + sizeof(QuadVertices) / sizeof(FVertexUV));
-    LoadPrimitives();
-    LoadTranslateGizmos();
-    LoadRotateGizmos();
-    LoadScaleGizmos();
 
 }
 
@@ -34,236 +28,125 @@ UResourceManager::~UResourceManager()
     Release();
 }
 
-ObjData UResourceManager::LoadObj(FString filepath)
-{
-    std::ifstream objFile(filepath.c_str());
-    ObjData data;
-    if (!objFile)
-        return data; // 실패 시 빈 구조체 반환
-
-    std::string line;
-    while (std::getline(objFile, line)) {
-        std::istringstream lineStream(line);
-        std::string type;
-        lineStream >> type;
-
-        if (type == "v") { // Vertex position
-            FVertexSimple vertex;
-            //lineStream >> vertex.X >> vertex.Y >> vertex.Z >> vertex.R >> vertex.G >> vertex.B; color 있을경우
-            lineStream >> vertex.X >> vertex.Y >> vertex.Z;
-            FVertexSimple vertexSimple{ vertex.X, vertex.Y, vertex.Z, 0.f, 0.f, 0.f, 1.f };
-            data.vertices.push_back(vertexSimple);
-        }
-        else if (type == "f") { // Face
-            std::vector<uint32> faceIndices;
-            uint32 index;
-
-            while (lineStream >> index) {
-                faceIndices.push_back(index - 1);
-            }
-            for (size_t i = 1; i + 1 < faceIndices.size(); ++i) {
-                data.indices.push_back(faceIndices[0]);
-                data.indices.push_back(faceIndices[i]);
-                data.indices.push_back(faceIndices[i + 1]);
-            }
-        }
-    }
-    objFile.close();
-    return data;
-}
-
-void UResourceManager::LoadPrimitives()
-{
-    PrimitiveVertexDataMap[EPrimitiveType::Line] = {
-        {0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f},
-        {0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f},
-    };
-
-    uint64 LineVertexNum = sizeof(LineVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::Line] = TArray<FVertexSimple>(LineVertices, LineVertices + LineVertexNum);
-
-    uint64 TriangleVertexNum = sizeof(TriangleVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::Triangle] = TArray<FVertexSimple>(TriangleVertices, TriangleVertices + TriangleVertexNum);
-
-    uint64 SphereVertexNum = sizeof(SphereVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::Sphere] = TArray<FVertexSimple>(SphereVertices, SphereVertices + SphereVertexNum);
-
-    uint64 CubeVertexNum = sizeof(CubeVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::Cube] = TArray<FVertexSimple>(CubeVertices, CubeVertices + CubeVertexNum);
-
-    uint64 CylinderVertexNum = sizeof(CylinderVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::Cylinder] = TArray<FVertexSimple>(CylinderVertices, CylinderVertices + CylinderVertexNum);
-
-    uint64 ConeVertexNum = sizeof(ConeVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::Cone] = TArray<FVertexSimple>(ConeVertices, ConeVertices + ConeVertexNum);
-
-    uint64 GridVertexNum = 1000;
-    float offset = static_cast<float>(GridVertexNum / 2) / 4;
-    TArray<FVertexSimple>& grid = PrimitiveVertexDataMap[EPrimitiveType::Grid] = TArray<FVertexSimple>();
-    grid.reserve(GridVertexNum);
-    for ( int i = 0; i < GridVertexNum / 4; ++i ) {
-        float f = static_cast<float>(i);
-        grid.push_back({ f - offset, offset,  0.f,    1.0f, 1.0f, 1.0f, 1.0f });
-        grid.push_back({ f - offset, -offset, 0.f,    1.0f, 1.0f, 1.0f, 1.0f });
-        grid.push_back({ offset, f - offset,  0.f,    1.0f, 1.0f, 1.0f, 1.0f });
-        grid.push_back({ -offset, f - offset, 0.f,    1.0f, 1.0f, 1.0f, 1.0f });
-    }
-
-    uint64 BoundingBoxVertexNum = sizeof(BoundingBoxVertices) / sizeof(FVertexSimple);
-    PrimitiveVertexDataMap[EPrimitiveType::BoundingBox] = TArray<FVertexSimple>(BoundingBoxVertices, BoundingBoxVertices + BoundingBoxVertexNum);
-}
-
-void UResourceManager::LoadTranslateGizmos()
-{
-    ObjData Obj = LoadObj(L"Resource/Shape/GizmoTranslate.obj");
-
-    TArray<FVertexSimple> XVertices;
-    TArray<FVertexSimple> YVertices;
-    TArray<FVertexSimple> ZVertices;
-
-    for (size_t i = 0; i < Obj.vertices.size(); ++i)
-    {
-        FVertexSimple xVert = Obj.vertices[i];
-        FVertexSimple yVert;
-        yVert.X = xVert.Y; yVert.Y = xVert.X; yVert.Z = xVert.Z; //Y축 방향
-        FVertexSimple zVert;
-        zVert.X = xVert.Z; zVert.Y = xVert.Y; zVert.Z = xVert.X; //Z축 방향
-        // X축은 빨간색 (1,0,0)
-        xVert.R = 1.f; xVert.G = 0.f; xVert.B = 0.f;
-        // Y축은 녹색 (0,1,0)
-        yVert.R = 0.f; yVert.G = 1.f; yVert.B = 0.f;
-        // Z축은 파란색 (0,0,1)
-        zVert.R = 0.f; zVert.G = 0.f; zVert.B = 1.f;
-
-        XVertices.push_back(xVert);
-        YVertices.push_back(yVert);
-        ZVertices.push_back(zVert);
-    }
-
-    GizmoVertexDataMap[EGizmoViewType::XTranslate] = XVertices;
-    GizmoVertexDataMap[EGizmoViewType::YTranslate] = YVertices;
-    GizmoVertexDataMap[EGizmoViewType::ZTranslate] = ZVertices;
-    GizmoIndexDataMap[EGizmoViewType::XTranslate] = Obj.indices;
-    GizmoIndexDataMap[EGizmoViewType::YTranslate] = Obj.indices;
-    GizmoIndexDataMap[EGizmoViewType::ZTranslate] = Obj.indices;
-}
-
-void UResourceManager::LoadRotateGizmos()
-{
-    ObjData Obj = LoadObj(L"Resource/Shape/GizmoRotate.obj");
-
-    TArray<FVertexSimple> XVertices;
-    TArray<FVertexSimple> YVertices;
-    TArray<FVertexSimple> ZVertices;
-
-    for (size_t i = 0; i < Obj.vertices.size(); ++i)
-    {
-        FVertexSimple xVert = Obj.vertices[i];
-        FVertexSimple yVert;
-        yVert.X = xVert.Y; yVert.Y = xVert.X; yVert.Z = xVert.Z; //Y축 방향
-        FVertexSimple zVert;
-        zVert.X = xVert.Z; zVert.Y = xVert.Y; zVert.Z = xVert.X; //Z축 방향
-
-        // X축은 빨간색 (1,0,0)
-        xVert.R = 1.f; xVert.G = 0.f; xVert.B = 0.f;
-        // Y축은 녹색 (0,1,0)
-        yVert.R = 0.f; yVert.G = 1.f; yVert.B = 0.f;
-        // Z축은 파란색 (0,0,1)
-        zVert.R = 0.f; zVert.G = 0.f; zVert.B = 1.f;
-
-        XVertices.push_back(xVert);
-        YVertices.push_back(yVert);
-        ZVertices.push_back(zVert);
-    }
-
-    GizmoVertexDataMap[EGizmoViewType::XRotate] = XVertices;
-    GizmoVertexDataMap[EGizmoViewType::YRotate] = YVertices;
-    GizmoVertexDataMap[EGizmoViewType::ZRotate] = ZVertices;
-    GizmoIndexDataMap[EGizmoViewType::XRotate] = Obj.indices;
-    GizmoIndexDataMap[EGizmoViewType::YRotate] = Obj.indices;
-    GizmoIndexDataMap[EGizmoViewType::ZRotate] = Obj.indices;
-}
-
-void UResourceManager::LoadScaleGizmos()
-{
-    ObjData Obj = LoadObj(L"Resource/Shape/GizmoScale.obj");
-
-    TArray<FVertexSimple> XVertices;
-    TArray<FVertexSimple> YVertices;
-    TArray<FVertexSimple> ZVertices;
-
-    for (size_t i = 0; i < Obj.vertices.size(); ++i)
-    {
-        FVertexSimple xVert = Obj.vertices[i];
-        FVertexSimple yVert;
-        yVert.X = Obj.vertices[i].Y; yVert.Y = Obj.vertices[i].X; yVert.Z = Obj.vertices[i].Z; //Y축 방향
-        FVertexSimple zVert;
-        zVert.X = Obj.vertices[i].Z; zVert.Y = Obj.vertices[i].Y; zVert.Z = Obj.vertices[i].X; //Z축 방향
-
-        // X축은 빨간색 (1,0,0)
-        xVert.R = 1.f; xVert.G = 0.f; xVert.B = 0.f;
-        // Y축은 녹색 (0,1,0)
-        yVert.R = 0.f; yVert.G = 1.f; yVert.B = 0.f;
-        // Z축은 파란색 (0,0,1)
-        zVert.R = 0.f; zVert.G = 0.f; zVert.B = 1.f;
-
-        XVertices.push_back(xVert);
-        YVertices.push_back(yVert);
-        ZVertices.push_back(zVert);
-    }
-
-    GizmoVertexDataMap[EGizmoViewType::XScale] = XVertices;
-    GizmoVertexDataMap[EGizmoViewType::YScale] = YVertices;
-    GizmoVertexDataMap[EGizmoViewType::ZScale] = ZVertices;
-    GizmoIndexDataMap[EGizmoViewType::XScale] = Obj.indices;
-    GizmoIndexDataMap[EGizmoViewType::YScale] = Obj.indices;
-    GizmoIndexDataMap[EGizmoViewType::ZScale] = Obj.indices;
-}
+//void UResourceManager::LoadTranslateGizmos()
+//{
+//    ObjData Obj = LoadObj(L"Resource/Shape/GizmoTranslate.obj");
+//
+//    TArray<FVertexPNCT> XVertices;
+//    TArray<FVertexPNCT> YVertices;
+//    TArray<FVertexPNCT> ZVertices;
+//
+//    for (size_t i = 0; i < Obj.vertices.size(); ++i)
+//    {
+//        FVertexSimple xVert = Obj.vertices[i];
+//        FVertexSimple yVert;
+//        yVert.X = xVert.Y; yVert.Y = xVert.X; yVert.Z = xVert.Z; //Y축 방향
+//        FVertexSimple zVert;
+//        zVert.X = xVert.Z; zVert.Y = xVert.Y; zVert.Z = xVert.X; //Z축 방향
+//        // X축은 빨간색 (1,0,0)
+//        xVert.R = 1.f; xVert.G = 0.f; xVert.B = 0.f;
+//        // Y축은 녹색 (0,1,0)
+//        yVert.R = 0.f; yVert.G = 1.f; yVert.B = 0.f;
+//        // Z축은 파란색 (0,0,1)
+//        zVert.R = 0.f; zVert.G = 0.f; zVert.B = 1.f;
+//
+//        XVertices.push_back(xVert);
+//        YVertices.push_back(yVert);
+//        ZVertices.push_back(zVert);
+//    }
+//
+//    GizmoVertexDataMap[EGizmoViewType::XTranslate] = XVertices;
+//    GizmoVertexDataMap[EGizmoViewType::YTranslate] = YVertices;
+//    GizmoVertexDataMap[EGizmoViewType::ZTranslate] = ZVertices;
+//    GizmoIndexDataMap[EGizmoViewType::XTranslate] = Obj.indices;
+//    GizmoIndexDataMap[EGizmoViewType::YTranslate] = Obj.indices;
+//    GizmoIndexDataMap[EGizmoViewType::ZTranslate] = Obj.indices;
+//}
+//
+//void UResourceManager::LoadRotateGizmos()
+//{
+//    ObjData Obj = LoadObj(L"Resource/Shape/GizmoRotate.obj");
+//
+//    TArray<FVertexSimple> XVertices;
+//    TArray<FVertexSimple> YVertices;
+//    TArray<FVertexSimple> ZVertices;
+//
+//    for (size_t i = 0; i < Obj.vertices.size(); ++i)
+//    {
+//        FVertexSimple xVert = Obj.vertices[i];
+//        FVertexSimple yVert;
+//        yVert.X = xVert.Y; yVert.Y = xVert.X; yVert.Z = xVert.Z; //Y축 방향
+//        FVertexSimple zVert;
+//        zVert.X = xVert.Z; zVert.Y = xVert.Y; zVert.Z = xVert.X; //Z축 방향
+//
+//        // X축은 빨간색 (1,0,0)
+//        xVert.R = 1.f; xVert.G = 0.f; xVert.B = 0.f;
+//        // Y축은 녹색 (0,1,0)
+//        yVert.R = 0.f; yVert.G = 1.f; yVert.B = 0.f;
+//        // Z축은 파란색 (0,0,1)
+//        zVert.R = 0.f; zVert.G = 0.f; zVert.B = 1.f;
+//
+//        XVertices.push_back(xVert);
+//        YVertices.push_back(yVert);
+//        ZVertices.push_back(zVert);
+//    }
+//
+//    GizmoVertexDataMap[EGizmoViewType::XRotate] = XVertices;
+//    GizmoVertexDataMap[EGizmoViewType::YRotate] = YVertices;
+//    GizmoVertexDataMap[EGizmoViewType::ZRotate] = ZVertices;
+//    GizmoIndexDataMap[EGizmoViewType::XRotate] = Obj.indices;
+//    GizmoIndexDataMap[EGizmoViewType::YRotate] = Obj.indices;
+//    GizmoIndexDataMap[EGizmoViewType::ZRotate] = Obj.indices;
+//}
+//
+//void UResourceManager::LoadScaleGizmos()
+//{
+//    ObjData Obj = LoadObj(L"Resource/Shape/GizmoScale.obj");
+//
+//    TArray<FVertexSimple> XVertices;
+//    TArray<FVertexSimple> YVertices;
+//    TArray<FVertexSimple> ZVertices;
+//
+//    for (size_t i = 0; i < Obj.vertices.size(); ++i)
+//    {
+//        FVertexSimple xVert = Obj.vertices[i];
+//        FVertexSimple yVert;
+//        yVert.X = Obj.vertices[i].Y; yVert.Y = Obj.vertices[i].X; yVert.Z = Obj.vertices[i].Z; //Y축 방향
+//        FVertexSimple zVert;
+//        zVert.X = Obj.vertices[i].Z; zVert.Y = Obj.vertices[i].Y; zVert.Z = Obj.vertices[i].X; //Z축 방향
+//
+//        // X축은 빨간색 (1,0,0)
+//        xVert.R = 1.f; xVert.G = 0.f; xVert.B = 0.f;
+//        // Y축은 녹색 (0,1,0)
+//        yVert.R = 0.f; yVert.G = 1.f; yVert.B = 0.f;
+//        // Z축은 파란색 (0,0,1)
+//        zVert.R = 0.f; zVert.G = 0.f; zVert.B = 1.f;
+//
+//        XVertices.push_back(xVert);
+//        YVertices.push_back(yVert);
+//        ZVertices.push_back(zVert);
+//    }
+//
+//    GizmoVertexDataMap[EGizmoViewType::XScale] = XVertices;
+//    GizmoVertexDataMap[EGizmoViewType::YScale] = YVertices;
+//    GizmoVertexDataMap[EGizmoViewType::ZScale] = ZVertices;
+//    GizmoIndexDataMap[EGizmoViewType::XScale] = Obj.indices;
+//    GizmoIndexDataMap[EGizmoViewType::YScale] = Obj.indices;
+//    GizmoIndexDataMap[EGizmoViewType::ZScale] = Obj.indices;
+//}
 
 void UResourceManager::Release()
 {
-    for (auto& [Type, Info] : PrimitiveVertexDataMap)
-    {
-        Info.clear();
-    }
-    PrimitiveVertexDataMap.clear();
 }
-
-const TArray<FVertexSimple> UResourceManager::GetPrimitiveVertexData(EPrimitiveType Type) const
-{
-    if (PrimitiveVertexDataMap.contains(Type))
-    {
-        return PrimitiveVertexDataMap.find(Type)->second;
-    }
-	return TArray<FVertexSimple>();
-}
-
-const TArray<uint32> UResourceManager::GetPrimitiveIndexData(EPrimitiveType Type) const
-{
-    if (PrimitiveIndexDataMap.contains(Type))
-    {
-        return PrimitiveIndexDataMap.find(Type)->second;
-    }
-    return TArray<uint32>();
-}
-
-const TArray<FVertexSimple> UResourceManager::GetGizmoVertexData(EGizmoViewType Type) const
-{
-    if (GizmoVertexDataMap.contains(Type))
-    {
-        return GizmoVertexDataMap.find(Type)->second;
-    }
-    return TArray<FVertexSimple>();
-}
-
-const TArray<uint32> UResourceManager::GetGizmoIndexData(EGizmoViewType Type) const
-{
-    if (GizmoIndexDataMap.contains(Type))
-    {
-        return GizmoIndexDataMap.find(Type)->second;
-    }
-    return TArray<uint32>();
-}
+//
+//const TArray<uint32> UResourceManager::GetGizmoIndexData(EGizmoViewType Type) const
+//{
+//    if (GizmoIndexDataMap.contains(Type))
+//    {
+//        return GizmoIndexDataMap.find(Type)->second;
+//    }
+//    return TArray<uint32>();
+//}
 
 void UResourceManager::NewScene()
 {

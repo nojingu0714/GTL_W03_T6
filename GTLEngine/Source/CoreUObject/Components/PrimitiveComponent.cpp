@@ -46,36 +46,36 @@ bool UPrimitiveComponent::IsRayIntersect(FRay ray, float hitDistance, FVector& h
     FMatrix transform = GetWorldMatrix().Inverse();
     FRay transformedRay = FRay(transform.TransformPositionVector(ray.Origin), transform.TransformDirectionVector(ray.Direction).GetSafeNormal());
 
-    TArray<FVertexSimple> vertices = UEngine::GetEngine().GetResourceManager()->GetPrimitiveVertexData(PrimitiveType);
-    int nIntersections = 0;
-    if ( vertices.size() < 3 )
-        return false;
+    //TArray<FVertexSimple> vertices = UEngine::GetEngine().GetResourceManager()->GetPrimitiveVertexData(PrimitiveType);
+    //int nIntersections = 0;
+    //if ( vertices.size() < 3 )
+    //    return false;
 
     bool result = false;
-    //BYTE* pbPositions = reinterpret_cast<BYTE*>(vertices.data());
+    ////BYTE* pbPositions = reinterpret_cast<BYTE*>(vertices.data());
 
-    uint32 nPrimitives = static_cast<uint32>(vertices.size() / 3);
+    //uint32 nPrimitives = static_cast<uint32>(vertices.size() / 3);
 
-    float nearHitDistancePow = FLT_MAX;
-    FVector nearestHitPoint = FVector::Zero();
-    for ( uint32 i = 0; i < nPrimitives; i++ ) {
-        int idx0, idx1, idx2;
-        idx0 = i * 3;
-        idx1 = i * 3 + 1;
-        idx2 = i * 3 + 2;
+    //float nearHitDistancePow = FLT_MAX;
+    //FVector nearestHitPoint = FVector::Zero();
+    //for ( uint32 i = 0; i < nPrimitives; i++ ) {
+    //    int idx0, idx1, idx2;
+    //    idx0 = i * 3;
+    //    idx1 = i * 3 + 1;
+    //    idx2 = i * 3 + 2;
 
-        FVector v0 = FVector(vertices[idx0].X, vertices[idx0].Y, vertices[idx0].Z);
-        FVector v1 = FVector(vertices[idx1].X, vertices[idx1].Y, vertices[idx1].Z);
-        FVector v2 = FVector(vertices[idx2].X, vertices[idx2].Y, vertices[idx2].Z);
+    //    FVector v0 = FVector(vertices[idx0].X, vertices[idx0].Y, vertices[idx0].Z);
+    //    FVector v1 = FVector(vertices[idx1].X, vertices[idx1].Y, vertices[idx1].Z);
+    //    FVector v2 = FVector(vertices[idx2].X, vertices[idx2].Y, vertices[idx2].Z);
 
-        FVector hit;
-        if ( Geometry::IsRayIntersectWithTriangle(transformedRay, v0, v1, v2, hitDistance, hit) ) {
-            if ( (hitPoint - transformedRay.Origin).LengthSquared() < nearHitDistancePow ) {
-                nearHitDistancePow = (hitPoint - transformedRay.Origin).LengthSquared();
-                hitPoint = hit;
-            }
-            result = true;
-        }
-    }
+    //    FVector hit;
+    //    if ( Geometry::IsRayIntersectWithTriangle(transformedRay, v0, v1, v2, hitDistance, hit) ) {
+    //        if ( (hitPoint - transformedRay.Origin).LengthSquared() < nearHitDistancePow ) {
+    //            nearHitDistancePow = (hitPoint - transformedRay.Origin).LengthSquared();
+    //            hitPoint = hit;
+    //        }
+    //        result = true;
+    //    }
+    //}
     return result;
 }

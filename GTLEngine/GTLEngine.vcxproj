@@ -63,18 +63,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\ConeComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\CubeComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\CylinderComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\CoreUObject\Components\LineComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -88,15 +76,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\SphereComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\CoreUObject\Components\StaticMeshComponent.cpp" />
-    <ClCompile Include="Source\CoreUObject\Components\TriangleComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\CoreUObject\GameFrameWork\Actor.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -327,16 +307,11 @@
     <ClInclude Include="Source\CoreUObject\Class.h" />
     <ClInclude Include="Source\CoreUObject\Components\ActorComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\CameraComponent.h" />
-    <ClInclude Include="Source\CoreUObject\Components\ConeComponent.h" />
-    <ClInclude Include="Source\CoreUObject\Components\CubeComponent.h" />
-    <ClInclude Include="Source\CoreUObject\Components\CylinderComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\LineComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\MeshComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\PrimitiveComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\SceneComponent.h" />
-    <ClInclude Include="Source\CoreUObject\Components\SphereComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\StaticMeshComponent.h" />
-    <ClInclude Include="Source\CoreUObject\Components\TriangleComponent.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Actor.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Camera.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Cone.h" />

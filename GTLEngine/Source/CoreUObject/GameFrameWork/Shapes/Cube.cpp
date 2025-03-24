@@ -1,17 +1,14 @@
 #include "pch.h"
 #include "Cube.h"
-#include "Components/CubeComponent.h"
 
-#include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Asset/ObjManager.h"
+
 
 ACube::ACube()
-	: AActor()
+	: Super()
 {
-	CubeComponent = AddComponent<UCubeComponent>(this, FVector(), FRotator(0.0f, -45.f, 0.f), FVector(1.0f, 1.0f, 2.0f));
-	CubeComponent->SetupAttachment(RootComponent);
-
-	CubeComponent2 = AddComponent<UCubeComponent>(this, FVector(0.0f, 5.0f, 2.f), FRotator(0.0f, 0.0f, 45.0f), FVector(1.0f, 2.0f, 2.0f));
-	CubeComponent2->SetupAttachment(CubeComponent);
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Cube.obj")));
 }
 
 void ACube::Tick(float TickTime)

@@ -42,7 +42,6 @@ public:
 
 	void UpdateCameraMatrix(ACamera* Camera);
 	void RenderWorldPlane(ACamera* Camera);
-	void RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);

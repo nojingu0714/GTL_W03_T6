@@ -1,20 +1,15 @@
 #pragma once
 
-#include "GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
 
-class UTriangleComponent;
-
-class ATriangle : public AActor
+class ATriangle : public AStaticMeshActor
 {
-	DECLARE_CLASS(ATriangle, AActor)
+	DECLARE_CLASS(ATriangle, AStaticMeshActor)
 public:
 	ATriangle();
 
 public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
-
-private:
-	UTriangleComponent* TriangleComponent;
 
 };

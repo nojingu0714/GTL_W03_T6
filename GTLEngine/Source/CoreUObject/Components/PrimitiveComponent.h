@@ -16,11 +16,6 @@ public:
 
 	//virtual void Serialize(bool bIsLoading, json::JSON Handle);
 
-
-	// 아래 사항은 Object 로드 방식으로 변경 시 삭제.
-public:
-	EPrimitiveType GetPrimitiveType() const { return PrimitiveType; }
-
 	virtual FBoundingBox GetAABB() const override;
 	virtual bool IsRayIntersect(FRay ray, float hitDistance, FVector& hitPoint) const override;
 
