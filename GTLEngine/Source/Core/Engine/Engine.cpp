@@ -43,9 +43,6 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width/2, InWindowInfo.Height/2);
 	Viewports.push_back(DefaultViewport);
 
-    // 뷰포트 클라이언트 생성
-	ViewportClient = new FViewportClient();
-    ViewportClient->Init();
     // 텍스쳐용 UV 버퍼 추가.
 
     // for batch line rendering
@@ -127,7 +124,7 @@ void UEngine::Render()
     for (const FViewport& Viewport : Viewports)
     {
         // Texture2D를 쓰는 Quad를 그리기
-        ViewportClient->Draw(Viewport.GetName());
+        DirectX11Handle->RenderViewport(Viewport);
     }
 
     UIManager->RenderUI();

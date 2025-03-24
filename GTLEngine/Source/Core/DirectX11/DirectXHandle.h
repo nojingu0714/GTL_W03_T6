@@ -74,7 +74,6 @@ private:
 	ID3D11DeviceContext* DXDDeviceContext;
 	IDXGISwapChain* DXDSwapChain;
 
-
 	////////////////////////////////////////
 	// Buffers
 	// TODO: Name으로 버텍스 버퍼 저장.
@@ -107,16 +106,12 @@ private:
 	////////////////////////////////////////
 	// Window Renderings (using swapchain's backbuffer)
 	D3D11_VIEWPORT WindowViewport;
-	//UDXDRenderTarget* WindowRenderTarget;
-	//UDXDDepthStencilView* WindowDepthStencilView;
-	//UDXDDepthStencilState* WindowDepthStencilState;
-
 
 	////////////////////////////////////////
 	// Viewport Renderings
 public:
 	void PrepareViewport(const FViewport& InViewport);
-	//void RenderViewport(const FViewport& InViewport);
+	void RenderViewport(const FViewport& InViewport);
 
 public:
 	HRESULT AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });

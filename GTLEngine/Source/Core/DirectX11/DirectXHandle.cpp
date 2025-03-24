@@ -131,61 +131,20 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	if (FAILED(hr))
 		return hr;
 
-	// 래스터라이저 스테이트 생성.
-	//{
-	//	// 일반 메시용 레스터라이저
-	//	UDXDRasterizerState* NormalRasterizer = new UDXDRasterizerState();
-	//	if (NormalRasterizer == nullptr)
-	//		return S_FALSE;
-	//	D3D11_RASTERIZER_DESC NormalRasterizerDesc = {};
-	//	NormalRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	//	NormalRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
-	//	hr = NormalRasterizer->CreateRasterizerState(DXDDevice, &NormalRasterizerDesc);
-	//	if (FAILED(hr))
-	//		return hr;
-	//	RasterizerStates[TEXT("Normal")] = NormalRasterizer;
-	//}
-
+	// 래스터라이저 생성.
 	D3D11_RASTERIZER_DESC NormalRasterizerDesc = {};
-	NormalRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	NormalRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	NormalRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드.
+	NormalRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링.
 	AddRasterizerState(TEXT("Default"), NormalRasterizerDesc);
 
-	//{
-	//	// 기즈모 레스터라이저
-	//	UDXDRasterizerState* GizmoRasterizer = new UDXDRasterizerState();
-	//	if (GizmoRasterizer == nullptr)
-	//		return S_FALSE;
-	//	D3D11_RASTERIZER_DESC GizmoRasterizerDesc = {};
-	//	GizmoRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	//	GizmoRasterizerDesc.CullMode = D3D11_CULL_FRONT; // 백 페이스 컬링
-	//	hr = GizmoRasterizer->CreateRasterizerState(DXDDevice, &GizmoRasterizerDesc);
-	//	if (FAILED(hr))
-	//		return hr;
-	//	RasterizerStates[TEXT("Gizmo")] = GizmoRasterizer;
-
-
-	//	// 와이어프레임 레스터라이저
-	//	UDXDRasterizerState* WireframeRasterizer = new UDXDRasterizerState();
-	//	if ( WireframeRasterizer == nullptr )
-	//		return S_FALSE;
-	//	D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
-	//	WireframeRasterizerDesc.FillMode = D3D11_FILL_WIREFRAME; // 채우기 모드
-	//	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
-	//	hr = WireframeRasterizer->CreateRasterizerState(DXDDevice, &WireframeRasterizerDesc);
-	//	if ( FAILED(hr) )
-	//		return hr;
-	//	RasterizerStates[TEXT("Wireframe")] = WireframeRasterizer;
-	//}
-
 	D3D11_RASTERIZER_DESC GizmoRasterizerDesc = {};
-	GizmoRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	GizmoRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	GizmoRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드.
+	GizmoRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링.
 	AddRasterizerState(TEXT("Gizmo"), GizmoRasterizerDesc);
 
 	D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
-	WireframeRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	WireframeRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드.
+	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링.
 	AddRasterizerState(TEXT("Wireframe"), WireframeRasterizerDesc);
 
 	// 셰이더 초기화. VertexShader, PixelShader, InputLayout 생성.
@@ -343,35 +302,13 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		DXDSwapChain = nullptr;
 	}
 
-	//if (RenderTarget)
-	//{
-	//	RenderTarget->ReleaseRenderTarget();
-	//	delete RenderTarget;
-	//	RenderTarget = nullptr;
-	//}
 	for (const auto& [String, RenderTarget] : RenderTargets) {
 		RenderTarget->ReleaseRenderTarget();
 	}
 
-
-	//if (DepthStencilView)
-	//{
-	//	DepthStencilView->ReleaseDepthStencilView();
-	//	delete DepthStencilView;
-	//	DepthStencilView = nullptr;
-	//}
-
 	for (const auto& [String, DepthStencilView] : DepthStencilViews) {
 		DepthStencilView->ReleaseDepthStencilView();
 	}
-
-
-	//if (DepthStencilStates)
-	//{
-	//	DepthStencilStates->ReleaseDepthStencilState();
-	//	delete DepthStencilStates;
-	//	DepthStencilStates = nullptr;
-	//}
 
 	for (const auto& [String, DepthStencilState] : DepthStencilStates) {
 		DepthStencilState->ReleaseDepthStencilState();
@@ -556,6 +493,7 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
 
 void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 {
+	// 버퍼 준비
 	// viewport
 	WindowViewport.TopLeftX = 0;
 	WindowViewport.TopLeftY = 0;
@@ -578,6 +516,48 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	DepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	AddDepthStencilState(TEXT("Window"), DepthStencilDesc);
+
+
+	// Quad 준비
+	// Sampler State 생성 
+	D3D11_SAMPLER_DESC SamplerDesc = {};
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	ResourceManager->CreateTextureSampler(TEXT("Window"), SamplerDesc);
+
+	// Quad Vertex Buffer 생성
+	// 0  0     1  0
+	// 0 -1     1 -1
+	FVertexFont QuadVertices[] =
+	{
+		{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
+		{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
+		{ FVector(1.f, 0.f, 0.f), FVector2(1.0f, 0.0f) }, // 우상단.
+		{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
+		{ FVector(0.f, -1.f, 0.f), FVector2(0.0f, 1.0f) }, // 좌하단.
+		{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
+	};
+
+	ID3D11Buffer* QuadVertexBuffer;
+
+	D3D11_BUFFER_DESC BufferDesc = {};
+	BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	BufferDesc.ByteWidth = sizeof(FVertexFont) * 6;
+	BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA InitData = {};
+	InitData.pSysMem = QuadVertices;
+
+	UEngine::GetEngine().GetDirectX11Handle()->GetD3DDevice()->CreateBuffer(&BufferDesc, &InitData, &QuadVertexBuffer);
+
+	FVertexInfo QuadVertexInfo = { 6, QuadVertexBuffer };
+	VertexBuffers[TEXT("Quad")] = QuadVertexInfo;
 }
 
 void UDirectXHandle::PrepareWindow()
@@ -624,25 +604,49 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
 }
 
-//void UDirectXHandle::RenderViewport(const FViewport& InViewport)
-//{
-//
-//	// TODO: renderviewport는 fviewportclient가 하도록 변경하기
-//	assert(0);
-//	D3D11_SAMPLER_DESC SamplerDesc = {};
-//	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-//	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-//	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-//	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-//	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-//	SamplerDesc.MinLOD = 0;
-//	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-//
-//	ComPtr<ID3D11SamplerState> SamplerState;
-//	auto hr = DXDDevice->CreateSamplerState(&SamplerDesc, SamplerState.GetAddressOf());
-//
-//
-//}
+void UDirectXHandle::RenderViewport(const FViewport& InViewport)
+{
+	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
+	ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
+
+	UINT Stride = sizeof(FVertexFont);
+	UINT Offset = 0;
+
+	Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("FontVS")));
+	Context->IASetVertexBuffers(0, 1, &VertexBuffers[TEXT("Quad")].VertexBuffer, &Stride, &Offset);
+	Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// 셰이더 설정
+	Context->VSSetShader(Handle->GetShaderManager()->GetVertexShaderByKey(TEXT("ViewportVS")), nullptr, 0);
+	Context->PSSetShader(Handle->GetShaderManager()->GetPixelShaderByKey(TEXT("ViewportPS")), nullptr, 0);
+
+	// 텍스처 + 샘플러 바인딩
+	Context->PSSetShaderResources(0, 1, Handle->GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
+	ID3D11SamplerState* sampler = ResourceManager->TryGetTextureSampler(TEXT("Quad"));
+	Context->PSSetSamplers(0, 1, &sampler);
+	
+	Context->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+
+	// viewport 위치 지정.
+	D3D11_VIEWPORT viewport = InViewport.GetViewport();
+	FWindowInfo windowInfo = UEngine::GetEngine().GetWindowInfo();
+	ID3D11Buffer* CbViewportRatio = ConstantBuffers[EConstantBufferType::ViewportRatio]->GetConstantBuffer();
+	if (!CbViewportRatio)
+	{
+		return;
+	}
+	DXDDeviceContext->VSSetConstantBuffers(4, 1, &CbViewportRatio);
+	D3D11_MAPPED_SUBRESOURCE MappedData = {};
+	DXDDeviceContext->Map(CbViewportRatio, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+	if (FCbViewportRatio* Buffer = reinterpret_cast<FCbViewportRatio*>(MappedData.pData))
+	{
+		Buffer->x = InViewport.GetViewport().TopLeftX / windowInfo.Width * 2 - 1;
+		Buffer->y = InViewport.GetViewport().TopLeftY / windowInfo.Height * 2 - 1;
+		Buffer->width = InViewport.GetViewport().Width / windowInfo.Width * 2;
+		Buffer->height = InViewport.GetViewport().Height / windowInfo.Height * 2;
+	}
+	DXDDeviceContext->Unmap(CbViewportRatio, 0);
+}
 
 HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
 {

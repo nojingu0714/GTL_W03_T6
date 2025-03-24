@@ -2,7 +2,7 @@
 Texture2D ViewportTexture : register(t0);
 SamplerState ViewportSampler : register(s0);
 
-cbuffer CViewportRatio : register(b3)
+cbuffer CViewportRatio : register(b4)
 {
     float OffsetX;
     float OffsetY;
