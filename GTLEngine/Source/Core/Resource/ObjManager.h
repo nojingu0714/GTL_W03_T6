@@ -89,7 +89,8 @@ struct FObjImporter
                 }
 
             }
-            else if (line.substr(0, 2) == "f ") {
+            else if (line.substr(0, 2) == "f ") 
+            {
                 TArray<int> faceVertices;
                 TArray<int> faceTexCoords;
                 TArray<int> faceNormals;
@@ -104,21 +105,27 @@ struct FObjImporter
                     std::vector<std::string> parts;
                     std::stringstream tokenStream(faceToken);
                     std::string part;
+                   
                     while (std::getline(tokenStream, part, '/')) {
                         parts.push_back(part);
                     }
 
-                    if (parts.size() == 1) {
-                        // 정점만 있는 경우
+                    if (parts.size() == 1)
+                    {
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
                     }
-                    else if (parts.size() == 2) {
-                        // 정점 + 텍스처
+                    else if (parts[1] == "")
+                    {
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
-                        faceTexCoords.push_back(std::stoi(parts[1]) - 1);
+                        faceNormals.push_back(std::stoi(parts[2]) - 1);
                     }
-                    else if (parts.size() == 3) {
-                        // 정점 + 텍스처 + 노멀
+                    else if (parts.size() == 2)
+                    {
+                        faceVertices.push_back(std::stoi(parts[0]) - 1);
+                        faceTexCoords.push_back(std::stoi(parts[2]) - 1);
+                    }
+                    else
+                    {
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
                         faceTexCoords.push_back(std::stoi(parts[1]) - 1);
                         faceNormals.push_back(std::stoi(parts[2]) - 1);
@@ -127,13 +134,14 @@ struct FObjImporter
 
                 // 활성화된 텍스처에 해당하는 face 추가
                 FFace newFace;
-                newFace.Vertices = TArray<int>(faceVertices.begin(), faceVertices.end());
-                newFace.TexCoords = TArray<int>(faceTexCoords.begin(), faceTexCoords.end());
-                newFace.Normals = TArray<int>(faceNormals.begin(), faceNormals.end());
+                newFace.Vertices = TArray<uint64>(faceVertices.begin(), faceVertices.end());
+                newFace.TexCoords = TArray<uint64>(faceTexCoords.begin(), faceTexCoords.end());
+                newFace.Normals = TArray<uint64>(faceNormals.begin(), faceNormals.end());
 
                 if (CurrentMaterial.length() != 0)
                     OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
-
+                else
+                    OutObjInfo.FaceMap[L"NONE"].push_back(newFace);
             }
         }
         ObjFile.close();
