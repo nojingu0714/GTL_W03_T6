@@ -316,8 +316,8 @@
     <ClCompile Include="Source\Core\Window\Viewport.cpp">
       <Filter>Source\Core\Window</Filter>
     </ClCompile>
-    <ClCompile Include="ViewportShader.hlsl">
-      <Filter>Resource\Shader</Filter>
+    <ClCompile Include="Source\Core\Window\ViewportClient.cpp">
+      <Filter>Source\Core\Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -558,6 +558,9 @@
     <ClInclude Include="Source\Core\Window\Viewport.h">
       <Filter>Source\Core\Window</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Window\ViewportClient.h">
+      <Filter>Source\Core\Window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\PrimitiveShader.hlsl">
@@ -570,6 +573,9 @@
       <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="Resource\Shader\MVPShader.hlsli">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shader\ViewportShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
   </ItemGroup>

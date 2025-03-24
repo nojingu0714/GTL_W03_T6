@@ -126,6 +126,8 @@ public:
 	UDXDDepthStencilView* GetDepthStencilView(const FString& InName);
 	UDXDDepthStencilState* GetDepthStencilStates(const FString& InName);
 	UDXDRasterizerState* GetRasterizerState(const FString& InName);
+	
+	UDXDShaderManager* GetShaderManager() const { return ShaderManager; }
 
 private:
 	// TMap으로 관리

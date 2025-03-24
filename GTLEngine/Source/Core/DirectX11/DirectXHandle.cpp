@@ -98,6 +98,21 @@ HRESULT UDirectXHandle::CreateShaderManager()
     if (FAILED(hr))
         return hr;
 
+	// Viewport VS, PS, InputLayout 생성.
+	D3D11_INPUT_ELEMENT_DESC ViewportLayout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	hr = ShaderManager->AddVertexShaderAndInputLayout(L"ViewportVS", L"Resource/Shader/ViewportShader.hlsl", "mainVS", ViewportLayout, ARRAYSIZE(ViewportLayout));
+	if (FAILED(hr))
+		return hr;
+
+	hr = ShaderManager->AddPixelShader(L"ViewportPS", L"Resource/Shader/ViewportShader.hlsl", "mainPS");
+	if (FAILED(hr))
+		return hr;
+
 	D3D11_SAMPLER_DESC SamplerDesc = {};
     SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -627,7 +642,7 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 
 void UDirectXHandle::PrepareWindow()
 {
-	FLOAT ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	FLOAT ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 
 	DXDDeviceContext->ClearRenderTargetView(WindowRenderTarget->GetFrameBufferRTV().Get(), ClearColor);
 

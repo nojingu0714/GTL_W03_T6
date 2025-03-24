@@ -15,6 +15,9 @@
 #include "GameFrameWork/Actor.h"
 #include "Gizmo/GizmoManager.h"
 
+#include "Core/Window/Viewport.h"
+#include "Core/Window/ViewportClient.h"
+
 
 TArray<UObject*> GUObjectArray = TArray<UObject*>();
 
@@ -35,6 +38,14 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     
     // 기본 뷰포트 설정.
     DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
+
+	FViewport DefaultViewport;
+	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width, InWindowInfo.Height);
+	Viewports.push_back(DefaultViewport);
+
+    // 뷰포트 클라이언트 생성
+	ViewportClient = new FViewportClient();
+    ViewportClient->Init();
 
     // 버텍스 버퍼 추가.
     hr = AddAllVertexBuffers();
@@ -126,9 +137,14 @@ void UEngine::Render()
         DirectX11Handle->RenderObject(World->GetActors());
         DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
     }
-    DirectX11Handle->PrepareWindow();
-    // Texture2D를 쓰는 Quad를 그리기
-    // FVIewportClient.Draw()
+
+    for (const FViewport& Viewport : Viewports)
+    {
+        DirectX11Handle->PrepareWindow();
+        // Texture2D를 쓰는 Quad를 그리기
+        ViewportClient->Draw(Viewport.GetName());
+    }
+
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();
 

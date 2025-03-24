@@ -11,6 +11,7 @@ class UInputManager;
 class UGizmoManager;
 class UObject;
 class UUIManager;
+class FViewportClient;
 
 enum class EViewModeIndex : uint32 {
     VMI_Lit,
@@ -82,6 +83,7 @@ private:
 
 private:
     TArray<FViewport> Viewports;
+    FViewportClient* ViewportClient;
 
 public:
 	float GetFPS() const { return FPS; }
