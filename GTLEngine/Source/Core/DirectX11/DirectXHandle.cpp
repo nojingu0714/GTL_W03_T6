@@ -668,14 +668,33 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 	
 	FStaticMesh* MeshInfo = FObjManager::LoadObjStaticMeshAsset(Comp->GetStaticMesh()->GetAssetPathFileName());
 
-	FVertexInfo VertexInfo;
-	FIndexInfo IndexInfo;
-	BufferManager->CreateVertexBuffer(DXDDevice, MeshInfo->Vertices, VertexInfo);
-	BufferManager->CreateIndexBuffer(DXDDevice, MeshInfo->Indices, IndexInfo);
+	// 각 섹션별로 처리
+	for (const FStaticMeshSection& Section : MeshInfo->Sections)
+	{
+		ID3D11ShaderResourceView* FontAtlasTexture = TextureSRVs[TEXT("Contents/Texture/texture.dds")];
+		DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
+		// 메터리얼 설정
+		//FTexture* Texture = TextureManager->GetTexture(Section.MaterialName); // 섹션에 맞는 텍스처 가져오기
+		//if (Texture)
+		//{
+		//	DXDDeviceContext->PSSetShaderResources(0, 1, Texture->GetShaderResourceView());
+		//}
 
-	DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &offset);
-	DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
+		// Vertex/Index 버퍼 생성
+		FVertexInfo VertexInfo;
+		FIndexInfo IndexInfo;
+		BufferManager->CreateVertexBuffer(DXDDevice, Section.Vertices, VertexInfo);
+		BufferManager->CreateIndexBuffer(DXDDevice, Section.Indices, IndexInfo);
+
+		// Vertex 버퍼 바인딩
+		DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &offset);
+
+		// Index 버퍼 바인딩
+		DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+		// 인덱스를 기반으로 그리기
+		DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
+	}
 }
 
 void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)

@@ -48,44 +48,46 @@ UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName)
 FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
 {
     FStaticMesh* NewStaticMesh = new FStaticMesh();
-
-    // StaticMesh의 PathFileName을 설정 (예시로 설정)
     NewStaticMesh->PathFileName = ObjInfo.PathFileName;
 
-    // FNormalVertex 배열을 생성
-    TArray<FNormalVertex> NormalVertices;
-
-    // Vertices와 Normals, Colors를 기반으로 FNormalVertex 배열 생성
-    for (int32 i = 0; i < ObjInfo.Vertices.size(); ++i)
-    {
-        FVector Position = ObjInfo.Vertices[i];
-        FVector Normal = (i < ObjInfo.Normals.size()) ? ObjInfo.Normals[i] : FVector(0.0f, 0.0f, 1.0f); // 기본 노멀값
-        FVector4 Color = (i < ObjInfo.Colors.size()) ? ObjInfo.Colors[i] : FVector4(1.0f, 1.0f, 1.0f, 1.0f); // 기본 색상값
-
-        NormalVertices.push_back(FNormalVertex(Position, Normal, Color));
-    }
-
-    // Vertices를 StaticMesh에 추가
-    NewStaticMesh->Vertices = NormalVertices;
-
-    // FaceMap에서 면 인덱스를 추출하여 인덱스 배열을 생성
-    TArray<uint32> Indices;
     for (const auto& MaterialFacePair : ObjInfo.FaceMap)
     {
+        FString MaterialName = MaterialFacePair.first;
         const TArray<FFace>& Faces = MaterialFacePair.second;
+
+        FStaticMeshSection NewSection;
+        NewSection.MaterialName = MaterialName;
+
+        TMap<int32, int32> VertexMap; // 중복 정점 방지용 맵
+        int32 NextIndex = 0;
 
         for (const FFace& Face : Faces)
         {
-            // 각 면에 대한 정점 인덱스를 Indices에 추가 (3개씩, 삼각형일 경우)
             for (int32 i = 0; i < Face.Vertices.size(); ++i)
             {
-                Indices.push_back(Face.Vertices[i]);
+                int32 VertexIndex = Face.Vertices[i];
+
+                if (!VertexMap.contains(VertexIndex))
+                {
+                    FVector Position = ObjInfo.Vertices[VertexIndex];
+                    FVector Normal = (VertexIndex < ObjInfo.Normals.size()) ? ObjInfo.Normals[VertexIndex] : FVector(0.0f, 0.0f, 1.0f);
+                    FVector4 Color = (VertexIndex < ObjInfo.Colors.size()) ? ObjInfo.Colors[VertexIndex] : FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                    FVector2 UV = (VertexIndex < ObjInfo.UV.size()) ? ObjInfo.UV[VertexIndex] : FVector2(0.0f, 0.0f);
+
+                    NewSection.Vertices.push_back(FNormalVertex(Position, Normal, Color, UV));
+                    VertexMap[VertexIndex]= NextIndex;
+                    NewSection.Indices.push_back(NextIndex++);
+                }
+                else
+                {
+                    NewSection.Indices.push_back(VertexMap[VertexIndex]);
+                }
             }
         }
+
+        // 하나의 Sub-Mesh(섹션) 추가
+        NewStaticMesh->Sections.push_back(NewSection);
     }
 
-    // StaticMesh에 인덱스 추가
-    NewStaticMesh->Indices = Indices;
-
-    return NewStaticMesh;;
+    return NewStaticMesh;
 }

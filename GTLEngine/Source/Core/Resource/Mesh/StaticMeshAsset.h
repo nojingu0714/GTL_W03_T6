@@ -24,12 +24,17 @@ struct FFace // obj 파일에 있는 f  a/b/c 값들 ( a :정점 / b : 텍스처
 };
 
 
+struct FStaticMeshSection
+{
+    FString MaterialName;  // 이 섹션에서 사용할 Material
+    TArray<FNormalVertex> Vertices; // 정점 데이터
+    TArray<uint32> Indices; // 인덱스 데이터
+};
 
 struct FStaticMesh
 {
-    FString PathFileName; // Mesh obj 파일 경로 이름.
-    TArray<FNormalVertex> Vertices; // 버텍스 정보 (위치, 색상)
-    TArray<uint32> Indices; // 인덱스 정보 (여기서는 비워둠)
+    FString PathFileName;  // Mesh OBJ 파일 경로
+    TArray<FStaticMeshSection> Sections; // 여러 개의 Sub-Mesh(메터리얼 섹션)
 };
 
 struct FObjMaterialInfo
@@ -61,7 +66,7 @@ struct FObjInfo
     TArray<FVector> Vertices;      // 버텍스 포지션.
     TArray<FVector> Normals;   // 버텍스 노말.
     TArray<FVector4> Colors;
-    TArray<FVector2> UVs;
+    TArray<FVector2> UV;
     TArray<FObjMaterialInfo> Materials;
 	// 적용될 머티리얼 이름, face 정보.
     TMap<FString, TArray<FFace>> FaceMap;

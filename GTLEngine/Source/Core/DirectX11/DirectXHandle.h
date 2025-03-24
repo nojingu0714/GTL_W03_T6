@@ -106,6 +106,7 @@ private:
 
 	// TODO: Texture 관리용 객체로 묶어서 관리.
 	TMap<FString, ID3D11ShaderResourceView*> TextureSRVs;
+
 	ID3D11SamplerState* FontSamplerState;
 	FVertexInfo FontTextureBuffer;
 
