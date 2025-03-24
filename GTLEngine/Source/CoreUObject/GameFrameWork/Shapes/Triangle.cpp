@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "Triangle.h"
-#include "Components/TriangleComponent.h"
+
+#include "Components/StaticMeshComponent.h"
+#include "Asset/ObjManager.h"
 
 ATriangle::ATriangle()
-	: AActor()
+	: Super()
 {
-	TriangleComponent = AddComponent<UTriangleComponent>(this);
-	TriangleComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Triangle.obj")));
 }
 
 void ATriangle::Tick(float TickTime)

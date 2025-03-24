@@ -14,6 +14,7 @@ class UDXDShaderManager;
 class UDXDInputLayout;
 class UDXDConstantBuffer;
 class UDXDBufferManager;
+class UDXDResourceManager;
 
 class UObject;
 class AActor;
@@ -23,6 +24,7 @@ class UGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
 class USceneComponent;
+class UStaticMeshComponent;
 
 class UDirectXHandle
 {
@@ -41,9 +43,9 @@ public:
 
 	void UpdateCameraMatrix(ACamera* Camera);
 	void RenderWorldPlane(ACamera* Camera);
-	void RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
+	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderLines(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);
@@ -96,16 +98,13 @@ private:
 	TMap<FString, UDXDRasterizerState*> RasterizerStates;
 	UDXDShaderManager* ShaderManager;
 	UDXDBufferManager* BufferManager;
+	UDXDResourceManager* ResourceManager;
 
 	TMap<FString, FVertexInfo> VertexBuffers;
 	TMap<FString, FIndexInfo> IndexBuffers;
 
 	TMap<EConstantBufferType, UDXDConstantBuffer*> ConstantBuffers;
 
-	// TODO: Texture 관리용 객체로 묶어서 관리.
-	ID3D11ShaderResourceView* FontAtlasTexture;
-	ID3D11SamplerState* FontSamplerState;
-	FVertexInfo FontTextureBuffer;
 
 	uint32 DynamicVertexBufferSize;
 

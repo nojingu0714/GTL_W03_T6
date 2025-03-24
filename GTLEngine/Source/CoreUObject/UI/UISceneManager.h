@@ -3,7 +3,7 @@
 #include "CoreUObject/World.h"
 #include "Core/Engine/Engine.h"
 
-class USceneManager: public UUIBase {
+class UUISceneManager: public UUIBase {
 public:
 	template<typename T>
 	T* SpawnActor(FString InName) {

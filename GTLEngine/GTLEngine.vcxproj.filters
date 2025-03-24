@@ -86,8 +86,11 @@
     <Filter Include="Source\CoreUObject\Mesh">
       <UniqueIdentifier>{fd7cc281-7b24-443e-86f9-93d75af6adb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core\Resource\Mesh">
-      <UniqueIdentifier>{396a4816-bb14-4a03-9dae-81d0fc306fa1}</UniqueIdentifier>
+    <Filter Include="Source\Core\Asset">
+      <UniqueIdentifier>{92f4bd8b-827e-480a-926f-978d2636268f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Asset\Mesh">
+      <UniqueIdentifier>{a1f2b6c4-d229-4760-b133-e1b5d2b3596e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -137,12 +140,6 @@
       <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\Components\PrimitiveComponent.cpp">
-      <Filter>Source\CoreUObject\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\CubeComponent.cpp">
-      <Filter>Source\CoreUObject\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\SphereComponent.cpp">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\GameFrameWork\Actor.cpp">
@@ -208,14 +205,8 @@
     <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Cylinder.cpp">
       <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\CylinderComponent.cpp">
-      <Filter>Source\CoreUObject\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Cone.cpp">
       <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\ConeComponent.cpp">
-      <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utils\Math\Geometry.cpp">
       <Filter>Utils\Math</Filter>
@@ -225,9 +216,6 @@
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Triangle.cpp">
       <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\TriangleComponent.cpp">
-      <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\UI\PropertyPanel.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
@@ -286,7 +274,7 @@
     <ClCompile Include="Source\CoreUObject\UI\ConsolePanel.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\UI\SceneManager.cpp">
+    <ClCompile Include="Source\CoreUObject\UI\UISceneManager.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\UI\UIInterface.cpp">
@@ -309,6 +297,24 @@
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp">
       <Filter>Source\CoreUObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\AssetManager.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\SceneManager.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\Texture.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\Material.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\ObjManager.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\DirectX11\DXDResourceManager.cpp">
+      <Filter>Source\Core\DirectX11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -358,12 +364,6 @@
       <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\Components\PrimitiveComponent.h">
-      <Filter>Source\CoreUObject\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Components\CubeComponent.h">
-      <Filter>Source\CoreUObject\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Components\SphereComponent.h">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Actor.h">
@@ -447,14 +447,8 @@
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Cylinder.h">
       <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Components\CylinderComponent.h">
-      <Filter>Source\CoreUObject\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Cone.h">
       <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Components\ConeComponent.h">
-      <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utils\Math\Geometry.h">
       <Filter>Utils\Math</Filter>
@@ -464,9 +458,6 @@
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Triangle.h">
       <Filter>Source\CoreUObject\GameFrameWork\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Components\TriangleComponent.h">
-      <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\UI\PropertyPanel.h">
       <Filter>Source\CoreUObject\UI</Filter>
@@ -525,7 +516,7 @@
     <ClInclude Include="Plugins\ImGui\imstb_textedit.h">
       <Filter>Plugins\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\UI\SceneManager.h">
+    <ClInclude Include="Source\CoreUObject\UI\UISceneManager.h">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\Components\StaticMeshComponent.h">
@@ -537,14 +528,38 @@
     <ClInclude Include="Source\CoreUObject\Mesh\UStaticMesh.h">
       <Filter>Source\CoreUObject\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Resource\Mesh\StaticMeshAsset.h">
-      <Filter>Source\Core\Resource\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CoreUObject\Components\MeshComponent.h">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Resource\Archive.h">
       <Filter>Source\Core\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\AssetManager.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\SceneManager.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\Texture.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\Material.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\ObjManager.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\Mesh\StaticMeshAsset.h">
+      <Filter>Source\Core\Asset\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\IconDefs.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\RawFonts.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\DirectX11\DXDResourceManager.h">
+      <Filter>Source\Core\DirectX11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -554,10 +569,13 @@
     <FxCompile Include="Resource\Shader\LineShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Resource\Shader\TextureShader.hlsl">
+    <FxCompile Include="Resource\Shader\FontShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="Resource\Shader\MVPShader.hlsli">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shader\StaticMeshShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
   </ItemGroup>

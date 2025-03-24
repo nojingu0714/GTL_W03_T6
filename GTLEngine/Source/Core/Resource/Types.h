@@ -36,16 +36,20 @@ FString GetPrimitiveTypeAsString(enum class EPrimitiveType Type);
 
 FString GetGizmoViewTypeAsString(enum class EGizmoViewType Type);
 
-struct FVertexSimple
+// Vertex Layout
+// Position, Normal, Color, Texture coord
+struct FVertexPNCT
 {
-    float X = 0.f, Y = 0.f, Z = 0.f;
-    float R = 0.f, G = 0.f, B = 0.f, A = 1.f;
+    FVector Position;
+    FVector Normal;
+    FVector4 Color;
+    FVector2 UV;
 };
 
-struct FVertexUV
+struct FVertexFont
 {
-	float X = 0.f, Y = 0.f, Z = 0.f;
-	float U = 0.f, V = 0.f;
+    FVector Position;
+    FVector2 UV;
 };
 
 struct FVertexInfo

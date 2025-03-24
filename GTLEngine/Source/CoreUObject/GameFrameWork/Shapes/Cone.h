@@ -1,12 +1,10 @@
 #pragma once
 
-#include "GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
 
-class UConeComponent;
-
-class ACone : public AActor
+class ACone : public AStaticMeshActor
 {
-	DECLARE_CLASS(ACone, AActor)
+	DECLARE_CLASS(ACone, AStaticMeshActor)
 public:
 	ACone();
 
@@ -14,7 +12,5 @@ public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
 
-private:
-	UConeComponent* ConeComponent;
 
 };

@@ -21,3 +21,7 @@ const FVector FVector::LeftVector = FVector(0, -1, 0);
 const FVector FVector::XAxisVector = FVector(1, 0, 0);
 const FVector FVector::YAxisVector = FVector(0, 1, 0);
 const FVector FVector::ZAxisVector = FVector(0, 0, 1);
+
+const FVector2 FVector2::ZeroVector = FVector2(0, 0);
+const FVector2 FVector2::UnitVector = FVector2(1, 1);
+const FVector2 FVector2::OneVector = FVector2(1, 1);

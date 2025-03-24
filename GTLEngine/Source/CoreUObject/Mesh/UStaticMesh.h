@@ -1,17 +1,20 @@
 #pragma once
 
 #include "Object.h"
-#include "Resource/Mesh/StaticMeshAsset.h"
+
+struct FStaticMesh;
 
 class UStaticMesh : public UObject
 {
 	DECLARE_CLASS(UStaticMesh, UObject)
 
 public:
+	UStaticMesh();
+
 	virtual void Destroy() override;
 
 public:
-	const FString& GetAssetPathName();
+	const FString& GetAssetPathFileName();
 	void SetStaticMeshAsset(FStaticMesh* InStaticMeshAsset);
 
 private:

@@ -13,6 +13,7 @@
 #include "Engine.h"
 #include "Core/Gizmo/GizmoManager.h"
 
+#include "GameFrameWork/StaticMeshActor.h"
 
 UWorld* UWorld::CreateWorld()
 {
@@ -22,6 +23,8 @@ UWorld* UWorld::CreateWorld()
 
 	NewWorld->MainCamera = NewWorld->SpawnActor<ACamera>(TEXT("MainCamera"), FVector(0.f, 2.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
 	NewWorld->MainCamera->SetActorLocation(FVector(-10.f, 0.f, 0.0f));
+
+	NewWorld->SpawnActor<AStaticMeshActor>(TEXT("StaticMeshActor"), FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
 
     return NewWorld;
 }

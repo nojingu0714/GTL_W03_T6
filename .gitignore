@@ -401,3 +401,4 @@ FodyWeavers.xsd
 
 !GTLEngine/Plugins/**
 !GTLEngine/Resource/**/**.obj
+!GTLEngine/Contents/**
