@@ -595,14 +595,20 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 
 	//DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	DXDDeviceContext->RSSetViewports(1, &InViewport.GetViewport());
+	// FViewport의 것을 쓰는게 아니라 render target에 꽉 차게 설정해야함.
+	// 크기만 가져와서 rasterizer에서 사용하도록 만듦.
+	D3D11_VIEWPORT Viewport = InViewport.GetViewport();
+	Viewport.TopLeftX = 0;
+	Viewport.TopLeftY = 0;
+
+	DXDDeviceContext->RSSetViewports(1, &Viewport);
 	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
 		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
 	else
 		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
-	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
+	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), GetDepthStencilView(InViewport.GetName())->GetDepthStencilView());
 }
 
 void UDirectXHandle::RenderViewport(const FViewport& InViewport)
@@ -625,28 +631,31 @@ void UDirectXHandle::RenderViewport(const FViewport& InViewport)
 	Context->PSSetShaderResources(0, 1, Handle->GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
 	ID3D11SamplerState* sampler = ResourceManager->TryGetTextureSampler(TEXT("Quad"));
 	Context->PSSetSamplers(0, 1, &sampler);
-	
-	Context->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+
 
 	// viewport 위치 지정.
-	D3D11_VIEWPORT viewport = InViewport.GetViewport();
+	D3D11_VIEWPORT viewport = WindowViewport;
 	FWindowInfo windowInfo = UEngine::GetEngine().GetWindowInfo();
 	ID3D11Buffer* CbViewportRatio = ConstantBuffers[EConstantBufferType::ViewportRatio]->GetConstantBuffer();
 	if (!CbViewportRatio)
 	{
 		return;
 	}
-	DXDDeviceContext->VSSetConstantBuffers(4, 1, &CbViewportRatio);
+
+	//DXDDeviceContext->VSSetConstantBuffers(3, 1, &CbViewportRatio);
 	D3D11_MAPPED_SUBRESOURCE MappedData = {};
-	DXDDeviceContext->Map(CbViewportRatio, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+	auto hr = DXDDeviceContext->Map(CbViewportRatio, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
 	if (FCbViewportRatio* Buffer = reinterpret_cast<FCbViewportRatio*>(MappedData.pData))
 	{
-		Buffer->x = InViewport.GetViewport().TopLeftX / windowInfo.Width * 2 - 1;
-		Buffer->y = InViewport.GetViewport().TopLeftY / windowInfo.Height * 2 - 1;
-		Buffer->width = InViewport.GetViewport().Width / windowInfo.Width * 2;
-		Buffer->height = InViewport.GetViewport().Height / windowInfo.Height * 2;
+		Buffer->x = InViewport.GetViewport().TopLeftX / (float)windowInfo.Width * 2 - 1;
+		Buffer->y = InViewport.GetViewport().TopLeftY / (float)windowInfo.Height * -2 + 1;
+		Buffer->width = InViewport.GetViewport().Width / (float)windowInfo.Width * 2;
+		Buffer->height = InViewport.GetViewport().Height / (float)windowInfo.Height * 2;
 	}
 	DXDDeviceContext->Unmap(CbViewportRatio, 0);
+
+
+	Context->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
 }
 
 HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
@@ -1263,9 +1272,9 @@ void UDirectXHandle::ResizeViewport(int width, int height) {
 
 HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 
-	assert(0); // addrendertarget수정중
-	RenderTargets[TEXT("Default")]->ReleaseRenderTarget();
-	DepthStencilViews[TEXT("Default")]->ReleaseDepthStencilView();
+	//assert(0); // addrendertarget수정중
+	RenderTargets[TEXT("Window")]->~UDXDRenderTarget();
+	DepthStencilViews[TEXT("Window")]->~UDXDDepthStencilView();
 	
 	HRESULT hr = DXDSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_UNKNOWN, 0);
 	if ( FAILED(hr) )
@@ -1274,12 +1283,13 @@ HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 	D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
 	framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
 	framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
-	//hr = AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
+	hr = RenderTargets[TEXT("Window")]->CreateRenderTargetToSwapChain(DXDDevice, DXDSwapChain);
+	//hr = AddRenderTargetToSwapChain(TEXT("Window"));
 	if ( FAILED(hr) )
 		return hr;
 
 	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
-	hr = DepthStencilViews[TEXT("Default")]->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(width), static_cast<float>(height));
+	hr = DepthStencilViews[TEXT("Window")]->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(width), static_cast<float>(height));
 	if ( FAILED(hr) )
 		return hr;
 

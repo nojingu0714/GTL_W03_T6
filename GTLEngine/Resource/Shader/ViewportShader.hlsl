@@ -2,7 +2,7 @@
 Texture2D ViewportTexture : register(t0);
 SamplerState ViewportSampler : register(s0);
 
-cbuffer CViewportRatio : register(b4)
+cbuffer CViewportRatio : register(b3)
 {
     float OffsetX;
     float OffsetY;
@@ -32,7 +32,8 @@ VS_OUTPUT mainVS(VS_INPUT Input)
 {
     VS_OUTPUT Output;
     Output.Position = float4(Input.Position, 1.0f);
-    //Output.Position = Output.Position * float4(ExtentX, ExtentY, 0, 1) + float4(OffsetX, OffsetY, 0, 1);
+    //Output.Position = Output.Position + float4(-1, 1, 0, 0);
+    Output.Position = Output.Position * float4(ExtentX, ExtentY, 0, 1) + float4(OffsetX, OffsetY, 0, 0);
     Output.TexCoord = Input.TexCoord;
     return Output;
 }

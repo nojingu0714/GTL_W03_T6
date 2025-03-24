@@ -18,6 +18,7 @@
 #include "Core/Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
 
+#include <stdlib.h>
 
 TArray<UObject*> GUObjectArray = TArray<UObject*>();
 
@@ -39,9 +40,32 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     // 기본 뷰포트 설정.
     DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
 
+    const int num = 3;
+    const int W = InWindowInfo.Width / num;
+    const int H = InWindowInfo.Height / num;
+    for (int i = 0; i < num; i++)
+    {
+        for (int j = 0; j < num; j++)
+        {
+            wchar_t buf[300];
+            _itow_s(i * num + j, buf, 10);
+            FViewport Viewport;
+            Viewport.Init(buf, InWindowInfo.WindowHandle, W * i, H * j, W, H);
+            Viewports.push_back(Viewport);
+        }
+    }
 	FViewport DefaultViewport;
 	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width/2, InWindowInfo.Height/2);
 	Viewports.push_back(DefaultViewport);
+	FViewport a;
+	a.Init(TEXT("a"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, 0, InWindowInfo.Width/2, InWindowInfo.Height/2);
+	Viewports.push_back(a);
+	FViewport b;
+	b.Init(TEXT("b"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2, InWindowInfo.Width/2, InWindowInfo.Height/2);
+	Viewports.push_back(b);
+	FViewport c;
+	c.Init(TEXT("c"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width/2, InWindowInfo.Height/2);
+	Viewports.push_back(c);
 
     // 텍스쳐용 UV 버퍼 추가.
 
@@ -104,11 +128,14 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
+    int index = 0;
     // viewport (Texture2D) 에 그리기.
     for (const FViewport& Viewport : Viewports)
     {
         DirectX11Handle->PrepareViewport(Viewport);
-        DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
+        auto cam = World->GetCamera();
+        cam->SetActorLocation(FVector(-index -1, 0, 0));
+        DirectX11Handle->UpdateCameraMatrix(cam);
 
         DirectX11Handle->SetLineMode();
         DirectX11Handle->RenderWorldPlane(World->GetCamera());
@@ -118,6 +145,7 @@ void UEngine::Render()
         DirectX11Handle->SetFaceMode();
         DirectX11Handle->RenderObject(World->GetActors());
         DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
+        index++;
     }
 
         DirectX11Handle->PrepareWindow();
