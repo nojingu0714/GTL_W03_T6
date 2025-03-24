@@ -191,6 +191,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Core\Asset\AssetManager.cpp" />
+    <ClCompile Include="Source\Core\Asset\Material.cpp" />
+    <ClCompile Include="Source\Core\Asset\ObjManager.cpp" />
+    <ClCompile Include="Source\Core\Asset\SceneManager.cpp" />
+    <ClCompile Include="Source\Core\Asset\Texture.cpp" />
     <ClCompile Include="Source\Core\DirectX11\DXDConstantBuffer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -251,11 +256,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Core\Resource\Material\Material.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Resource\ObjManager.cpp" />
     <ClCompile Include="Source\Core\Resource\ResourceManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -363,6 +363,14 @@
     <ClInclude Include="Source\CoreUObject\UI\SceneManager.h" />
     <ClInclude Include="Source\CoreUObject\UI\UIBase.h" />
     <ClInclude Include="Source\CoreUObject\World.h" />
+    <ClInclude Include="Source\Core\Asset\AssetManager.h" />
+    <ClInclude Include="Source\Core\Asset\IconDefs.h" />
+    <ClInclude Include="Source\Core\Asset\Material.h" />
+    <ClInclude Include="Source\Core\Asset\Mesh\StaticMeshAsset.h" />
+    <ClInclude Include="Source\Core\Asset\ObjManager.h" />
+    <ClInclude Include="Source\Core\Asset\RawFonts.h" />
+    <ClInclude Include="Source\Core\Asset\SceneManager.h" />
+    <ClInclude Include="Source\Core\Asset\Texture.h" />
     <ClInclude Include="Source\Core\DirectX11\DXDConstantBuffer.h" />
     <ClInclude Include="Source\Core\DirectX11\DirectXHandle.h" />
     <ClInclude Include="Source\Core\DirectX11\DXDDepthStencilView.h" />
@@ -378,9 +386,6 @@
     <ClInclude Include="Source\Core\HAL\PlatformMemory.h" />
     <ClInclude Include="Source\Core\Input\InputManager.h" />
     <ClInclude Include="Source\Core\Resource\Archive.h" />
-    <ClInclude Include="Source\Core\Resource\Material\Material.h" />
-    <ClInclude Include="Source\Core\Resource\Mesh\StaticMeshAsset.h" />
-    <ClInclude Include="Source\Core\Resource\ObjManager.h" />
     <ClInclude Include="Source\Core\Resource\ResourceManager.h" />
     <ClInclude Include="Source\Core\Resource\Shape\PrimitiveShape.h" />
     <ClInclude Include="Source\Core\Resource\Texture\TextureManager.h" />

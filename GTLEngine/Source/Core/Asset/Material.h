@@ -2,13 +2,15 @@
 
 #include "Object.h"
 #include "Math/Vector.h"
-#include "Resource/Mesh/StaticMeshAsset.h"
+#include "Asset/Mesh/StaticMeshAsset.h"
 
 class UMaterial : public UObject
 {
 	DECLARE_CLASS(UMaterial, UObject)
 
 public:
+	UMaterial() = default;
+
 	void InitMaterial(const FObjMaterialInfo& InMatInfo);
 
 	void SetAmbient(const FVector& InAmbient) { Ambient = InAmbient; }

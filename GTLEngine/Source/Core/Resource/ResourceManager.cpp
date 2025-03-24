@@ -17,8 +17,6 @@
 #include "GameFrameWork/Shapes/Cylinder.h"
 #include "GameFrameWork/Shapes/Cone.h"
 
-#include "ObjManager.h"
-
 UResourceManager::UResourceManager()
 {
 

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Object.h"
-#include "Resource/Mesh/StaticMeshAsset.h"
+
+class FStaticMesh;
 
 class UStaticMesh : public UObject
 {

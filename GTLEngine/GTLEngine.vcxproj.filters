@@ -86,14 +86,14 @@
     <Filter Include="Source\CoreUObject\Mesh">
       <UniqueIdentifier>{fd7cc281-7b24-443e-86f9-93d75af6adb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core\Resource\Mesh">
-      <UniqueIdentifier>{396a4816-bb14-4a03-9dae-81d0fc306fa1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Core\Resource\Texture">
       <UniqueIdentifier>{2eed16a1-81d3-4c48-a354-5a594a4f59cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core\Resource\Material">
-      <UniqueIdentifier>{14b8a4ca-9c8c-464c-a4e7-eb178ae9b3f5}</UniqueIdentifier>
+    <Filter Include="Source\Core\Asset">
+      <UniqueIdentifier>{92f4bd8b-827e-480a-926f-978d2636268f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Asset\Mesh">
+      <UniqueIdentifier>{a1f2b6c4-d229-4760-b133-e1b5d2b3596e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -316,14 +316,23 @@
     <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Resource\ObjManager.cpp">
-      <Filter>Source\Core\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Resource\Texture\TextureManager.cpp">
       <Filter>Source\Core\Resource\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Resource\Material\Material.cpp">
-      <Filter>Source\Core\Resource\Material</Filter>
+    <ClCompile Include="Source\Core\Asset\AssetManager.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\SceneManager.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\Texture.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\Material.cpp">
+      <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Asset\ObjManager.cpp">
+      <Filter>Source\Core\Asset</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -552,23 +561,38 @@
     <ClInclude Include="Source\CoreUObject\Mesh\UStaticMesh.h">
       <Filter>Source\CoreUObject\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Resource\Mesh\StaticMeshAsset.h">
-      <Filter>Source\Core\Resource\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CoreUObject\Components\MeshComponent.h">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Resource\Archive.h">
       <Filter>Source\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Resource\ObjManager.h">
-      <Filter>Source\Core\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Resource\Texture\TextureManager.h">
       <Filter>Source\Core\Resource\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Resource\Material\Material.h">
-      <Filter>Source\Core\Resource\Material</Filter>
+    <ClInclude Include="Source\Core\Asset\AssetManager.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\SceneManager.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\Texture.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\Material.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\ObjManager.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\Mesh\StaticMeshAsset.h">
+      <Filter>Source\Core\Asset\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\IconDefs.h">
+      <Filter>Source\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Asset\RawFonts.h">
+      <Filter>Source\Core\Asset</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

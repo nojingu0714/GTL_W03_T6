@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "UStaticMesh.h"
 
-#include "Resource/ObjManager.h"
+#include "Asset/ObjManager.h"
+#include "Asset/Mesh/StaticMeshAsset.h"
+
 
 UStaticMesh::UStaticMesh()
 {

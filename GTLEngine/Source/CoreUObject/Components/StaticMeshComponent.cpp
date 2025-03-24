@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "StaticMeshComponent.h"
 
-#include "Resource/ObjManager.h"
+#include "Asset/ObjManager.h"
 #include "Mesh/UStaticMesh.h"
 
 UStaticMeshComponent::UStaticMeshComponent()
