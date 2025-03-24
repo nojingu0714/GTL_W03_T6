@@ -69,13 +69,12 @@ struct FObjImporter
                 std::string MtlFileName;  // std::string으로 먼저 읽고
                 ss >> token >> MtlFileName;
                 MtlFileName = InPath + "/" + MtlFileName;
+                
                 FObjMaterialInfo NewMtlInfo;
-                if (!ParseMtlFile(MtlFileName, NewMtlInfo))
+                if (!ParseMtlFile(InPath, MtlFileName, OutObjInfo.Materials))
                 {
                     return false;
                 }
-
-                OutObjInfo.Materials.push_back(NewMtlInfo);
             }
             // Handle material usage (usemtl)
             else if (line.substr(0, 7) == "usemtl ")
@@ -144,13 +143,15 @@ struct FObjImporter
         return true;
     }
 
-    static bool ParseMtlFile(const std::string& InFileName, FObjMaterialInfo& OutInfo)
+    static bool ParseMtlFile(const std::string& PathName, const std::string& InFileName, TArray<FObjMaterialInfo>& InfoArray)
     {
         std::ifstream MtlFile(InFileName.c_str());
 
         if (!MtlFile.is_open()) {
             throw std::runtime_error("Failed to open OBJ file.");
         }
+
+        FObjMaterialInfo NewMatInfo = {};
 
         std::string line;
         while (std::getline(MtlFile, line))
@@ -166,6 +167,12 @@ struct FObjImporter
             // 새로운 메터리얼 처리
             if (line.compare(pos, 6, "newmtl") == 0)
             {
+                if (NewMatInfo.MatName != TEXT(""))
+                {
+                    InfoArray.push_back(NewMatInfo);
+                    NewMatInfo = {};
+                }
+
                 pos += 7;  // "newmtl" 뒤의 공백 건너뛰기
                 while (pos < line.length() && line[pos] == ' ') pos++;  // 공백 건너뛰기
 
@@ -174,7 +181,7 @@ struct FObjImporter
                 if (endPos == std::string::npos) endPos = line.length();  // 개행문자가 없으면 끝까지
 
                 std::string matName = line.substr(pos, endPos - pos);
-                OutInfo.MatName = UGTLStringLibrary::StringToWString(matName);
+                NewMatInfo.MatName = UGTLStringLibrary::StringToWString(matName);
                 continue;
             }
 
@@ -184,7 +191,7 @@ struct FObjImporter
                 pos += 3;
                 float r, g, b;
                 sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
-                OutInfo.Ka = FVector(r, g, b);
+                NewMatInfo.Ka = FVector(r, g, b);
                 continue;
             }
             else if (line.compare(pos, 2, "Kd") == 0)
@@ -192,7 +199,7 @@ struct FObjImporter
                 pos += 3;
                 float r, g, b;
                 sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
-                OutInfo.Kd = FVector(r, g, b);
+                NewMatInfo.Kd = FVector(r, g, b);
                 continue;
             }
             else if (line.compare(pos, 2, "Ks") == 0)
@@ -200,7 +207,7 @@ struct FObjImporter
                 pos += 3;
                 float r, g, b;
                 sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
-                OutInfo.Ks = FVector(r, g, b);
+                NewMatInfo.Ks = FVector(r, g, b);
                 continue;
             }
             else if (line.compare(pos, 2, "Ke") == 0)
@@ -208,7 +215,7 @@ struct FObjImporter
                 pos += 3;
                 float r, g, b;
                 sscanf_s(line.substr(pos).c_str(), "%f %f %f", &r, &g, &b);
-                OutInfo.Ke = FVector(r, g, b);
+                NewMatInfo.Ke = FVector(r, g, b);
                 continue;
             }
 
@@ -218,7 +225,7 @@ struct FObjImporter
                 pos += 6;
                 int illum;
                 sscanf_s(line.substr(pos).c_str(), "%d", &illum);
-                OutInfo.Illum = illum;
+                NewMatInfo.Illum = illum;
                 continue;
             }
             else if (line.compare(pos, 2, "Ns") == 0)
@@ -226,7 +233,7 @@ struct FObjImporter
                 pos += 3;
                 float ns;
                 sscanf_s(line.substr(pos).c_str(), "%f", &ns);
-                OutInfo.Ns = ns;
+                NewMatInfo.Ns = ns;
                 continue;
             }
             else if (line.compare(pos, 1, "d") == 0)
@@ -234,7 +241,7 @@ struct FObjImporter
                 pos += 2;
                 float d;
                 sscanf_s(line.substr(pos).c_str(), "%f", &d);
-                OutInfo.d = d;
+                NewMatInfo.d = d;
                 continue;
             }
             else if (line.compare(pos, 2, "Tr") == 0)
@@ -242,7 +249,7 @@ struct FObjImporter
                 pos += 3;
                 float tr;
                 sscanf_s(line.substr(pos).c_str(), "%f", &tr);
-                OutInfo.Tr = tr;
+                NewMatInfo.Tr = tr;
                 continue;
             }
             else if (line.compare(pos, 2, "Ni") == 0)
@@ -250,7 +257,7 @@ struct FObjImporter
                 pos += 3;
                 float ni;
                 sscanf_s(line.substr(pos).c_str(), "%f", &ni);
-                OutInfo.Ni = ni;
+                NewMatInfo.Ni = ni;
                 continue;
             }
             else if (line.compare(pos, 6, "map_Ka") == 0)
@@ -258,7 +265,7 @@ struct FObjImporter
                 pos += 7;
                 size_t endPos = line.find_first_of(" \t", pos);
                 std::string mapKa = line.substr(pos, endPos - pos);
-                OutInfo.MapKa = UGTLStringLibrary::StringToWString(mapKa);
+                NewMatInfo.MapKa = UGTLStringLibrary::StringToWString(PathName + "/" + mapKa);
                 continue;
             }
             else if (line.compare(pos, 6, "map_Kd") == 0)
@@ -266,7 +273,7 @@ struct FObjImporter
                 pos += 7;
                 size_t endPos = line.find_first_of(" \t", pos);
                 std::string mapKd = line.substr(pos, endPos - pos);
-                OutInfo.MapKd = UGTLStringLibrary::StringToWString(mapKd);
+                NewMatInfo.MapKd = UGTLStringLibrary::StringToWString(PathName + "/" + mapKd);
                 continue;
             }
             else if (line.compare(pos, 6, "map_Ks") == 0)
@@ -274,7 +281,7 @@ struct FObjImporter
                 pos += 7;
                 size_t endPos = line.find_first_of(" \t", pos);
                 std::string mapKs = line.substr(pos, endPos - pos);
-                OutInfo.MapKs = UGTLStringLibrary::StringToWString(mapKs);
+                NewMatInfo.MapKs = UGTLStringLibrary::StringToWString(PathName + "/" + mapKs);
                 continue;
             }
             else if (line.compare(pos, 6, "map_Ke") == 0)
@@ -282,7 +289,7 @@ struct FObjImporter
                 pos += 7;
                 size_t endPos = line.find_first_of(" \t", pos);
                 std::string mapKe = line.substr(pos, endPos - pos);
-                OutInfo.MapKe = UGTLStringLibrary::StringToWString(mapKe);
+                NewMatInfo.MapKe = UGTLStringLibrary::StringToWString(PathName + "/" + mapKe);
                 continue;
             }
             else if (line.compare(pos, 8, "map_Bump") == 0)
@@ -290,7 +297,7 @@ struct FObjImporter
                 pos += 9;
                 size_t endPos = line.find_first_of(" \t", pos);
                 std::string mapBump = line.substr(pos, endPos - pos);
-                OutInfo.MapBump = UGTLStringLibrary::StringToWString(mapBump);
+                NewMatInfo.MapBump = UGTLStringLibrary::StringToWString(PathName + "/" + mapBump);
                 continue;
             }
             else if (line.compare(pos, 12, "map_Displace") == 0)
@@ -298,18 +305,21 @@ struct FObjImporter
                 pos += 13;
                 size_t endPos = line.find_first_of(" \t", pos);
                 std::string mapDisplace = line.substr(pos, endPos - pos);
-                OutInfo.MapDisplace = UGTLStringLibrary::StringToWString(mapDisplace);
+                NewMatInfo.MapDisplace = UGTLStringLibrary::StringToWString(PathName + "/" + mapDisplace);
                 continue;
             }
             else
             {
                 // Unknown token 처리
-                OutInfo = FObjMaterialInfo();
+                NewMatInfo = FObjMaterialInfo();
                 return false;
             }
 
         }
         MtlFile.close();
+        if (NewMatInfo.MatName != TEXT(""))
+            InfoArray.push_back(NewMatInfo);
+
         return true;
     }
 
