@@ -4,6 +4,10 @@
 
 class UTexture : public UObject
 {
+
+public:
+	void SetTextureName(const FString& InTextureName) { TextureName = InTextureName; }
+	FString GetTextureName() const { return TextureName; }
 private:
 	FString TextureName;
 

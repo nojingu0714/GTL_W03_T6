@@ -81,8 +81,8 @@ enum class EConstantBufferType
     ChangesOnResize,
     ChangesEveryFrame,
     ChangesEveryObject,
-    MVP,
     ViewportRatio,
+    Material,
     Max,
 };
 
@@ -112,9 +112,17 @@ struct alignas(16) FCbViewportRatio
     float height;
 };
 
-struct alignas(16) FMVP
+struct FCbMaterial
 {
-    FMatrix MVP;
+    FVector Ambient;
+    FVector Diffuse;
+    FVector Specular;
+    FVector Emissive;
+    float SpecularExponent;
+    int IlluminationModel;
+    float Opacity;
+    float Transparency;
+    float RefractiveIndex;
 };
 
 struct FCbLine
