@@ -51,7 +51,7 @@ void FViewportClient::Draw(const FString& ViewportName)
 	UINT Stride = sizeof(FVertexFont);
 	UINT Offset = 0;
 
-	Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("ViewportVS")));
+	Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("FontVS")));
 	Context->IASetVertexBuffers(0, 1, &QuadVertexBuffer, &Stride, &Offset);
 	Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
