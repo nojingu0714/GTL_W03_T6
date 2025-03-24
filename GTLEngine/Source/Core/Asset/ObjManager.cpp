@@ -47,6 +47,11 @@ UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName)
 	return StaticMesh;
 }
 
+UMaterial* FObjManager::LoadMaterial(const FString& PathFileName)
+{
+    return nullptr;
+}
+
 
 
 FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)

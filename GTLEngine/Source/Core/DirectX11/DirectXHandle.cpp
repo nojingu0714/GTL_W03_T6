@@ -14,7 +14,7 @@
 
 #include "Mesh/UStaticMesh.h"
 #include "Components/StaticMeshComponent.h"
-#include "Resource/ObjManager.h"
+#include "Asset/ObjManager.h"
 
 #include "CoreUObject/Components/PrimitiveComponent.h"
 #include "CoreUObject/Components/CameraComponent.h"
@@ -29,8 +29,6 @@
 #include "Math/Matrix.h"
 
 #include "DirectXTex/DirectXTex.h"
-
-#include "Resource/Texture/TextureManager.h"
 
 UDirectXHandle::~UDirectXHandle()
 {
@@ -260,7 +258,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 
 	ID3D11ShaderResourceView* NewSRV = nullptr;
 	FString FileName = TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds");
-	hr = UTextureManager::LoadTextureFromFile(FileName, DXDDevice, &NewSRV);
+	//hr = UTextureManager::LoadTextureFromFile(FileName, DXDDevice, &NewSRV);
 	if (FAILED(hr))
 	{
 		return hr;
