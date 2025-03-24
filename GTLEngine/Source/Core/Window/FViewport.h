@@ -7,7 +7,7 @@ class FViewport
 {
 public:
 	FViewport() = default;
-	bool Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight);
+	HRESULT Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight);
 	void SetDepthcomparisonMode(EDepthComparisonMode InDepthComparisonMode);
 	void SetRasterizerMode(ERasterizerMode InRasterizerMode);
 	void MoveViewport(int InX, int InY);
@@ -17,14 +17,13 @@ public:
 
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
-	//const D3D11_VIEWPORT& GetViewport() const { return Viewport; }
+	const D3D11_VIEWPORT& GetViewport() const { return Viewport; }
 	const FString& GetName() const { return Name; }
 	const FMatrix& GetProjectionMatrix() const { return CachedProjectionMatrix; }
 
 
 private:
 	FString Name;
-
 	FMatrix CachedProjectionMatrix;
 	EDepthComparisonMode DepthComparisonMode = EDepthComparisonMode::Less;
 	ERasterizerMode RasterizerMode = ERasterizerMode::Solid_Back;

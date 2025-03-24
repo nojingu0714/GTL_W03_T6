@@ -6,12 +6,24 @@ UDXDRenderTarget::~UDXDRenderTarget()
     ReleaseRenderTarget();
 }
 
-HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, ComPtr<IDXGISwapChain> SwapChain, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc)
+HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, ComPtr<IDXGISwapChain> SwapChain, const D3D11_TEXTURE2D_DESC RenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc)
 {
-    HRESULT hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)FrameBuffer.GetAddressOf());
-    if(FAILED(hr))
-        return hr;
-
+	HRESULT hr = S_OK;
+    // render target이 되는 framebuffer의 사이즈가 0이면 자동으로 swapbuffer의 framebuffer를 이용합니다.
+    if (RenderTargetDesc.Width == 0 && RenderTargetDesc.Height == 0)
+    {
+        hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)FrameBuffer.GetAddressOf());
+        if(FAILED(hr))
+            return hr;
+    }
+    // TODO: 특정 사이즈로 사용할 수 있게 수정
+	// 특정 사이즈로 framebuffer를 생성합니다.
+    else
+    {
+		hr = DXDDevice->CreateTexture2D(&RenderTargetDesc, nullptr, FrameBuffer.GetAddressOf());
+		if (FAILED(hr))
+			return hr;
+    }
     hr = DXDDevice->CreateRenderTargetView(FrameBuffer.Get(), &RenderTargetViewDesc, FrameBufferRTV.GetAddressOf());
     if (FAILED(hr))
         return hr;

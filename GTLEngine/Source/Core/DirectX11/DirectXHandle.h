@@ -107,7 +107,10 @@ private:
 	////////////////////////////////////////
 	// Renderings
 public:
-	HRESULT AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc);
+	void PrepareViewport(FViewport* InViewport);
+
+public:
+	HRESULT AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
 	HRESULT AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight);
 	HRESULT AddDepthStencilState(const FString& InName, const D3D11_DEPTH_STENCIL_DESC& InDesc);
 	HRESULT AddRasterizerState(const FString& InName, const D3D11_RASTERIZER_DESC& InDesc);
@@ -117,7 +120,6 @@ public:
 	UDXDDepthStencilState* GetDepthStencilStates(const FString& InName);
 	UDXDRasterizerState* GetRasterizerState(const FString& InName);
 
-	FViewport CreateViewport();
 
 private:
 	// TMap으로 관리

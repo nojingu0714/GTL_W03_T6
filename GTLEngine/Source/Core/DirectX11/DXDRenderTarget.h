@@ -8,7 +8,7 @@ public:
     ~UDXDRenderTarget();
 
 public:
-    HRESULT CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, ComPtr<IDXGISwapChain> SwapChain, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc);
+    HRESULT CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, ComPtr<IDXGISwapChain> SwapChain, const D3D11_TEXTURE2D_DESC RenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc);
     void ReleaseRenderTarget();
 
 

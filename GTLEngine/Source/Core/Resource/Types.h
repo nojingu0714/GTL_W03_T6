@@ -143,4 +143,4 @@ enum class ERasterizerMode
 
 FString GetDepthComparisonModeAsString(enum class EDepthComparisonMode Mode);
 
-FString GetGizmoViewTypeAsString(enum class EGizmoViewType Type);
+FString GetERasterizerModeAsString(enum class ERasterizerMode Mode);

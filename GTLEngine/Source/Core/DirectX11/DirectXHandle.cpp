@@ -599,7 +599,36 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
     DXDDeviceContext->Draw(Num, 0);
 }
 
-HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0})
+void UDirectXHandle::PrepareViewport(FViewport* InViewport)
+{
+	// init
+	if (!InViewport)
+	{
+		UE_LOG(TEXT("UDirectXHandle::PrepareViewport::Invalid Viewport"));
+		return;
+	}
+
+	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+
+	DXDDeviceContext->ClearRenderTargetView(GetRenderTarget(InViewport->GetName())->GetFrameBufferRTV().Get(), ClearColor);
+
+	// 뎁스/스텐실 뷰 클리어. 뷰, DEPTH만 클리어, 깊이 버퍼 클리어 할 값, 스텐실 버퍼 클리어 할 값.
+	DXDDeviceContext->ClearDepthStencilView(GetDepthStencilView(InViewport->GetName())->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	//DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	DXDDeviceContext->RSSetViewports(1, &InViewport->GetViewport());
+	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
+	else
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
+
+	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
+	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport->GetName())->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
+
+}
+
+HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
 {
 	if (RenderTargets.find(InName) != RenderTargets.end())
 	{
@@ -609,7 +638,19 @@ HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_RENDE
 
 	UDXDRenderTarget* RenderTarget = new UDXDRenderTarget();
 
-	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, InRenderTargetViewDesc);
+	// Render Target Texture 생성
+	D3D11_TEXTURE2D_DESC renderTargetDesc = {};
+	renderTargetDesc.Width = 1024;  // 원하는 가로 크기
+	renderTargetDesc.Height = 768;  // 원하는 세로 크기
+	renderTargetDesc.MipLevels = 1;
+	renderTargetDesc.ArraySize = 1;
+	renderTargetDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTargetDesc.SampleDesc.Count = 1;
+	renderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
+	renderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+
+	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, {}, InRenderTargetViewDesc);
 	if (FAILED(hr))
 		return hr;
 
