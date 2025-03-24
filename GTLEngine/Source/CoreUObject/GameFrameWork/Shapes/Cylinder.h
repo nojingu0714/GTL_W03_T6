@@ -1,20 +1,15 @@
 #pragma once
 
-#include "GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
 
-class UCylinderComponent;
-
-class ACylinder : public AActor
+class ACylinder : public AStaticMeshActor
 {
-	DECLARE_CLASS(ACylinder, AActor)
+	DECLARE_CLASS(ACylinder, AStaticMeshActor)
 public:
 	ACylinder();
 
 public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
-
-private:
-	UCylinderComponent* CylinderComponent;
 
 };

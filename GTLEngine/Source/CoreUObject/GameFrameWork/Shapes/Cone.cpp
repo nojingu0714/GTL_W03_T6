@@ -1,12 +1,14 @@
 #include "pch.h"
 #include "Cone.h"
-#include "Components/ConeComponent.h"
+
+#include "Components/StaticMeshComponent.h"
+#include "Asset/ObjManager.h"
 
 ACone::ACone()
-	: AActor()
+	: Super()
 {
-	ConeComponent = AddComponent<UConeComponent>(this);
-	ConeComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Triangle.obj")));
+
 }
 
 void ACone::Tick(float TickTime)

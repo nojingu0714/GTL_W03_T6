@@ -1,12 +1,14 @@
 #include "pch.h"
 #include "Sphere.h"
-#include "Components/SphereComponent.h"
+
+#include "Components/StaticMeshComponent.h"
+#include "Asset/ObjManager.h"
 
 ASphere::ASphere()
-	: AActor()
+	: Super()
 {
-	SphereComponent = AddComponent<USphereComponent>(this);
-	SphereComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Sphere.obj")));
+
 }
 
 void ASphere::Tick(float TickTime)

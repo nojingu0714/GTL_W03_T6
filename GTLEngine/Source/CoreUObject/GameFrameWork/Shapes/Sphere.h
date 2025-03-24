@@ -1,20 +1,15 @@
 #pragma once
 
-#include "GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
 
-class USphereComponent;
-
-class ASphere : public AActor
+class ASphere : public AStaticMeshActor
 {
-	DECLARE_CLASS(ASphere, AActor)
+	DECLARE_CLASS(ASphere, AStaticMeshActor)
 public:
 	ASphere();
 
 public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
-
-private:
-	USphereComponent* SphereComponent;
 
 };

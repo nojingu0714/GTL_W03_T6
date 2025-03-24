@@ -22,19 +22,19 @@ void FViewportClient::Init()
 	// Quad Vertex Buffer 생성
 	// 0  0     1  0
 	// 0 -1     1 -1
-	FVertexUV QuadVertices[] =
+	FVertexFont QuadVertices[] =
 	{
-	 	{ 1.f, -1.f, 0.f, 1.0f, 1.0f }, // 우하단.
-		{ 0.f, 0.f, 0.f, 0.0f, 0.0f }, // 좌상단.
-		{ 1.f, 0.f, 0.f, 1.0f, 0.0f }, // 우상단.
-		{ 1.f, -1.f, 0.f, 1.0f, 1.0f }, // 우하단.
-		{ 0.f, -1.f, 0.f, 0.0f, 1.0f }, // 좌하단.
-		{ 0.f, 0.f, 0.f, 0.0f, 0.0f }, // 좌상단.
+		{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
+		{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
+		{ FVector(1.f, 0.f, 0.f), FVector2(1.0f, 0.0f) }, // 우상단.
+		{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
+		{ FVector(0.f, -1.f, 0.f), FVector2(0.0f, 1.0f) }, // 좌하단.
+		{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
 	};
 
 	D3D11_BUFFER_DESC BufferDesc = {};
 	BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	BufferDesc.ByteWidth = sizeof(FVertexUV) * 6;
+	BufferDesc.ByteWidth = sizeof(FVertexFont) * 6;
 	BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA InitData = {};
@@ -48,13 +48,13 @@ void FViewportClient::Draw(const FString& ViewportName)
 	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
 
-	UINT Stride = sizeof(FVertexUV);
+	UINT Stride = sizeof(FVertexFont);
 	UINT Offset = 0;
 
 	Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("ViewportVS")));
 	Context->IASetVertexBuffers(0, 1, &QuadVertexBuffer, &Stride, &Offset);
 	Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
+
 	// 셰이더 설정
 	Context->VSSetShader(Handle->GetShaderManager()->GetVertexShaderByKey(TEXT("ViewportVS")), nullptr, 0);
 	Context->PSSetShader(Handle->GetShaderManager()->GetPixelShaderByKey(TEXT("ViewportPS")), nullptr, 0);
@@ -66,7 +66,7 @@ void FViewportClient::Draw(const FString& ViewportName)
 	//UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	//ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
 
-	//UINT Stride = sizeof(FVertexUV);
+	//UINT Stride = sizeof(FVertexFont);
 	//UINT Offset = 0;
 
 	//Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("ViewportVS")));

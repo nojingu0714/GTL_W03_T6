@@ -8,9 +8,14 @@
 #include "DXDConstantBuffer.h"
 #include "State/DXDDepthStencilState.h"
 #include "DXDBufferManager.h"
+#include "DXDResourceManager.h"
 
 #include "CoreUObject/GameFrameWork/Actor.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
+
+#include "Mesh/UStaticMesh.h"
+#include "Components/StaticMeshComponent.h"
+#include "Asset/ObjManager.h"
 
 #include "CoreUObject/Components/PrimitiveComponent.h"
 #include "CoreUObject/Components/CameraComponent.h"
@@ -23,9 +28,6 @@
 #include "World.h"
 
 #include "Math/Matrix.h"
-
-#include "DirectXTex/DirectXTex.h"
-#include "DirectXTex/DirectXTex.inl"
 
 #include "Core/Window/ViewportClient.h"
 
@@ -74,30 +76,32 @@ HRESULT UDirectXHandle::CreateShaderManager()
     // Primitive VS, PS, InputLayout 생성.
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    HRESULT hr = ShaderManager->AddVertexShaderAndInputLayout(L"DefaultVS", L"Resource/Shader/PrimitiveShader.hlsl", "mainVS", layout, ARRAYSIZE(layout));
+    HRESULT hr = ShaderManager->AddVertexShaderAndInputLayout(L"DefaultVS", L"Resource/Shader/StaticMeshShader.hlsl", "mainVS", layout, ARRAYSIZE(layout));
     if (FAILED(hr))
         return hr;
 
-    hr = ShaderManager->AddPixelShader(L"DefaultPS", L"Resource/Shader/PrimitiveShader.hlsl", "mainPS");
+    hr = ShaderManager->AddPixelShader(L"DefaultPS", L"Resource/Shader/StaticMeshShader.hlsl", "mainPS");
     if (FAILED(hr))
         return hr;
 
     // Texture VS, PS, InputLayout 생성.
     D3D11_INPUT_ELEMENT_DESC TextureLayout[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  offsetof(FVertexFont, Position), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(FVertexFont, UV), D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    hr = ShaderManager->AddVertexShaderAndInputLayout(L"TextureVS", L"Resource/Shader/TextureShader.hlsl", "mainVS", TextureLayout, ARRAYSIZE(TextureLayout));
+    hr = ShaderManager->AddVertexShaderAndInputLayout(L"FontVS", L"Resource/Shader/FontShader.hlsl", "mainVS", TextureLayout, ARRAYSIZE(TextureLayout));
     if (FAILED(hr))
         return hr;
 
-    hr = ShaderManager->AddPixelShader(L"TexturePS", L"Resource/Shader/TextureShader.hlsl", "mainPS");
+    hr = ShaderManager->AddPixelShader(L"FontPS", L"Resource/Shader/FontShader.hlsl", "mainPS");
     if (FAILED(hr))
         return hr;
 
@@ -113,22 +117,6 @@ HRESULT UDirectXHandle::CreateShaderManager()
 		return hr;
 
 	hr = ShaderManager->AddPixelShader(L"ViewportPS", L"Resource/Shader/ViewportShader.hlsl", "mainPS");
-	if (FAILED(hr))
-		return hr;
-
-	D3D11_SAMPLER_DESC SamplerDesc = {};
-    SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.MipLODBias = -1.0f;
-
-	SamplerDesc.MaxAnisotropy = 16;
-	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	SamplerDesc.MinLOD = 0;
-	SamplerDesc.MaxLOD = 0;
-    
-	hr = DXDDevice->CreateSamplerState(&SamplerDesc, &FontSamplerState);
 	if (FAILED(hr))
 		return hr;
 
@@ -300,19 +288,30 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	DepthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	AddDepthStencilState(TEXT("Always"), DepthStencilDesc);
 
-    // 텍스쳐 불러오기.
-    // TODO: 텍스쳐 클래스로 묶기
-	// Create 시에는 File 경로로 불러오기.
-    // 내부에서 map<string,SRV> 쌍으로 관리.
-    DirectX::ScratchImage TextureImage;
+	ResourceManager = new UDXDResourceManager(DXDDevice);
 
-	hr =  DirectX::LoadFromDDSFile(L"Resource/Texture/Fonts/DejaVu_Sans_Mono.dds", DirectX::DDS_FLAGS_NONE, nullptr, TextureImage);
+    
+	// 텍스쳐 파일 저장.
+	FString FileName = TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds");
+
+	hr = ResourceManager->CreateTextureSRV(FileName);
 	if (FAILED(hr))
 	{
 		return hr;
 	}
 
-	hr = DirectX::CreateShaderResourceView(DXDDevice, TextureImage.GetImages(), TextureImage.GetImageCount(), TextureImage.GetMetadata(), &FontAtlasTexture);
+	D3D11_SAMPLER_DESC SamplerDesc = {};
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.MipLODBias = -1.0f;
+
+	SamplerDesc.MaxAnisotropy = 16;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = 0;
+	hr = ResourceManager->CreateTextureSampler(FileName, SamplerDesc);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -406,8 +405,11 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 	{
 		for (auto& VertexBuffer : VertexBuffers)
 		{
-			VertexBuffer.second.VertexBuffer->Release();
-			VertexBuffer.second.VertexBuffer = nullptr;
+			if (VertexBuffer.second.VertexBuffer)
+			{
+				VertexBuffer.second.VertexBuffer->Release();
+				VertexBuffer.second.VertexBuffer = nullptr;
+			}
 		}
 		VertexBuffers.clear();
 	}
@@ -432,19 +434,6 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		}
 		ConstantBuffers.clear();
 	}
-	
-	if (FontAtlasTexture)
-	{
-		FontAtlasTexture->Release();
-		FontAtlasTexture = nullptr;
-	}
-
-	if (FontSamplerState)
-	{
-		FontSamplerState->Release();
-		FontSamplerState = nullptr;
-	}
-	
 }
 
 void UDirectXHandle::UpdateCameraMatrix(ACamera* Camera)
@@ -525,7 +514,7 @@ void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexSimple);
+    uint Stride = sizeof(FVertexPNCT);
     uint offset = 0;
     FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::Grid)];
     ID3D11Buffer* VB = Info.VertexBuffer;
@@ -533,63 +522,6 @@ void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
     DXDDeviceContext->Draw(Num, 0);
 
-}
-
-void UDirectXHandle::RenderPrimitive(UPrimitiveComponent* PrimitiveComp, bool flag)
-{
-    if (!PrimitiveComp)
-        return;
-
-	if (PrimitiveComp->GetPrimitiveType() == EPrimitiveType::None || PrimitiveComp->GetPrimitiveType() == EPrimitiveType::Line || PrimitiveComp->GetPrimitiveType() == EPrimitiveType::Grid)
-		return;
-
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("DefaultPS")), NULL, 0);
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
-
-    // Begin Object Matrix Update. 
-    ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
-    if (!CbChangesEveryObject)
-    {
-        return;
-    }
-    D3D11_MAPPED_SUBRESOURCE MappedData = {};
-    DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-    if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
-    {
-        Buffer->WorldMatrix = PrimitiveComp->GetWorldMatrix();
-		if (flag)
-			Buffer->Flag = true;
-		else
-			Buffer->Flag = false;
-    }
-    DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
-
-    EPrimitiveType Type = PrimitiveComp->GetPrimitiveType();
-    uint Stride = sizeof(FVertexSimple);
-    //uint Stride = 84;6
-    UINT offset = 0;
-	FVertexInfo Info;
-	//if ( !PrimitiveVertexBuffers.contains(Type) )
-	Info = VertexBuffers[GetPrimitiveTypeAsString(Type)];
-	//else 
-	//	Info = PrimitiveVertexBuffers[Type];
-    ID3D11Buffer* VB = Info.VertexBuffer;
-    uint Num = Info.NumVertices;
-    DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
-
-    // IndexBuffer가 존재하는지 확인하고, DrawIndexed 호출
-    auto indexIt = IndexBuffers.find(GetPrimitiveTypeAsString(Type));
-    if (indexIt != IndexBuffers.end())
-    {
-        FIndexInfo IndexInfo = indexIt->second;
-        DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
-    }
-    else
-    {  
-        DXDDeviceContext->Draw(Num, 0);
-    }
 }
 
 void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
@@ -612,7 +544,7 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexSimple);
+    uint Stride = sizeof(FVertexPNCT);
     UINT offset = 0;
     FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
     ID3D11Buffer* VB = Info.VertexBuffer;
@@ -921,7 +853,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
 		if (Gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
 			continue;
         EGizmoViewType Type = Gizmo->GetGizmoViewType();
-        uint Stride = sizeof(FVertexSimple);
+        uint Stride = sizeof(FVertexPNCT);
         UINT offset = 0;
         FVertexInfo Info = VertexBuffers[GetGizmoViewTypeAsString(Type)];
         ID3D11Buffer* VB = Info.VertexBuffer;
@@ -943,6 +875,62 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
 	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Default"))->GetDepthStencilState(), 0);
 }
 
+void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
+{
+	if (!Comp)
+		return;
+
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("DefaultPS")), NULL, 0);
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
+	
+	// Begin Object Matrix Update. 
+	ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
+	if (!CbChangesEveryObject)
+	{
+		return;
+	}
+	D3D11_MAPPED_SUBRESOURCE MappedData = {};
+	DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+	if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
+	{
+		Buffer->WorldMatrix = Comp->GetWorldMatrix();
+	}
+	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
+
+	uint Stride = sizeof(FVertexPNCT);
+	UINT offset = 0;
+
+	UStaticMesh* Mesh = Comp->GetStaticMesh();
+	
+	FStaticMesh* MeshInfo = FObjManager::LoadObjStaticMeshAsset(Comp->GetStaticMesh()->GetAssetPathFileName());
+
+	// 각 섹션별로 처리
+	for (const FStaticMeshSection& Section : MeshInfo->Sections)
+	{
+		ID3D11ShaderResourceView* FontAtlasTexture = ResourceManager->TryGetTextureSRV(TEXT("Contents/texture.dds"));
+		DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
+		
+		ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
+		DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
+	
+		// Vertex/Index 버퍼 생성
+		FVertexInfo VertexInfo;
+		FIndexInfo IndexInfo;
+		BufferManager->CreateVertexBuffer(DXDDevice, Section.Vertices, VertexInfo);
+		BufferManager->CreateIndexBuffer(DXDDevice, Section.Indices, IndexInfo);
+
+		// Vertex 버퍼 바인딩
+		DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &offset);
+
+		// Index 버퍼 바인딩
+		DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+		// 인덱스를 기반으로 그리기
+		DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
+	}
+}
+
 void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
 {
 	if ( !GetFlag(UEngine::GetEngine().ShowFlags, EEngineShowFlags::SF_Primitives) )
@@ -952,17 +940,8 @@ void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
     {
 		for (UActorComponent* Comp : Actor->GetOwnedComponent())
 		{
-			if (Actor->IsSelected)
-			{
-				RenderPrimitive(Cast<UPrimitiveComponent>(Comp), true);
-			}
-			else
-			{
-				RenderPrimitive(Cast<UPrimitiveComponent>(Comp), false);
-			}
-			// TODO: 컴포넌트 별 UUID 렌더링 구현하기. 컴포넌트의 변환된 위치를 찾는 부분에서 문제 생김.
-			//RenderComponentUUID(dynamic_cast<USceneComponent*>(Comp));
-        }
+			RenderStaticMesh(Cast<UStaticMeshComponent>(Comp));
+        } 
 		RenderActorUUID(Actor);
 
 		// 액터가 가진 모든 컴포넌트 순회하면서 렌더링.
@@ -987,29 +966,24 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
 
 	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
 
-	UINT stride = sizeof(FVertexSimple);
+	UINT stride = sizeof(FVertexPNCT);
 	UINT number = 0;
 	UINT offset = 0;
 
     // TODO: 인풋 레이아웃을 line 전용으로 변경해야하는데 지금은 동일한 정보이므로 바꾸지 않아도 될듯함.
     //       for 루프로 순회하면서 버텍스 버퍼 업데이트 및 draw.
     
-	TArray<FVertexSimple> vertices;
+	TArray<FVertexPNCT> vertices;
     for ( AActor* Actor : Actors ) {
         for ( UActorComponent* Comp : Actor->GetOwnedComponent() ) {
 			ULineComponent* line = Cast<ULineComponent>(Comp);
 			if (line) {
 				FVector StartVector = line->GetStartPoint();
-				FVertexSimple StartVertex = {
-					StartVector.X, StartVector.Y, StartVector.Z,
-					1.0f, 0.0f, 0.0f, 1.0f
-
-				};
+				
+				FVertexPNCT StartVertex = { FVector(StartVector.X, StartVector.Y, StartVector.Z), FVector(), FVector4(1.0f, 0.0f, 0.0f, 1.0f), FVector2() };
 				FVector EndVector = line->GetEndPoint();
-				FVertexSimple EndVertex = {
-					EndVector.X, EndVector.Y, EndVector.Z,
-					1.0f, 0.0f, 0.0f, 1.0f
-				};
+				
+				FVertexPNCT EndVertex = { FVector(EndVector.X, EndVector.Y, EndVector.Z), FVector(), FVector4(1.0f, 0.0f, 0.0f, 1.0f), FVector2() };
 				vertices.push_back(StartVertex);
 				vertices.push_back(EndVertex);
 				number += 2;
@@ -1018,7 +992,7 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
         }
     }
 
-	HRESULT hr = CheckAndAddDynamicVertexBuffer<FVertexSimple>(L"Dynamic", number);
+	HRESULT hr = CheckAndAddDynamicVertexBuffer<FVertexPNCT>(L"Dynamic", number);
 	if ( FAILED(hr) ) {
 		// MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
 		return;
@@ -1041,7 +1015,7 @@ void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
 	FVertexInfo Info = VertexBuffers[L"Dynamic"];
 	ID3D11Buffer* vertexBuffer = Info.VertexBuffer;
 	DXDDeviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-	memcpy(MappedData.pData, vertices.data(), sizeof(FVertexSimple) * vertices.size());
+	memcpy(MappedData.pData, vertices.data(), sizeof(FVertexPNCT) * vertices.size());
 	DXDDeviceContext->Unmap(vertexBuffer, 0);
 
 
@@ -1057,9 +1031,9 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
     if (!TargetActor)
         return;
 
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("TextureVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("TexturePS")), NULL, 0);
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("TextureVS")));
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("FontVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("FontPS")), NULL, 0);
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("FontVS")));
 	// 깊이 테스트 무시하는 DepthStencilState로 변경.
 	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Always"))->GetDepthStencilState(), 0);
 
@@ -1092,10 +1066,12 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
+	ID3D11ShaderResourceView* FontAtlasTexture = ResourceManager->TryGetTextureSRV(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
+	ID3D11SamplerState* FontSamplerState = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
 	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
 
-    uint Stride = sizeof(FVertexUV);
+    uint Stride = sizeof(FVertexFont);
     UINT offset = 0;
 	FBufferInfo Info;
 	BufferManager->CreateASCIITextBuffer(DXDDevice, TargetActor->GetName(), Info, 0.0f, 0.0f);
@@ -1117,9 +1093,9 @@ void UDirectXHandle::RenderComponentUUID(USceneComponent* TargetComponent)
 	if (!TargetComponent || TargetComponent == TargetComponent->GetOwner()->GetRootComponent())
 		return;
 
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("TextureVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("TexturePS")), NULL, 0);
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("TextureVS")));
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("FontVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("FontPS")), NULL, 0);
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("FontVS")));
 
 	// Begin Object Matrix Update. 
 	ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
@@ -1147,10 +1123,11 @@ void UDirectXHandle::RenderComponentUUID(USceneComponent* TargetComponent)
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
+	ID3D11ShaderResourceView* FontAtlasTexture = ResourceManager->TryGetTextureSRV(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
 	DXDDeviceContext->PSSetShaderResources(0, 1, &FontAtlasTexture);
-	DXDDeviceContext->PSSetSamplers(0, 1, &FontSamplerState);
+	ID3D11SamplerState* FontSamplerState = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
 
-	uint Stride = sizeof(FVertexUV);
+	uint Stride = sizeof(FVertexFont);
 	UINT offset = 0;
 	FBufferInfo Info;
 	BufferManager->CreateASCIITextBuffer(DXDDevice, TargetComponent->GetName(), Info, 0.0f, -1.0f);

@@ -47,7 +47,6 @@ public:
     void Render();
     HRESULT ResizeWindow(int width, int height);
 	void ClearEngine();
-    HRESULT AddAllVertexBuffers();
 
 private:
     UEngine() = default;

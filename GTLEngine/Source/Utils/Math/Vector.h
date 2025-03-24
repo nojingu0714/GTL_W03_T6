@@ -221,6 +221,111 @@ inline bool FVector::operator!=(const FVector& Other) const
 	return X != Other.X || Y != Other.Y || Z != Other.Z;
 }
 
+struct alignas(16) FVector2
+{
+	float X, Y;
+	FVector2()
+		: X(0), Y(0)
+	{
+	}
+	FVector2(float InX, float InY)
+		: X(InX), Y(InY)
+	{
+	}
+
+	static const FVector2 ZeroVector;
+	static const FVector2 UnitVector;
+	static const FVector2 OneVector;
+	
+	static inline FVector2 Zero() { return ZeroVector; }
+	static inline FVector2 One() { return OneVector; }
+	static inline FVector2 Unit() { return UnitVector; }
+
+	FVector2 operator+(const FVector2& Other) const
+	{
+		return { X + Other.X, Y + Other.Y };
+	}
+
+	FVector2 operator-(const FVector2& Other) const
+	{
+		return { X - Other.X, Y - Other.Y };
+	}
+
+	FVector2 operator*(float Scalar) const
+	{
+		return { X * Scalar, Y * Scalar };
+	}
+
+	FVector2 operator/(float Scalar) const
+	{
+		return { X / Scalar, Y / Scalar };
+	}
+
+	FVector2 operator-() const
+	{
+		return { -X, -Y };
+	}
+
+	bool operator==(const FVector2& Other) const
+	{
+		return X == Other.X && Y == Other.Y;
+	}
+
+	bool operator!=(const FVector2& Other) const
+	{
+		return X != Other.X || Y != Other.Y;
+	}
+
+	float Dot(const FVector2& Other) const
+	{
+		return X * Other.X + Y * Other.Y;
+	}
+
+	float Length() const
+	{
+		return FMath::Sqrt(X * X + Y * Y);
+	}
+
+	float LengthSquared() const
+	{
+		return X * X + Y * Y;
+	}
+
+	bool Normalize(float Tolerance = 1.e-8f)
+	{
+		const float SquareSum = X * X + Y * Y;
+		if (SquareSum > Tolerance)
+		{
+			const float Scale = FMath::InvSqrt(SquareSum);
+			X *= Scale; Y *= Scale;
+			return true;
+		}
+		return false;
+	}
+
+	FVector2 GetUnsafeNormal() const
+	{
+		const float Scale = FMath::InvSqrt(X * X + Y * Y);
+		return { X * Scale, Y * Scale };
+	}
+
+	FVector2 GetSafeNormal(float Tolerance = 1.e-8f) const
+	{
+		const float SquareSum = X * X + Y * Y;
+		// Not sure if it's safe to add tolerance in there. Might introduce too many errors
+		if (SquareSum == 1.f)
+		{
+			return *this;
+		}
+		else if (SquareSum < Tolerance)
+		{
+			return ZeroVector;
+		}
+		const float Scale = FMath::InvSqrt(SquareSum);
+		return { X * Scale, Y * Scale };
+	}
+};
+
 struct alignas(16) FVector4 : public FVector
 {
 	using FVector::X;
