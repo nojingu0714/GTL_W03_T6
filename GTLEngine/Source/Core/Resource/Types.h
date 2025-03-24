@@ -78,6 +78,7 @@ enum class EConstantBufferType
     ChangesEveryFrame,
     ChangesEveryObject,
     MVP,
+    ViewportRatio,
     Max,
 };
 
@@ -97,6 +98,14 @@ struct alignas(16)  FCbChangesEveryObject
     FMatrix WorldMatrix;
     int Flag;
     int Padding[3];
+};
+
+struct alignas(16) FCbViewportRatio
+{
+    float x;
+    float y;
+    float width;
+    float height;
 };
 
 struct alignas(16) FMVP

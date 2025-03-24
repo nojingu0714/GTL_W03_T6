@@ -2,7 +2,8 @@
 
 class FViewportClient
 {
-private:
+//private:
+public:
 	ID3D11SamplerState* SamplerState;
 	ID3D11Buffer* QuadVertexBuffer;
 	

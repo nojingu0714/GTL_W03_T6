@@ -40,7 +40,7 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width, InWindowInfo.Height);
+	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width/2, InWindowInfo.Height/2);
 	Viewports.push_back(DefaultViewport);
 
     // 뷰포트 클라이언트 생성
@@ -250,6 +250,7 @@ HRESULT UEngine::AddAllVertexBuffers()
     
     return S_OK;
 }
+
 
 void UEngine::CreateNewWorld()
 {

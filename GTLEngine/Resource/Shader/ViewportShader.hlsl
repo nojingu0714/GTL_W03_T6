@@ -1,7 +1,16 @@
+#include "MVPShader.hlsli"
 Texture2D ViewportTexture : register(t0);
 SamplerState ViewportSampler : register(s0);
 
-struct VS_INPUT
+cbuffer CViewportRatio : register(b3)
+{
+    float OffsetX;
+    float OffsetY;
+    float ExtentX;
+    float ExtentY;
+}
+
+    struct VS_INPUT
 {
     float3 Position : POSITION;
     float2 TexCoord : TEXCOORD0;
@@ -23,6 +32,7 @@ VS_OUTPUT mainVS(VS_INPUT Input)
 {
     VS_OUTPUT Output;
     Output.Position = float4(Input.Position, 1.0f);
+    //Output.Position = Output.Position * float4(ExtentX, ExtentY, 0, 1) + float4(OffsetX, OffsetY, 0, 1);
     Output.TexCoord = Input.TexCoord;
     return Output;
 }

@@ -81,7 +81,9 @@ public:
 private:
     FWindowInfo WindowInfo;
 
-private:
+public:
+    const FViewport& GetViewport(FString Name);
+//private:
     TArray<FViewport> Viewports;
     FViewportClient* ViewportClient;
 

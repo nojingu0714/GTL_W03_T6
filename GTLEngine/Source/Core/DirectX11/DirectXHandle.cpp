@@ -27,6 +27,9 @@
 #include "DirectXTex/DirectXTex.h"
 #include "DirectXTex/DirectXTex.inl"
 
+#include "Core/Window/ViewportClient.h"
+
+
 UDirectXHandle::~UDirectXHandle()
 {
 	ReleaseDirectX11Handle();
@@ -246,6 +249,14 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 			DXDDeviceContext->VSSetConstantBuffers(3, 1, &CbMVP);
 		}
 	}
+	if (UDXDConstantBuffer* DXDCB = ConstantBuffers[EConstantBufferType::ViewportRatio])
+	{
+		if (ID3D11Buffer* CbViewportRatio = DXDCB->GetConstantBuffer())
+		{
+			DXDDeviceContext->VSSetConstantBuffers(4, 1, &CbViewportRatio);
+		}
+	}
+
 
     // 뎁스 스텐실 뷰 생성.
     //DepthStencilView = new UDXDDepthStencilView();
@@ -622,42 +633,28 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	WindowViewport.MaxDepth = 1.0f;
 
 	// rendertarget
-	WindowRenderTarget = new UDXDRenderTarget();
-	// 자동으로 swapchain을 target framebuffer로 하도록 설정.
-	D3D11_TEXTURE2D_DESC TextureDesc = {};
-	TextureDesc.Width = 0;
-	TextureDesc.Height = 0;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-	TextureDesc.SampleDesc.Count = 1;
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.MiscFlags = 0;
-	WindowRenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, TextureDesc, { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
+	// swapchain을 target framebuffer로 하도록 설정.
+	AddRenderTargetToSwapChain(TEXT("Window"));
+
 	// depth stencil view
-	WindowDepthStencilView = new UDXDDepthStencilView();
-	WindowDepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
+	AddDepthStencilView(TEXT("Window"), hWnd, InWidth, InHeight);
 
 	// depth stencil state
-	WindowDepthStencilState = new UDXDDepthStencilState();
 	D3D11_DEPTH_STENCIL_DESC DepthStencilDesc = {};
 	memset(&DepthStencilDesc, 0, sizeof(DepthStencilDesc));
 	DepthStencilDesc.DepthEnable = TRUE;
 	DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	DepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	WindowDepthStencilState->CreateDepthStencilState(DXDDevice, DepthStencilDesc);
+	AddDepthStencilState(TEXT("Window"), DepthStencilDesc);
 }
 
 void UDirectXHandle::PrepareWindow()
 {
 	FLOAT ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 
-	DXDDeviceContext->ClearRenderTargetView(WindowRenderTarget->GetFrameBufferRTV().Get(), ClearColor);
+	DXDDeviceContext->ClearRenderTargetView(GetRenderTarget(TEXT("Window"))->GetFrameBufferRTV().Get(), ClearColor);
 
-	DXDDeviceContext->ClearDepthStencilView(WindowDepthStencilView->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	DXDDeviceContext->ClearDepthStencilView(GetDepthStencilView(TEXT("Window"))->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	DXDDeviceContext->RSSetViewports(1, &WindowViewport);
 	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
@@ -665,7 +662,7 @@ void UDirectXHandle::PrepareWindow()
 	SetFaceMode();
 	
 
-	DXDDeviceContext->OMSetRenderTargets(1, WindowRenderTarget->GetFrameBufferRTV().GetAddressOf(), WindowDepthStencilView->GetDepthStencilView());
+	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(TEXT("Window"))->GetFrameBufferRTV().GetAddressOf(), GetDepthStencilView(TEXT("Window"))->GetDepthStencilView());
 }
 
 void UDirectXHandle::RenderWindow()
@@ -676,7 +673,7 @@ void UDirectXHandle::RenderWindow()
 
 void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 {
-	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	FLOAT ClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 	DXDDeviceContext->ClearRenderTargetView(GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().Get(), ClearColor);
 
@@ -693,28 +690,27 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
 	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
-
 }
 
-void UDirectXHandle::RenderViewport(const FViewport& InViewport)
-{
-
-	// TODO: renderviewport는 fviewportclient가 하도록 변경하기
-	assert(0);
-	D3D11_SAMPLER_DESC SamplerDesc = {};
-	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	SamplerDesc.MinLOD = 0;
-	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	ComPtr<ID3D11SamplerState> SamplerState;
-	auto hr = DXDDevice->CreateSamplerState(&SamplerDesc, SamplerState.GetAddressOf());
-
-
-}
+//void UDirectXHandle::RenderViewport(const FViewport& InViewport)
+//{
+//
+//	// TODO: renderviewport는 fviewportclient가 하도록 변경하기
+//	assert(0);
+//	D3D11_SAMPLER_DESC SamplerDesc = {};
+//	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+//	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+//	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+//	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+//	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+//	SamplerDesc.MinLOD = 0;
+//	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+//
+//	ComPtr<ID3D11SamplerState> SamplerState;
+//	auto hr = DXDDevice->CreateSamplerState(&SamplerDesc, SamplerState.GetAddressOf());
+//
+//
+//}
 
 HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
 {
@@ -726,7 +722,25 @@ HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTU
 
 	UDXDRenderTarget* RenderTarget = new UDXDRenderTarget();
 
-	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, InRenderTargetDesc ,InRenderTargetViewDesc);
+	HRESULT hr = RenderTarget->CreateRenderTarget(DXDDevice, InRenderTargetDesc ,InRenderTargetViewDesc);
+	if (FAILED(hr))
+		return hr;
+
+	RenderTargets[InName] = RenderTarget;
+	return S_OK;
+}
+
+HRESULT UDirectXHandle::AddRenderTargetToSwapChain(const FString& InName)
+{
+	if (RenderTargets.find(InName) != RenderTargets.end())
+	{
+		UE_LOG(TEXT("UDirectXHandle::AddRenderTarget::Duplicate Name"));
+		return S_OK;
+	}
+
+	UDXDRenderTarget* RenderTarget = new UDXDRenderTarget();
+
+	HRESULT hr = RenderTarget->CreateRenderTargetToSwapChain(DXDDevice, DXDSwapChain);
 	if (FAILED(hr))
 		return hr;
 

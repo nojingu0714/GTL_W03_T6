@@ -105,19 +105,20 @@ private:
 	////////////////////////////////////////
 	// Window Renderings (using swapchain's backbuffer)
 	D3D11_VIEWPORT WindowViewport;
-	UDXDRenderTarget* WindowRenderTarget;
-	UDXDDepthStencilView* WindowDepthStencilView;
-	UDXDDepthStencilState* WindowDepthStencilState;
+	//UDXDRenderTarget* WindowRenderTarget;
+	//UDXDDepthStencilView* WindowDepthStencilView;
+	//UDXDDepthStencilState* WindowDepthStencilState;
 
 
 	////////////////////////////////////////
 	// Viewport Renderings
 public:
 	void PrepareViewport(const FViewport& InViewport);
-	void RenderViewport(const FViewport& InViewport);
+	//void RenderViewport(const FViewport& InViewport);
 
 public:
 	HRESULT AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
+	HRESULT AddRenderTargetToSwapChain(const FString& InName);
 	HRESULT AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight);
 	HRESULT AddDepthStencilState(const FString& InName, const D3D11_DEPTH_STENCIL_DESC& InDesc);
 	HRESULT AddRasterizerState(const FString& InName, const D3D11_RASTERIZER_DESC& InDesc);

@@ -20,14 +20,16 @@ void FViewportClient::Init()
 	UEngine::GetEngine().GetDirectX11Handle()->GetD3DDevice()->CreateSamplerState(&SamplerDesc, &SamplerState);
 
 	// Quad Vertex Buffer 생성
+	// 0  0     1  0
+	// 0 -1     1 -1
 	FVertexUV QuadVertices[] =
 	{
-		{ 0.5f, -0.5f, 0.f, 1.0f, 1.0f }, // 우하단.
-		{ -0.5f, 0.5f, 0.f, 0.0f, 0.0f }, // 좌상단.
-		{ 0.5f, 0.5f, 0.f, 1.0f, 0.0f }, // 우상단.
-		{ 0.5f, -0.5f, 0.f, 1.0f, 1.0f }, // 우하단.
-		{ -0.5f, -0.5f, 0.f, 0.0f, 1.0f }, // 좌하단.
-		{ -0.5f, 0.5f, 0.f, 0.0f, 0.0f }, // 좌상단.
+	 	{ 1.f, -1.f, 0.f, 1.0f, 1.0f }, // 우하단.
+		{ 0.f, 0.f, 0.f, 0.0f, 0.0f }, // 좌상단.
+		{ 1.f, 0.f, 0.f, 1.0f, 0.0f }, // 우상단.
+		{ 1.f, -1.f, 0.f, 1.0f, 1.0f }, // 우하단.
+		{ 0.f, -1.f, 0.f, 0.0f, 1.0f }, // 좌하단.
+		{ 0.f, 0.f, 0.f, 0.0f, 0.0f }, // 좌상단.
 	};
 
 	D3D11_BUFFER_DESC BufferDesc = {};
@@ -58,8 +60,47 @@ void FViewportClient::Draw(const FString& ViewportName)
 	Context->PSSetShader(Handle->GetShaderManager()->GetPixelShaderByKey(TEXT("ViewportPS")), nullptr, 0);
 
 	// 텍스처 + 샘플러 바인딩
-	Context->PSSetShaderResources(0, 1, Handle->GetRenderTarget(ViewportName)->GetFrameBufferResourceView().GetAddressOf());
+	Context->PSSetShaderResources(0, 1, Handle->GetRenderTarget(ViewportName)->GetFrameBufferSRV().GetAddressOf());
 	Context->PSSetSamplers(0, 1, &SamplerState);
+
+	//UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
+	//ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
+
+	//UINT Stride = sizeof(FVertexUV);
+	//UINT Offset = 0;
+
+	//Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("ViewportVS")));
+	//Context->IASetVertexBuffers(0, 1, &UEngine::GetEngine().ViewportClient->QuadVertexBuffer, &Stride, &Offset);
+	//Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//// 셰이더 설정
+	//Context->VSSetShader(Handle->GetShaderManager()->GetVertexShaderByKey(TEXT("ViewportVS")), nullptr, 0);
+	//Context->PSSetShader(Handle->GetShaderManager()->GetPixelShaderByKey(TEXT("ViewportPS")), nullptr, 0);
+
+	//// 텍스처 + 샘플러 바인딩
+	//Context->PSSetShaderResources(0, 1, Handle->GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
+	//Context->PSSetSamplers(0, 1, &UEngine::GetEngine().ViewportClient->SamplerState);
+
+
+
+	//// viewport 위치 지정.
+	//D3D11_VIEWPORT viewport = InViewport.GetViewport();
+	//FWindowInfo windowInfo = UEngine::GetEngine().GetWindowInfo();
+	//ID3D11Buffer* CbViewportRatio = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
+	//if (!CbViewportRatio)
+	//{
+	//	return;
+	//}
+	//D3D11_MAPPED_SUBRESOURCE MappedData = {};
+	//DXDDeviceContext->Map(CbViewportRatio, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+	//if (FCbViewportRatio* Buffer = reinterpret_cast<FCbViewportRatio*>(MappedData.pData))
+	//{
+	//	Buffer->x = InViewport.GetViewport().TopLeftX / windowInfo.Width * 2 - 1;
+	//	Buffer->y = InViewport.GetViewport().TopLeftY / windowInfo.Height * 2 - 1;
+	//	Buffer->width = InViewport.GetViewport().Width / windowInfo.Width * 2;
+	//	Buffer->height = InViewport.GetViewport().Height / windowInfo.Height * 2;
+	//}
+	//DXDDeviceContext->Unmap(CbViewportRatio, 0);
 
 	Context->Draw(6, 0);
 }
