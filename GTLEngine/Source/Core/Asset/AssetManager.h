@@ -2,9 +2,8 @@
 
 #include "Object.h"
 
-class USceneManager;
-class UObjManager;
-
+class FSceneManager;
+class FObjManager;
 
 /*
 	프로그램에서 사용할 모든 에셋을 관리할 매니저.
@@ -18,7 +17,6 @@ class UAssetManager : public UObject
 
 
 public:
-
 	UAssetManager();
 	virtual void Destroy() override;
 
@@ -31,6 +29,6 @@ public:
 
 
 private:
-	USceneManager* SceneManager;
-	UObjManager* ObjManager;
+	FSceneManager* SceneManager;
+	FObjManager* ObjManager;
 };

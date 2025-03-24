@@ -18,8 +18,10 @@ public:
 	HRESULT CreateDynamicVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
 
 private:
-	TMap<FString, FVertexInfo> VertexBufferPool;
+	TMap<FString, FVertexInfo> StaticVertexBufferPool;
+	TMap<FString, FVertexInfo> DynamicVertexBufferPool;
 	TMap<FString, FIndexInfo> IndexBufferPool;
+
 
 };
 

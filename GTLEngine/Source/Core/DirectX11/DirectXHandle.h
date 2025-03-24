@@ -14,6 +14,7 @@ class UDXDShaderManager;
 class UDXDInputLayout;
 class UDXDConstantBuffer;
 class UDXDBufferManager;
+class UDXDResourceManager;
 
 class UObject;
 class AActor;
@@ -97,17 +98,13 @@ private:
 	TMap<FString, UDXDRasterizerState*> RasterizerStates;
 	UDXDShaderManager* ShaderManager;
 	UDXDBufferManager* BufferManager;
+	UDXDResourceManager* ResourceManager;
 
 	TMap<FString, FVertexInfo> VertexBuffers;
 	TMap<FString, FIndexInfo> IndexBuffers;
 
 	TMap<EConstantBufferType, UDXDConstantBuffer*> ConstantBuffers;
 
-	// TODO: Texture 관리용 객체로 묶어서 관리.
-	TMap<FString, ID3D11ShaderResourceView*> TextureSRVs;
-
-	ID3D11SamplerState* FontSamplerState;
-	FVertexInfo FontTextureBuffer;
 
 	uint32 DynamicVertexBufferSize;
 

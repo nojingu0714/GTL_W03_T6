@@ -274,7 +274,7 @@
     <ClCompile Include="Source\CoreUObject\UI\ConsolePanel.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\UI\SceneManager.cpp">
+    <ClCompile Include="Source\CoreUObject\UI\UISceneManager.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\UI\UIInterface.cpp">
@@ -312,6 +312,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Asset\ObjManager.cpp">
       <Filter>Source\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\DirectX11\DXDResourceManager.cpp">
+      <Filter>Source\Core\DirectX11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -513,7 +516,7 @@
     <ClInclude Include="Plugins\ImGui\imstb_textedit.h">
       <Filter>Plugins\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\UI\SceneManager.h">
+    <ClInclude Include="Source\CoreUObject\UI\UISceneManager.h">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\Components\StaticMeshComponent.h">
@@ -555,6 +558,9 @@
     <ClInclude Include="Source\Core\Asset\RawFonts.h">
       <Filter>Source\Core\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\DirectX11\DXDResourceManager.h">
+      <Filter>Source\Core\DirectX11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\PrimitiveShader.hlsl">
@@ -563,7 +569,7 @@
     <FxCompile Include="Resource\Shader\LineShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Resource\Shader\TextureShader.hlsl">
+    <FxCompile Include="Resource\Shader\FontShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="Resource\Shader\MVPShader.hlsli">

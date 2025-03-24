@@ -7,7 +7,7 @@
 #include "UI/ControlPanel.h"
 #include "UI/ConsolePanel.h"
 #include "UI/PropertyPanel.h"
-#include "UI/SceneManager.h"
+#include "UI/UISceneManager.h"
 
 #include "Asset/IconDefs.h"
 #include "Asset/RawFonts.h"
@@ -51,7 +51,7 @@ void UUIManager::CreateDefaultUI() {
 	RegistUI(FObjectFactory::ConstructObject<UControlPanel>());
 	RegistUI(FObjectFactory::ConstructObject<UConsolePanel>());
 	RegistUI(FObjectFactory::ConstructObject<UPropertyPanel>());
-	RegistUI(FObjectFactory::ConstructObject<USceneManager>());
+	RegistUI(FObjectFactory::ConstructObject<UUISceneManager>());
 }
 
 void UUIManager::Tick(float DeltaTime)
