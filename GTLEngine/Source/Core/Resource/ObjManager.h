@@ -134,9 +134,9 @@ struct FObjImporter
 
                 // 활성화된 텍스처에 해당하는 face 추가
                 FFace newFace;
-                newFace.Vertices = TArray<uint64>(faceVertices.begin(), faceVertices.end());
-                newFace.TexCoords = TArray<uint64>(faceTexCoords.begin(), faceTexCoords.end());
-                newFace.Normals = TArray<uint64>(faceNormals.begin(), faceNormals.end());
+                newFace.Vertices = TArray<int>(faceVertices.begin(), faceVertices.end());
+                newFace.TexCoords = TArray<int>(faceTexCoords.begin(), faceTexCoords.end());
+                newFace.Normals = TArray<int>(faceNormals.begin(), faceNormals.end());
 
                 if (CurrentMaterial.length() != 0)
                     OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
