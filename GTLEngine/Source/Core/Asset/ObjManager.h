@@ -35,7 +35,7 @@ struct FObjImporter
             // Handle vertices (v)
             if (line.substr(0, 2) == "v ") {
                 FVector Vertex;
-                FVector4 Color(1.0f, 1.0f, 1.0f, 1.0f); // Default color: white
+                FVector4 Color(0.0f,0.0f, 0.0f, 1.0f); // Default color: white
 
                 // Parse vertex coordinates
                 ss >> token >> Vertex.X >> Vertex.Y >> Vertex.Z;
