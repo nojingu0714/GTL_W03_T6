@@ -313,7 +313,7 @@
     <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp">
       <Filter>Source\CoreUObject\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Window\FViewport.cpp">
+    <ClCompile Include="Source\Core\Window\Viewport.cpp">
       <Filter>Source\Core\Window</Filter>
     </ClCompile>
     <ClCompile Include="ViewportShader.hlsl">
@@ -555,7 +555,7 @@
     <ClInclude Include="Source\Core\Resource\Archive.h">
       <Filter>Source\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Window\FViewport.h">
+    <ClInclude Include="Source\Core\Window\Viewport.h">
       <Filter>Source\Core\Window</Filter>
     </ClInclude>
   </ItemGroup>

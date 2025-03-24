@@ -16,7 +16,6 @@ HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, Com
         if(FAILED(hr))
             return hr;
     }
-    // TODO: 특정 사이즈로 사용할 수 있게 수정
 	// 특정 사이즈로 framebuffer를 생성합니다.
     else
     {
@@ -28,6 +27,7 @@ HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, Com
     if (FAILED(hr))
         return hr;
 
+    // FrameBuffer는 Texture2D이므로, Shader에서 사용할 수 있도록 Shader Resource View를 생성.
     D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
     SRVDesc.Format = RenderTargetDesc.Format;
     SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

@@ -32,19 +32,9 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
         MessageBox(WindowInfo.WindowHandle, TEXT("DirectX11 핸들 생성 실패"), TEXT("Error"), MB_OK);
         return false;
     }
-
-	//// Render Target 추가.
- //   D3D11_RENDER_TARGET_VIEW_DESC framebufferRTVdesc = {};
- //   framebufferRTVdesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB; // 색상 포맷
- //   framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
- //   hr = DirectX11Handle->AddRenderTarget(TEXT("Default"), framebufferRTVdesc);
- //   if (FAILED(hr))
- //   {
- //       MessageBox(WindowInfo.WindowHandle, TEXT("렌더 타겟 추가 실패"), TEXT("Error"), MB_OK);
- //       return false;
- //   }
-	Viewports[TEXT("Default")].Init(TEXT("Default"), WindowInfo.WindowHandle, 0, 0, WindowInfo.Width/3, WindowInfo.Height/2);
-    // 셰이더 추가.
+    
+    // 기본 뷰포트 설정.
+    DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
 
     // 버텍스 버퍼 추가.
     hr = AddAllVertexBuffers();
@@ -121,25 +111,48 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-    // 그릴 렌더 타겟뷰 초기화.
-    //DirectX11Handle->InitView();
-    DirectX11Handle->PrepareViewport(&Viewports[TEXT("Default")]);
-    DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
+    // viewport (Texture2D) 에 그리기.
+    for (const FViewport& Viewport : Viewports)
+    {
+        DirectX11Handle->PrepareViewport(Viewport);
+        DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
 
-    DirectX11Handle->SetLineMode();
-    DirectX11Handle->RenderWorldPlane(World->GetCamera());
-    DirectX11Handle->RenderBoundingBox(World->GetActors());
-    DirectX11Handle->RenderLines(World->GetActors());
+        DirectX11Handle->SetLineMode();
+        DirectX11Handle->RenderWorldPlane(World->GetCamera());
+        DirectX11Handle->RenderBoundingBox(World->GetActors());
+        DirectX11Handle->RenderLines(World->GetActors());
 
-    DirectX11Handle->SetFaceMode();
-    DirectX11Handle->RenderObject(World->GetActors());
-    DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
-    // 오브젝트들 받아와서 DXD 핸들에 넘겨준 후 DXD 핸들에서 해당 오브젝트 값 읽어서 렌더링에 추가.
-
-    // UI 그리기.
+        DirectX11Handle->SetFaceMode();
+        DirectX11Handle->RenderObject(World->GetActors());
+        DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
+    }
+    DirectX11Handle->PrepareWindow();
+    // Texture2D를 쓰는 Quad를 그리기
+    // FVIewportClient.Draw()
     UIManager->RenderUI();
-	// 최종적으로 그린 결과물을 화면에 출력.
-	DirectX11Handle->GetDXDSwapChain()->Present(1, 0);
+    DirectX11Handle->RenderWindow();
+
+
+
+ //   // 그릴 렌더 타겟뷰 초기화.
+ //   //DirectX11Handle->InitView();
+ //   DirectX11Handle->PrepareViewport(&Viewports[TEXT("Default")]);
+ //   DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
+
+ //   DirectX11Handle->SetLineMode();
+ //   DirectX11Handle->RenderWorldPlane(World->GetCamera());
+ //   DirectX11Handle->RenderBoundingBox(World->GetActors());
+ //   DirectX11Handle->RenderLines(World->GetActors());
+
+ //   DirectX11Handle->SetFaceMode();
+ //   DirectX11Handle->RenderObject(World->GetActors());
+ //   DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
+ //   // 오브젝트들 받아와서 DXD 핸들에 넘겨준 후 DXD 핸들에서 해당 오브젝트 값 읽어서 렌더링에 추가.
+
+ //   // UI 그리기.
+ //   UIManager->RenderUI();
+	//// 최종적으로 그린 결과물을 화면에 출력.
+	//DirectX11Handle->GetDXDSwapChain()->Present(1, 0);
 }
 
 HRESULT UEngine::ResizeWindow(int width, int height) {

@@ -51,14 +51,13 @@ public:
 	void RenderComponentUUID(USceneComponent* TargetComponent);
 
 public:
-	void InitView();
+	//void InitView();
 
 public:
 	inline void SetLineMode() { DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); }
 	inline void SetFaceMode() { DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); }
 
 private:
-	D3D11_VIEWPORT ViewportInfo;
 
 
 	////////////////////////////////////////
@@ -97,18 +96,25 @@ private:
 
 	void RenderAABB(FBoundingBox aabb);
 
-	
-	//UDXDRenderTarget* RenderTarget;
-	//UDXDDepthStencilView* DepthStencilView;
-	//UDXDDepthStencilState* DepthStencilState;
-	//TMap<FString, UDXDRasterizerState*> RasterizerStates;	
+
+public:
+	void InitWindow(HWND hWnd, UINT InWidth, UINT InHeight);
+	void PrepareWindow();
+	void RenderWindow();
+private:
+	////////////////////////////////////////
+	// Window Renderings (using swapchain's backbuffer)
+	D3D11_VIEWPORT WindowViewport;
+	UDXDRenderTarget* WindowRenderTarget;
+	UDXDDepthStencilView* WindowDepthStencilView;
+	UDXDDepthStencilState* WindowDepthStencilState;
 
 
 	////////////////////////////////////////
-	// Renderings
+	// Viewport Renderings
 public:
-	void PrepareViewport(FViewport* InViewport);
-	void RenderViewport(FViewport* InViewport);
+	void PrepareViewport(const FViewport& InViewport);
+	void RenderViewport(const FViewport& InViewport);
 
 public:
 	HRESULT AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
@@ -120,7 +126,6 @@ public:
 	UDXDDepthStencilView* GetDepthStencilView(const FString& InName);
 	UDXDDepthStencilState* GetDepthStencilStates(const FString& InName);
 	UDXDRasterizerState* GetRasterizerState(const FString& InName);
-
 
 private:
 	// TMap으로 관리

@@ -59,9 +59,6 @@ HRESULT UDirectXHandle::CreateDeviceAndSwapchain()
 	// 생성된 스왑 체인의 정보 가져오기
 	DXDSwapChain->GetDesc(&swapchaindesc);
 
-	// 뷰포트 정보 설정
-	ViewportInfo = { 0.0f, 0.0f, (float)swapchaindesc.BufferDesc.Width, (float)swapchaindesc.BufferDesc.Height, 0.0f, 1.0f };
-
 	return S_OK;
 }
 
@@ -599,37 +596,84 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
     DXDDeviceContext->Draw(Num, 0);
 }
 
-void UDirectXHandle::PrepareViewport(FViewport* InViewport)
+void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 {
-	// init
-	if (!InViewport)
-	{
-		UE_LOG(TEXT("UDirectXHandle::PrepareViewport::Invalid Viewport"));
-		return;
-	}
+	// viewport
+	WindowViewport.TopLeftX = 0;
+	WindowViewport.TopLeftY = 0;
+	WindowViewport.Width = InWidth;
+	WindowViewport.Height = InHeight;
+	WindowViewport.MinDepth = 0.0f;
+	WindowViewport.MaxDepth = 1.0f;
 
+	// rendertarget
+	WindowRenderTarget = new UDXDRenderTarget();
+	// 자동으로 swapchain을 target framebuffer로 하도록 설정.
+	WindowRenderTarget->CreateRenderTarget(DXDDevice, DXDSwapChain, {}, { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
+
+	// depth stencil view
+	WindowDepthStencilView = new UDXDDepthStencilView();
+	WindowDepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
+
+	// depth stencil state
+	WindowDepthStencilState = new UDXDDepthStencilState();
+	D3D11_DEPTH_STENCIL_DESC DepthStencilDesc = {};
+	memset(&DepthStencilDesc, 0, sizeof(DepthStencilDesc));
+	DepthStencilDesc.DepthEnable = TRUE;
+	DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	WindowDepthStencilState->CreateDepthStencilState(DXDDevice, DepthStencilDesc);
+}
+
+void UDirectXHandle::PrepareWindow()
+{
+	FLOAT ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	DXDDeviceContext->ClearRenderTargetView(WindowRenderTarget->GetFrameBufferRTV().Get(), ClearColor);
+
+	DXDDeviceContext->ClearDepthStencilView(WindowDepthStencilView->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	DXDDeviceContext->RSSetViewports(1, &WindowViewport);
+	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
+
+	SetFaceMode();
+
+	DXDDeviceContext->OMSetRenderTargets(1, WindowRenderTarget->GetFrameBufferRTV().GetAddressOf(), WindowDepthStencilView->GetDepthStencilView());
+}
+
+void UDirectXHandle::RenderWindow()
+{
+	DXDSwapChain->Present(1, 0);
+
+}
+
+void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
+{
 	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-	DXDDeviceContext->ClearRenderTargetView(GetRenderTarget(InViewport->GetName())->GetFrameBufferRTV().Get(), ClearColor);
+	DXDDeviceContext->ClearRenderTargetView(GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().Get(), ClearColor);
 
 	// 뎁스/스텐실 뷰 클리어. 뷰, DEPTH만 클리어, 깊이 버퍼 클리어 할 값, 스텐실 버퍼 클리어 할 값.
-	DXDDeviceContext->ClearDepthStencilView(GetDepthStencilView(InViewport->GetName())->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	DXDDeviceContext->ClearDepthStencilView(GetDepthStencilView(InViewport.GetName())->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	//DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	DXDDeviceContext->RSSetViewports(1, &InViewport->GetViewport());
+	DXDDeviceContext->RSSetViewports(1, &InViewport.GetViewport());
 	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
 		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
 	else
 		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
-	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport->GetName())->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
+	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
 
 }
 
-void UDirectXHandle::RenderViewport(FViewport* InViewport)
+void UDirectXHandle::RenderViewport(const FViewport& InViewport)
 {
+
+	// TODO: renderviewport는 fviewportclient가 하도록 변경하기
+	assert(0);
 	D3D11_SAMPLER_DESC SamplerDesc = {};
 	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -1077,27 +1121,27 @@ void UDirectXHandle::RenderComponentUUID(USceneComponent* TargetComponent)
 	Info.IndexInfo.IndexBuffer->Release();
 }
 
-void UDirectXHandle::InitView()
-{
-	// 렌더 타겟 클리어 및 클리어에 적용할 색.
-	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-
-	DXDDeviceContext->ClearRenderTargetView(RenderTargets[TEXT("Default")]->GetFrameBufferRTV().Get(), ClearColor);
-
-	// 뎁스/스텐실 뷰 클리어. 뷰, DEPTH만 클리어, 깊이 버퍼 클리어 할 값, 스텐실 버퍼 클리어 할 값.
-	DXDDeviceContext->ClearDepthStencilView(DepthStencilViews[TEXT("Default")]->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-    //DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	DXDDeviceContext->RSSetViewports(1, &ViewportInfo);
-	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
-		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
-	else
-		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
-
-	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
-	DXDDeviceContext->OMSetRenderTargets(1, RenderTargets[TEXT("Default")]->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
-}
+//void UDirectXHandle::InitView()
+//{
+//	// 렌더 타겟 클리어 및 클리어에 적용할 색.
+//	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+//
+//	DXDDeviceContext->ClearRenderTargetView(RenderTargets[TEXT("Default")]->GetFrameBufferRTV().Get(), ClearColor);
+//
+//	// 뎁스/스텐실 뷰 클리어. 뷰, DEPTH만 클리어, 깊이 버퍼 클리어 할 값, 스텐실 버퍼 클리어 할 값.
+//	DXDDeviceContext->ClearDepthStencilView(DepthStencilViews[TEXT("Default")]->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+//
+//    //DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//
+//	DXDDeviceContext->RSSetViewports(1, &ViewportInfo);
+//	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
+//		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
+//	else
+//		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
+//
+//	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
+//	DXDDeviceContext->OMSetRenderTargets(1, RenderTargets[TEXT("Default")]->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
+//}
 
 HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)
 {
@@ -1140,13 +1184,13 @@ void UDirectXHandle::UpdateWorldProjectionMatrix(ACamera* Camera)
 {
 	float FOVRad = FMath::DegreesToRadians(Camera->GetFieldOfView());
 	UEngine::GetEngine().GetWorld()->SetProjectionMatrix(
-		FMatrix::PerspectiveFovLH(FOVRad, ViewportInfo.Width / ViewportInfo.Height, Camera->GetNearClip(), Camera->GetFarClip())
+		FMatrix::PerspectiveFovLH(FOVRad, WindowViewport.Width / WindowViewport.Height, Camera->GetNearClip(), Camera->GetFarClip())
 	);
 }
 
 void UDirectXHandle::ResizeViewport(int width, int height) {
-	ViewportInfo.Width = static_cast<float>(width);
-	ViewportInfo.Height = static_cast<float>(height);
+	WindowViewport.Width = static_cast<float>(width);
+	WindowViewport.Height = static_cast<float>(height);
 }
 
 HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
