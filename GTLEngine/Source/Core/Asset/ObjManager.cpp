@@ -89,7 +89,7 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
                 // 새로운 정점이면 정점 정보를 추가
                 FVector Position = ObjInfo.Vertices[VertexIndex];
                 FVector4 Color = ObjInfo.Colors[VertexIndex];
-                FVector Normal = ObjInfo.Normals[NormalIndex];
+                FVector Normal = ObjInfo.Normals.empty() ? FVector() : ObjInfo.Normals[NormalIndex];
                 FVector2 UV = ObjInfo.UV.size() >0? ObjInfo.UV[UVIndex]:FVector2(0,0);
 
                 FVertexPNCT Vertex(Position, Normal, Color, UV);

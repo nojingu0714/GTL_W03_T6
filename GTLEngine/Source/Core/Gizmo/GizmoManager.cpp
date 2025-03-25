@@ -14,13 +14,19 @@
 
 #include "Utils/Math/Geometry.h"
 
+#include "ObjectFactory.h"
+#include "Gizmo/GizmoActor.h"
+
 FGizmoManager::FGizmoManager()
 {
 }
 
-void FGizmoManager::Init(UDirectXHandle* Handle)
+void FGizmoManager::Init()
 {
 	// Gizmo를 위한 Primitive 생성
+
+	GizmoActor = FObjectFactory::ConstructObject<AGizmoActor>();
+	
 }
 
 void FGizmoManager::Tick(float DeltaTime)

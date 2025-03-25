@@ -4,7 +4,7 @@
 #include "Core/Resource/Types.h"
 #include "DirectX11/DirectXHandle.h"
 
-
+// 가장 기본적인 Primitive들을 생성하는 함수.
 HRESULT CreatePrimitives(UDirectXHandle* Handle)
 {
 	const int NumSegments = 32;
@@ -185,5 +185,23 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 
 	hr = Handle->AddVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, CubeFrameIndices);
 
+	///////////////////////////////////
+	/// Quad
+	
+	TArray<FVertexPT> QuadVertices =
+	{
+		{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
+		{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
+		{ FVector(1.f, 0.f, 0.f), FVector2(1.0f, 0.0f) }, // 우상단.
+		{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
+		{ FVector(0.f, -1.f, 0.f), FVector2(0.0f, 1.0f) }, // 좌하단.
+		{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
+	};
+    // Change the line causing the error to explicitly specify the template parameter
+	TArray<uint32> EmptyIndices;
+
+    hr = Handle->AddVertexBuffer(TEXT("Quad"), QuadVertices, EmptyIndices);
 	return hr;
+
+
 }

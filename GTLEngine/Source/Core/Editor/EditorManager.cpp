@@ -44,6 +44,9 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	HoveredViewport = &Viewports[0];
 	SelectedViewport = &Viewports[0];
 
+	GizmoManager = new FGizmoManager();
+	GizmoManager->Init();
+
 }
 
 void FEditorManager::Tick(float DeltaTime)
@@ -94,8 +97,8 @@ void FEditorManager::Draw()
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
+		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
 		Handle->RenderBoundingBox(World->GetActors());
-		//Handle->RenderGizmo(GizmoManager->GetGizmo());
 	}
 
 	Handle->PrepareWindow();

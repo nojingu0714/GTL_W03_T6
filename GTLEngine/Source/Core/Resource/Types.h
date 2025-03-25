@@ -89,6 +89,7 @@ enum class EConstantBufferType
     ChangesEveryObject,
     ViewportRatio,
     Material,
+    Gizmo,
     Max,
 };
 
@@ -135,6 +136,11 @@ struct FCbLine
 {
     FVector Position;
     float R, G, B, A;
+};
+
+struct FCbGizmo
+{
+	FVector4 Color;
 };
 
 struct FRay {
