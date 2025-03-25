@@ -9,7 +9,7 @@ Texture2D TexBumpMap : register(t4);
 Texture2D TexDisplacementMap : register(t5);
 Texture2D TexNormalMap : register(t6);
 
-SamplerState g_Sampler : register(s0);
+SamplerState MatSampler : register(s0);
 
 cbuffer MaterialCB : register(b3)
 {
@@ -62,29 +62,40 @@ PS_INPUT mainVS(VS_INPUT Input)
 float4 mainPS(PS_INPUT Input) : SV_TARGET
 {
     // 텍스처 색상 샘플링
-    float4 TexDiffuseColor = TexDiffuseMap.Sample(g_Sampler, Input.Tex);
     
-     // 머티리얼 값
-    float3 DiffuseColor = Diffuse;
-    float3 AmbientColor = Ambient;
-    float3 SpecularColor = Specular;
-    float3 EmissiveColor = Emissive;
+    float4 AmbientTex = TexAmbientMap.Sample(MatSampler, Input.Tex);
+    float4 DiffuseTex = TexDiffuseMap.Sample(MatSampler, Input.Tex);
+    float4 SpecularTex = TexSpecularMap.Sample(MatSampler, Input.Tex);
+    float4 EmissiveTex = TexEmissiveMap.Sample(MatSampler, Input.Tex);
+    float4 BumpMapTex = TexBumpMap.Sample(MatSampler, Input.Tex);
+    float4 DisplacementMapTex = TexDisplacementMap.Sample(MatSampler, Input.Tex);
+    float4 NormalMapTex = TexNormalMap.Sample(MatSampler, Input.Tex);
     
-    // // 조명 계산 (단일 광원 예시)
-    //Light light;
-    //light.Position = float3(0.0f, 10.0f, 0.0f); // 광원 위치 (예: 월드 좌표)
-    //light.Color = float3(1.0f, 1.0f, 1.0f); // 광원 색상 (예: 흰색)
-    //light.Intensity = 1.0f; // 광원 강도
+    float4 AmbientColor = AmbientTex * float4(Ambient, 1.0f);
+    float4 DiffuseColor = DiffuseTex * float4(Diffuse, 1.0f);
+    float4 SpecularColor = SpecularTex * float4(Specular, 1.0f);
+    float4 EmissiveColor = float4(Emissive, 1.0f);
     
-    //float3 lightDir = normalize(light.Position - Input.Pos.xyz);
-    //float3 normal = normalize(Input.Nor);
+    float4 TextureColor = DiffuseColor * 0.5 + AmbientColor * 0.1 + SpecularColor * 0.1 + SpecularExponent * 0.1 + BumpMapTex * 0.05 + RefractiveIndex * 0.8 + EmissiveColor;
     
-    //// Lambertian 조명 모델 적용
-    //float lambert = LambertLighting(normal, lightDir);
+    // 하드코딩으로 조명 생성.
+    float3 gLightDir = normalize(float3(-1.0f, 0.0f, 1.0f));
+    float3 gLightColor = float3(1.0f, 0.0f, 0.0f);
+    float3 gAmbientColor = float3(0.1f, 0.1f, 0.1f);
+    
+    float3 Norm = normalize(Input.Nor);
+    float Diff = saturate(dot(Norm, -gLightDir));
+    float shadowFactor = smoothstep(0.3, 0.6, Diff);
+    float3 AmbientLight = gAmbientColor * Ambient;
+    
+    float3 DiffuseLight = Diff * gLightColor * Diffuse * (0.2 + 1.0 * shadowFactor);
+    
+    float3 Lighting = AmbientLight + DiffuseLight;
+    
+    float4 FinalColor = float4(TextureColor.rgb * Lighting, TextureColor.a);
+    FinalColor.a *= Opacity;
 
-    // 최종 색상 계산
-    //float3 FinalColor = AmbientColor + lambert * DiffuseColor + SpecularColor * pow(lambert, SpecularExponent) + EmissiveColor;
-
-    float3 FinalColor = TexDiffuseColor;
-    return TexDiffuseColor; // 알파는 1.0f로 설정 (불투명)
+    return float4(Diffuse, 1.0f);
+    
+    return FinalColor; // 알파는 1.0f로 설정 (불투명)
 }

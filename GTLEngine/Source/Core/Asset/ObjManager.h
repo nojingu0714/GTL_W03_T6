@@ -117,7 +117,7 @@ struct FObjImporter
                     else if (parts[1] == "") {
                         // 정점 + 텍스처
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
-                        faceTexCoords.push_back(std::stoi(parts[1]) - 1);
+                        faceNormals.push_back(std::stoi(parts[2]) - 1);
                     }
                     else if (parts.size() == 3) {
                         // 정점 + 텍스처 + 노멀
@@ -133,7 +133,7 @@ struct FObjImporter
                 newFace.TexCoords = TArray<int>(faceTexCoords.begin(), faceTexCoords.end());
                 newFace.Normals = TArray<int>(faceNormals.begin(), faceNormals.end());
 
-                if (CurrentMaterial.length() != 0)
+              //  if (CurrentMaterial.length() != 0)
                     OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
 
             }
@@ -311,8 +311,8 @@ struct FObjImporter
             else
             {
                 // Unknown token 처리
-                NewMatInfo = FObjMaterialInfo();
-                return false;
+              //  NewMatInfo = FObjMaterialInfo();
+               // return false;
             }
 
         }
