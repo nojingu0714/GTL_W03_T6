@@ -529,7 +529,7 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	SamplerDesc.MinLOD = 0;
 	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	ResourceManager->CreateTextureSampler(TEXT("Window"), SamplerDesc);
+	ResourceManager->CreateTextureSampler(TEXT("Quad"), SamplerDesc);
 
 	// Quad Vertex Buffer 생성
 	// 0  0     1  0
@@ -560,6 +560,7 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	VertexBuffers[TEXT("Quad")] = QuadVertexInfo;
 }
 
+// Quad를 그릴 준비를 합니다.
 void UDirectXHandle::PrepareWindow()
 {
 	FLOAT ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
@@ -568,21 +569,39 @@ void UDirectXHandle::PrepareWindow()
 
 	DXDDeviceContext->ClearDepthStencilView(GetDepthStencilView(TEXT("Window"))->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+	UINT Stride = sizeof(FVertexFont);
+	UINT Offset = 0;
+
+	DXDDeviceContext->IASetInputLayout(GetShaderManager()->GetInputLayoutByKey(TEXT("FontVS")));
+	DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexBuffers[TEXT("Quad")].VertexBuffer, &Stride, &Offset);
+	DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// 셰이더 설정
+	DXDDeviceContext->VSSetShader(GetShaderManager()->GetVertexShaderByKey(TEXT("ViewportVS")), nullptr, 0);
+	DXDDeviceContext->PSSetShader(GetShaderManager()->GetPixelShaderByKey(TEXT("ViewportPS")), nullptr, 0);
+
 	DXDDeviceContext->RSSetViewports(1, &WindowViewport);
 	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 
 	SetFaceMode();
-	
+
+	ID3D11SamplerState* sampler = ResourceManager->TryGetTextureSampler(TEXT("Quad"));
+	DXDDeviceContext->PSSetSamplers(0, 1, &sampler);
 
 	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(TEXT("Window"))->GetFrameBufferRTV().GetAddressOf(), GetDepthStencilView(TEXT("Window"))->GetDepthStencilView());
 }
 
+// back buffer를 present합니다.
 void UDirectXHandle::RenderWindow()
 {
-	DXDSwapChain->Present(1, 0);
+	// texture resource 해제.
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	DXDDeviceContext->PSSetShaderResources(0, 1, nullSRV);
 
+	DXDSwapChain->Present(1, 0);
 }
 
+// texture2d를 생성합니다.
 void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 {
 	FLOAT ClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -610,26 +629,21 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), GetDepthStencilView(InViewport.GetName())->GetDepthStencilView());
 }
 
-void UDirectXHandle::RenderViewport(const FViewport& InViewport)
+// quad를 그립니다.
+void UDirectXHandle::RenderViewport(const FViewport& InViewport, bool isDepthStencil)
 {
 	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
-
-	UINT Stride = sizeof(FVertexFont);
-	UINT Offset = 0;
-
-	Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("FontVS")));
-	Context->IASetVertexBuffers(0, 1, &VertexBuffers[TEXT("Quad")].VertexBuffer, &Stride, &Offset);
-	Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// 셰이더 설정
-	Context->VSSetShader(Handle->GetShaderManager()->GetVertexShaderByKey(TEXT("ViewportVS")), nullptr, 0);
-	Context->PSSetShader(Handle->GetShaderManager()->GetPixelShaderByKey(TEXT("ViewportPS")), nullptr, 0);
-
-	// 텍스처 + 샘플러 바인딩
-	Context->PSSetShaderResources(0, 1, Handle->GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
-	ID3D11SamplerState* sampler = ResourceManager->TryGetTextureSampler(TEXT("Quad"));
-	Context->PSSetSamplers(0, 1, &sampler);
+	
+	if (!isDepthStencil)
+	{
+		DXDDeviceContext->PSSetShaderResources(0, 1, GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
+	}
+	else
+	{
+		auto SRV = GetDepthStencilView(InViewport.GetName())->GetDepthStencilSRV();
+		DXDDeviceContext->PSSetShaderResources(0, 1, &SRV);
+	}
 
 
 	// viewport 위치 지정.
@@ -734,22 +748,6 @@ HRESULT UDirectXHandle::AddDepthStencilState(const FString& InName, const D3D11_
 	DepthStencilStates[InName] = DepthStencilState;
 	return S_OK;
 }
-//
-//HRESULT UDirectXHandle::InitializeDepthStencilState()
-//{
-//	if (DepthStencilStates)
-//	{
-//		UE_LOG(TEXT("UDirectXHandle::InitializeDepthStencilState::Already Initialized"));
-//		return S_OK;
-//	}
-//
-//	DepthStencilStates = new UDXDDepthStencilState();
-//	HRESULT hr = DepthStencilStates->Create(DXDDevice);
-//	if (FAILED(hr))
-//		return hr;
-//
-//	return S_OK;
-//}
 
 HRESULT UDirectXHandle::AddRasterizerState(const FString& InName, const D3D11_RASTERIZER_DESC& InDesc)
 {

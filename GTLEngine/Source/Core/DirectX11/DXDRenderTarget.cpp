@@ -6,7 +6,7 @@ UDXDRenderTarget::~UDXDRenderTarget()
     ReleaseRenderTarget();
 }
 
-HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, const D3D11_TEXTURE2D_DESC RenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc)
+HRESULT UDXDRenderTarget::CreateRenderTarget(ComPtr<ID3D11Device> DXDDevice, const D3D11_TEXTURE2D_DESC& RenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& RenderTargetViewDesc)
 {
 	HRESULT hr = S_OK;
 	// 특정 사이즈로 framebuffer를 생성합니다.
@@ -56,10 +56,17 @@ void UDXDRenderTarget::ReleaseRenderTarget()
     if (FrameBuffer)
     {
         FrameBuffer.Reset();
+        FrameBuffer = nullptr;
     }
 
     if (FrameBufferRTV)
     {
         FrameBufferRTV.Reset();
+        FrameBufferRTV = nullptr;
+    }
+    if (FrameBufferSRV)
+    {
+        FrameBufferSRV.Reset();
+        FrameBufferSRV = nullptr;
     }
 }

@@ -43,6 +43,7 @@ public:
 	const FMatrix& GetProjectionMatrix() const { return Camera->CachedProjectionMatrix; }
 	const FMatrix& GetViewMatrix() const { return Camera->CachedViewMatrix; }
 	FViewportCamera* GetCamera() const { return Camera; }
+	void GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& OutRayOriginOnWorld, FVector& OutRayDirOnWorld);
 
 	void Destroy();
 

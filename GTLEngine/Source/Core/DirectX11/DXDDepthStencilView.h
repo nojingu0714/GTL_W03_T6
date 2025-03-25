@@ -11,8 +11,11 @@ public:
 	void ReleaseDepthStencilView();
 
 	ID3D11DepthStencilView* GetDepthStencilView() const { return DepthStencilView; }
+	ID3D11ShaderResourceView* GetDepthStencilSRV() const { return DepthStencilSRV; }
 private:
-	ID3D11Texture2D*	DepthStencilBuffer;
-	ID3D11DepthStencilView* DepthStencilView;
+	ID3D11Texture2D*					DepthStencilBuffer = nullptr;
+	ID3D11DepthStencilView*				DepthStencilView = nullptr;
+	ID3D11ShaderResourceView*			DepthStencilSRV = nullptr;
+
 };
 

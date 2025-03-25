@@ -18,6 +18,7 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	HRESULT hr = S_OK;
 
+	// 컬러 버퍼.
 	D3D11_TEXTURE2D_DESC TextureDesc = {};
 	TextureDesc.Width = InWidth;
 	TextureDesc.Height = InHeight;
@@ -45,7 +46,12 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	Camera->MaxPitch = 89.f;
 	Camera->MinPitch = -89.f;
 
-	hr = Handle->AddRenderTarget(InName, TextureDesc);
+	D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc = {};
+	RenderTargetViewDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	RenderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	RenderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	hr = Handle->AddRenderTarget(InName, TextureDesc, RenderTargetViewDesc);
 	if (FAILED(hr))
 	{
 		UE_LOG(TEXT("FViewport::Init::Failed to add render target"));
@@ -165,4 +171,14 @@ void FViewport::Destroy()
 {
 	delete Camera;
 	Camera = nullptr;
+}
+
+void FViewport::GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& OutRayOriginOnWorld, FVector& OutRayDirOnWorld)
+{
+	float NDCMouseX = (InScreenMouseX - Viewport.TopLeftX) / (float)Viewport.Width * 2 - 1;
+	float NDCMouseY = (InScreenMouseY - Viewport.TopLeftY) / (float)Viewport.Height * -2 + 1;
+
+	FVector4 NDCRayOrigin = FVector4(NDCMouseX, NDCMouseY, 0, 1);
+	FVector4 NDCRayDir = FVector4(NDCMouseX, NDCMouseY, 1, 1);
+
 }

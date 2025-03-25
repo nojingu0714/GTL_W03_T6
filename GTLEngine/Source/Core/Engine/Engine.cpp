@@ -129,27 +129,6 @@ void UEngine::Render()
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();
 
-
-
- //   // 그릴 렌더 타겟뷰 초기화.
- //   //DirectX11Handle->InitView();
- //   DirectX11Handle->PrepareViewport(&Viewports[TEXT("Default")]);
- //   DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
-
- //   DirectX11Handle->SetLineMode();
- //   DirectX11Handle->RenderWorldPlane(World->GetCamera());
- //   DirectX11Handle->RenderBoundingBox(World->GetActors());
- //   DirectX11Handle->RenderLines(World->GetActors());
-
- //   DirectX11Handle->SetFaceMode();
- //   DirectX11Handle->RenderObject(World->GetActors());
- //   DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
- //   // 오브젝트들 받아와서 DXD 핸들에 넘겨준 후 DXD 핸들에서 해당 오브젝트 값 읽어서 렌더링에 추가.
-
- //   // UI 그리기.
- //   UIManager->RenderUI();
-	//// 최종적으로 그린 결과물을 화면에 출력.
-	//DirectX11Handle->GetDXDSwapChain()->Present(1, 0);
 }
 
 HRESULT UEngine::ResizeWindow(int width, int height) {
