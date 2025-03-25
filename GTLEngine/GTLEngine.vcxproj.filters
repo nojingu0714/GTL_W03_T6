@@ -343,6 +343,9 @@
     <ClCompile Include="Source\Core\Editor\DebugLine.cpp">
       <Filter>Source\Core\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Window\Splitter.cpp">
+      <Filter>Source\Core\Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Utils\EnginePch.h">
@@ -605,6 +608,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Editor\DebugLine.h">
       <Filter>Source\Core\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Window\Splitter.h">
+      <Filter>Source\Core\Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -261,6 +261,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Core\Window\Splitter.cpp" />
     <ClCompile Include="Source\Core\Window\Viewport.cpp" />
     <ClCompile Include="Source\Core\Window\ViewportClient.cpp" />
     <ClCompile Include="Source\Launch\LaunchWindows.cpp">
@@ -378,6 +379,7 @@
     <ClInclude Include="Source\Core\Time\TimeManager.h" />
     <ClInclude Include="Source\Core\UI\UIInterface.h" />
     <ClInclude Include="Source\Core\UI\UIManager.h" />
+    <ClInclude Include="Source\Core\Window\Splitter.h" />
     <ClInclude Include="Source\Core\Window\Viewport.h" />
     <ClInclude Include="Source\Core\Window\ViewportClient.h" />
     <ClInclude Include="Source\Utils\EnginePch.h" />

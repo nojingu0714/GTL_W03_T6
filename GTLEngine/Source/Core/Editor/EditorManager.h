@@ -2,6 +2,8 @@
 
 class FViewport;
 class FViewportClient;
+class FSplitterH;
+class FSplitterV;
 
 class FEditorManager
 {
@@ -20,4 +22,7 @@ public:
 	TArray<FViewport> Viewports;
 	FViewport* HoveredViewport;
 	FViewport* SelectedViewport;
+
+	FSplitterH* SplitterH;
+	FSplitterV* SplitterV;
 };

@@ -6,21 +6,22 @@
 #include "Engine/Engine.h"
 #include "Gizmo/GizmoManager.h"
 #include "Input/InputManager.h"
+#include "Window/Splitter.h"
 
 void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 {
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	DefaultViewport.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	DefaultViewport.Init(TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	DefaultViewport.Init(TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
 	// 뷰포트 클라이언트 생성
@@ -28,6 +29,14 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	//ViewportClient->Init();
 	HoveredViewport = &Viewports[0];
 	SelectedViewport = &Viewports[0];
+
+	//Splitter 생성 
+	SplitterH = new FSplitterH();
+	SplitterH->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
+	
+
+	SplitterV = new FSplitterV();
+	SplitterV->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
 }
 
 void FEditorManager::Tick(float DeltaTime)
@@ -36,6 +45,22 @@ void FEditorManager::Tick(float DeltaTime)
 	UpdateSelectedViewport();
 
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+
+	if (InputManager->GetMouseButton(UInputManager::EMouseButton::LEFT))
+	{
+		int32 MouseX = InputManager->GetMouseClientX();
+		int32 MouseY = InputManager->GetMouseClientY();
+		FVector2 MousePosition = FVector2(MouseX, MouseY);
+		if (SplitterH->IsMouseOverSplitter(MousePosition))
+		{
+			SplitterH->OnDrag(MousePosition);
+		}
+		if (SplitterV->IsMouseOverSplitter(MousePosition))
+		{
+			SplitterV->OnDrag(MousePosition);
+		}
+	}
+
 
 	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
 	{
