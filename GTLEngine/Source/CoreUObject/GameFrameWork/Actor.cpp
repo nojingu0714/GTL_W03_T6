@@ -89,36 +89,3 @@ FBoundingBox AActor::GetAABB() const {
 	return FBoundingBox(min, max);
 }
 
-void AActor::OnClick(int mx, int my) {
-	IsSelected = true;
-}
-
-void AActor::OnRelease(int mx, int my) {
-	IsSelected = false;
-}
-
-bool AActor::IsClicked(FRay ray, float maxDistance, FVector& hitpoint) {
-	// aabb로 1차 검사
-	FBoundingBox aabb = GetAABB();
-	if ( !Geometry::IsRayIntersectAABB(aabb, ray, 100.f) ) {
-		return false;
-	}
-	bool result = false;
-	float minDistancePow = FLT_MAX;
-	AActor* camera = UEngine::GetEngine().GetWorld()->GetCamera();
-	if (camera == nullptr) {
-		return false;
-	}
-	// 각 객체의 알고리즘(default: moller-trumbore algorithm)으로 2차 검사
-	for ( UActorComponent* comp : GetOwnedComponent() ) {
-		FVector hitp;
-		if ( comp->IsRayIntersect(ray, 100.f, hitp) &&
-			minDistancePow > (camera->GetActorLocation() - hitp).LengthSquared()
-			) {
-			minDistancePow = (camera->GetActorLocation() - hitp).LengthSquared();
-			result = true;
-			hitpoint = hitp;
-		}
-	}
-	return result;
-}

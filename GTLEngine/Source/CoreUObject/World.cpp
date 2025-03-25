@@ -15,9 +15,6 @@ UWorld* UWorld::CreateWorld()
 
 	// TODO: 나중에 분리.
 
-	NewWorld->MainCamera = NewWorld->SpawnActor<ACamera>(TEXT("MainCamera"), FVector(0.f, 2.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
-	NewWorld->MainCamera->SetActorLocation(FVector(-10.f, 0.f, 0.0f));
-
 	NewWorld->SpawnActor<AStaticMeshActor>(TEXT("StaticMeshActor"), FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
 
     return NewWorld;
@@ -43,18 +40,7 @@ void UWorld::Destroy()
 			FObjectFactory::DestroyObject(Actor);
 		}
 	}
-	MainCamera = nullptr;
 	ActiveActors.clear();
 	/*IClickable::GetClickableList().clear();
 	IDragable::GetClickableList().clear();*/
-	UEngine::GetEngine().GetGizmoManager()->ClearSelected();
 }
-
-void UWorld::InitViewInfo()
-{
-	CachedViewInfo.ViewMatrix = FMatrix();
-	CachedViewInfo.ProjectionMatrix = FMatrix();
-	CachedViewInfo.ViewProjectionMatrix = FMatrix();
-}
-
-

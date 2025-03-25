@@ -23,10 +23,6 @@ public:
     //const TArray<FVertexPNCT> GetGizmoVertexData(EGizmoViewType Type) const;
     //const TArray<uint32> GetGizmoIndexData(EGizmoViewType Type) const;
 
-    void NewScene();
-    void LoadScene(std::string SceneName);
-    void SaveScene(std::string SceneName);
-
     void SetConfigData(EConfigData type, float data);
     float GetConfigData(EConfigData type, float defaultValue);
 

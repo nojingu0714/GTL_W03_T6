@@ -16,6 +16,8 @@ public:
 
 	void SetStaticMesh(UStaticMeshComponent* InStaticMeshComponent);
 
+	UStaticMeshComponent* GetStaticMeshComponent() const { return StaticMeshComponent; }
+
 protected:
 	UStaticMeshComponent* StaticMeshComponent = nullptr;
 

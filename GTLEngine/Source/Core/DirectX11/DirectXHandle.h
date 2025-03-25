@@ -52,7 +52,6 @@ public:
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderLines(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);
-	void RenderComponentUUID(USceneComponent* TargetComponent);
 
 public:
 	//void InitView();

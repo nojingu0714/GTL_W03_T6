@@ -13,7 +13,6 @@
 #include "GameFrameWork/Shapes/Cube.h"
 #include "GameFrameWork/Shapes/Cylinder.h"
 #include "GameFrameWork/Shapes/Cone.h"
-#include "GameFrameWork/Shapes/Line.h"
 
 #include <functional>
 
@@ -40,21 +39,6 @@ void UUISceneManager::Tick(float TickTime) {
 
     ImGui::End();
 
-    //DebugLine 생성
-    UInputManager* inputManager = UEngine::GetEngine().GetInputManager();
-    if ( DebugSpawnLine && inputManager->GetMouseDown(UInputManager::EMouseButton::LEFT) ) {
-		float mouse_x = inputManager->GetMouseNdcX();
-		float mouse_y = inputManager->GetMouseNdcY();
-		FRay ray = Geometry::CreateRayWithMouse(mouse_x, mouse_y);
-		ALine* line = UEngine::GetEngine().GetWorld()->SpawnActor<ALine>(
-			TEXT("Line"),
-			FVector::ZeroVector,
-			FRotator::ZeroRotator,
-			FVector::OneVector,
-			nullptr
-		);
-        line->SetRay(ray);
-	}
 }
 
 void UUISceneManager::ActorSpawner()
@@ -125,25 +109,11 @@ void UUISceneManager::SceneHierarchy()
             }
             ImGui::TreePop();
         }
-
-
         };
-    for (AActor* obj : UEngine::GetEngine().GetWorld()->GetActors()) {
-        // cast가 안먹힌다
-        if ( dynamic_cast<ALine*>(obj) != nullptr )
-            continue;
-        if (obj) {
-            FString ws = obj->GetName();
-            std::string s;
-            s.assign(ws.begin(), ws.end());
-            if (ImGui::TreeNodeEx(s.c_str())) {
-                createNode(obj->GetRootComponent());
-                ImGui::TreePop();
-            }
-
-        }
-    }
     ImGui::EndChild();
 }
 
-void UUISceneManager::Destroy() {}
+void UUISceneManager::Destroy()
+{
+    Super::Destroy();
+}

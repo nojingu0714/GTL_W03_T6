@@ -2,7 +2,6 @@
 #include "Camera.h"
 
 #include "Components/CameraComponent.h"
-#include "Components/LineComponent.h"
 #include "Engine/Engine.h"
 #include "World.h"
 #include "Resource/ResourceManager.h"

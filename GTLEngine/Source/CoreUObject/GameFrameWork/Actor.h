@@ -3,14 +3,13 @@
 #include "Core/Engine/Engine.h"
 #include "CoreUObject/Object.h"
 #include "CoreUObject/Components/SceneComponent.h"
-#include "UI/UIInterface.h"
 #include "ObjectFactory.h"
 
 class UActorComponent;
 class USceneComponent;
 struct FBoundingBox;
 	
-class AActor : public UObject, public IClickable
+class AActor : public UObject
 {
 	DECLARE_CLASS(AActor, UObject)
 public:
@@ -68,11 +67,6 @@ public:
 private:
 	AActor* Owner;
 	TArray<UActorComponent*> OwnedComponent;
-
-public:
-	void OnClick(int mx, int my) override;
-	void OnRelease(int mx, int my) override;
-	bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint) override;
 
 };
 

@@ -65,6 +65,7 @@ public:
     UInputManager* GetInputManager() const { return InputManager; }
     UUIManager* GetUIManager() const { return UIManager; }
 	UGizmoManager* GetGizmoManager() const { return GizmoManager; }
+	FEditorManager* GetEditorManager() const { return EditorManager; }
 
 private:
 	UDirectXHandle* DirectX11Handle;
@@ -75,6 +76,7 @@ private:
     UUIManager* UIManager;
     UGizmoManager* GizmoManager;
     FEditorManager* EditorManager;
+
 public:
     const FWindowInfo& GetWindowInfo() const { return WindowInfo; }
 
@@ -87,11 +89,6 @@ public:
 
 private:
     float FPS;
-
-public:
-    EViewModeIndex ViewModeIndex;
-    EGizmoModeIndex GizmoModeIndex;
-    EEngineShowFlags ShowFlags = EEngineShowFlags::SF_Primitives;
 
 public:
     void CreateNewWorld();
