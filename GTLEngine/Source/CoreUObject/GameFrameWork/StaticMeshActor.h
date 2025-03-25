@@ -14,6 +14,8 @@ public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
 
+	void SetStaticMesh(UStaticMeshComponent* InStaticMeshComponent);
+
 protected:
 	UStaticMeshComponent* StaticMeshComponent = nullptr;
 

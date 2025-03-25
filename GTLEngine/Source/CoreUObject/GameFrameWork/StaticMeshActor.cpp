@@ -17,3 +17,8 @@ void AStaticMeshActor::Destroy()
 {
 	Super::Destroy();
 }
+
+void AStaticMeshActor::SetStaticMesh(UStaticMeshComponent* InStaticMeshComponent)
+{
+	StaticMeshComponent = InStaticMeshComponent;
+}
