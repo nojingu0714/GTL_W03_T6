@@ -98,6 +98,9 @@
     <Filter Include="Source\Core\Editor">
       <UniqueIdentifier>{d64e0c86-16e4-40e6-8bee-522c5e26b820}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\CoreUObject\UObject">
+      <UniqueIdentifier>{8666750a-e63f-4594-9baf-f3f22b7330df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\EnginePch.cpp">
@@ -327,6 +330,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Window\ViewportClient.cpp">
       <Filter>Source\Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\UObject\UObjectArray.cpp">
+      <Filter>Source\CoreUObject\UObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\UObject\UObjectIterator.cpp">
+      <Filter>Source\CoreUObject\UObject</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Editor\EditorManager.cpp">
       <Filter>Source\Core\Editor</Filter>
@@ -584,6 +593,12 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Editor\EditorManager.h">
       <Filter>Source\Core\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\UObject\UObjectArray.h">
+      <Filter>Source\CoreUObject\UObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\UObject\UObjectIterator.h">
+      <Filter>Source\CoreUObject\UObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

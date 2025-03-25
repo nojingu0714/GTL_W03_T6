@@ -21,8 +21,6 @@
 
 #include <stdlib.h>
 
-TArray<UObject*> GUObjectArray = TArray<UObject*>();
-
 bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 {
     WindowInfo = InWindowInfo;

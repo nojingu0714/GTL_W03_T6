@@ -34,8 +34,9 @@ struct FObjImporter
 
             // Handle vertices (v)
             if (line.substr(0, 2) == "v ") {
-                FVector Vertex;
-                FVector4 Color(0.0f,0.0f, 0.0f, 1.0f); // Default color: white
+                static FVector Vertex;
+                static FVector4 Color;
+                Color = { 0.0f,0.0f, 0.0f, 1.0f }; // Default color: white
 
                 // Parse vertex coordinates
                 ss >> token >> Vertex.X >> Vertex.Y >> Vertex.Z;
@@ -52,13 +53,13 @@ struct FObjImporter
             }
             // Handle normals (vn)
             else if (line.substr(0, 3) == "vn ") {
-                FVector normal;
+                static FVector normal;
                 ss >> token >> normal.X >> normal.Y >> normal.Z;
                 OutObjInfo.Normals.push_back(FVector{ normal });  // 0 is a placeholder for index
             }
             // Handle texture coordinates (vt)
             else if (line.substr(0, 3) == "vt ") {
-                FVector2 uv;
+                static FVector2 uv;
                 ss >> token >> uv.X >> uv.Y;
                 uv.Y = -uv.Y;
                 OutObjInfo.UV.push_back({ uv });  // 0 is a placeholder for index
@@ -66,11 +67,11 @@ struct FObjImporter
             // Handle face (f) which contains vertex indices
             // Handle material library (mtllib)
             else if (line.substr(0, 7) == "mtllib ") {
-                std::string MtlFileName;  // std::string으로 먼저 읽고
+                static std::string MtlFileName;  // std::string으로 먼저 읽고
                 ss >> token >> MtlFileName;
                 MtlFileName = InPath + "/" + MtlFileName;
                 
-                FObjMaterialInfo NewMtlInfo;
+                static FObjMaterialInfo NewMtlInfo;
                 if (!ParseMtlFile(InPath, MtlFileName, OutObjInfo.Materials))
                 {
                     return false;
@@ -114,10 +115,10 @@ struct FObjImporter
                         // 정점만 있는 경우
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
                     }
-                    else if (parts.size() == 2) {
+                    else if (parts[1] == "") {
                         // 정점 + 텍스처
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
-                        faceTexCoords.push_back(std::stoi(parts[1]) - 1);
+                        faceNormals.push_back(std::stoi(parts[2]) - 1);
                     }
                     else if (parts.size() == 3) {
                         // 정점 + 텍스처 + 노멀
@@ -133,7 +134,7 @@ struct FObjImporter
                 newFace.TexCoords = TArray<int>(faceTexCoords.begin(), faceTexCoords.end());
                 newFace.Normals = TArray<int>(faceNormals.begin(), faceNormals.end());
 
-                if (CurrentMaterial.length() != 0)
+              //  if (CurrentMaterial.length() != 0)
                     OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
 
             }
@@ -311,8 +312,8 @@ struct FObjImporter
             else
             {
                 // Unknown token 처리
-                NewMatInfo = FObjMaterialInfo();
-                return false;
+              //  NewMatInfo = FObjMaterialInfo();
+               // return false;
             }
 
         }

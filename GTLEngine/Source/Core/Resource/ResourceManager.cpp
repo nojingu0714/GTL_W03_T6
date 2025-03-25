@@ -151,7 +151,7 @@ void UResourceManager::Release()
 void UResourceManager::NewScene()
 {
     LoadScene("DefaultScene");
-    UE_LOG(TEXT("CreateDepthStencilState New Scene"));
+    UE_LOG(LogTemp, Warning, TEXT("CreateDepthStencilState New Scene"));
     //ULogManager::AddLog(TEXT("Create New Scene"));
     
 }
@@ -168,7 +168,7 @@ void UResourceManager::LoadScene(std::string SceneName)
     if (!inFile.is_open())
     {
         // 파일 열기 실패 처리
-        UE_LOG(TEXT("Can't access %s"), wbuf)
+        UE_LOG(LogTemp, Warning, TEXT("Can't access %s"), wbuf);
         //ULogManager::AddLog(TEXT("Can't access %s"), (SceneName + ".Scene").c_str());
         return;
     }
@@ -232,7 +232,7 @@ void UResourceManager::LoadScene(std::string SceneName)
         }
     }
     
-    UE_LOG(TEXT("Success to Load %s"), wbuf);
+    UE_LOG(LogTemp, Display, TEXT("Success to Load %s"), wbuf);
     //ULogManager::AddLog(TEXT("Success to Load %s"), (SceneName + ".Scene").c_str());
 }
 
@@ -321,9 +321,9 @@ void UResourceManager::SaveScene(std::string SceneName)
     {
         outFile << jsonData;
         outFile.close();
-        UE_LOG(L"Success to Save %s", wSceneName.c_str());
+        UE_LOG(LogTemp, Warning, TEXT("Success to Save %s"), wSceneName.c_str());
     } else {
-        UE_LOG(L"Can't access %s", wSceneName.c_str());
+        UE_LOG(LogTemp, Warning, TEXT("Can't access %s"), wSceneName.c_str());
     }
 }
 

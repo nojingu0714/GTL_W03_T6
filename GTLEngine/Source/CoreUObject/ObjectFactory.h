@@ -1,8 +1,9 @@
 ﻿#pragma once
-#include "Engine.h"
+
 #include "EngineStatics.h"
 #include <string>
 #include "HAL/PlatformMemory.h"
+#include "UObject/UObjectArray.h"
 
 class UObject;
 

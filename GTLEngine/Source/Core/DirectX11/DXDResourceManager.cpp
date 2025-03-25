@@ -56,7 +56,7 @@ ID3D11ShaderResourceView* UDXDResourceManager::TryGetTextureSRV(const FString& K
 	
 	if (FAILED(CreateTextureSRV(Key)))
 	{
-		UE_LOG(TEXT("DXDResourceManager %s Texture Load Failed"), __FUNCTION__);
+		UE_LOG(LogTemp, Warning, TEXT("DXDResourceManager %s Texture Load Failed"), __FUNCTION__);
 		return nullptr;
 	}
 	return TextureSRVPool[Key];

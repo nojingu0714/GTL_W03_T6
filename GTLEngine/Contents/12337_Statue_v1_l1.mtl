@@ -1,0 +1,32 @@
+# Blender 4.4.0 MTL File: 'None'
+# www.blender.org
+
+newmtl 12337_Statue_Shiva_body
+Ns 45.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.450000 0.450000 0.450000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd 12337_Statue_Shiva_body_diff.jpg
+
+newmtl 12337_Statue_Shiva_decoration
+Ns 45.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd 12337_Statue_Shiva_decoration_diff.jpg
+map_Ks 12337_Statue_Shiva_decoration_spec.jpg
+
+newmtl 12337_Statue_Shiva_platform
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd 12337_Statue_Shiva_platform_diff.jpg

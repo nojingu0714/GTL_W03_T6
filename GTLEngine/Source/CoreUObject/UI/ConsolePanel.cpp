@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ConsolePanel.h"
 
+#include "Utils/GTLStringLibrary.h"
+
 UConsolePanel::UConsolePanel(): WindowWidth(360.f), WindowHeight(400.f) {
     strcpy_s(InputBuffer, 256, "");
 }
@@ -88,8 +90,9 @@ void UConsolePanel::LogDisplay()
 {
     const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
     ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_HorizontalScrollbar);
-    for (const char* item : ULogManager::GetLogs()) {
-        ImGui::TextUnformatted(item);
+    for (const FLogItem& item : ULogManager::GetLogs()) {
+        std::wcout << item.Message << std::endl;
+        ImGui::TextUnformatted(item.Message);
         //ImGui::Text(item);
     }
     if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
@@ -114,6 +117,6 @@ void UConsolePanel::Destroy() {}
 
 void UConsolePanel::ExecCommand(const char* s) {
     //AddLog("# %s\n", s);
-    UE_LOG(TEXT("# %s\n"), s)
+    UE_LOG(Log, Display, TEXT("# %s\n"), s);
     StrSplit(s);
 }
