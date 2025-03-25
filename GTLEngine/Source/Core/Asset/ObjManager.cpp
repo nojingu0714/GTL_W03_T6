@@ -2,6 +2,7 @@
 #include "ObjManager.h"
 #include "Material.h"
 
+
 TMap<FString, FStaticMesh*> FObjManager::ObjStaticMeshMap;
 
 const int RenderMode = 3; // Triangle Render
@@ -37,12 +38,11 @@ FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
 
 UStaticMesh* FObjManager::LoadObjStaticMesh(const FString& PathFileName)
 {
-   
-    for (auto It = GUObjectArray.begin(); It != GUObjectArray.end(); ++It)
+    for (TObjectIterator<UStaticMesh> It; It; ++It)
     {
-        UStaticMesh* StaticMesh = Cast<UStaticMesh>(*It);
-        if (StaticMesh && StaticMesh->GetAssetPathFileName() == PathFileName)
-            return StaticMesh;
+        UStaticMesh* StaticMesh = *It;
+        if (StaticMesh->GetAssetPathFileName() == PathFileName)
+            return *It;
     }
 
     FStaticMesh* Asset = FObjManager::LoadObjStaticMeshAsset(PathFileName);

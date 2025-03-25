@@ -649,7 +649,7 @@ HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTU
 {
 	if (RenderTargets.find(InName) != RenderTargets.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddRenderTarget::Duplicate Name"));
+		UE_LOG(LogTemp, Display, TEXT("UDirectXHandle::AddRenderTarget::Duplicate Name"));
 		return S_OK;
 	}
 
@@ -667,7 +667,7 @@ HRESULT UDirectXHandle::AddRenderTargetToSwapChain(const FString& InName)
 {
 	if (RenderTargets.find(InName) != RenderTargets.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddRenderTarget::Duplicate Name"));
+		UE_LOG(LogTemp, Display, TEXT("UDirectXHandle::AddRenderTarget::Duplicate Name"));
 		return S_OK;
 	}
 
@@ -685,7 +685,7 @@ HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UI
 {
 	if (DepthStencilViews.find(InName) != DepthStencilViews.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilView::Duplicate Name"));
+		UE_LOG(LogTemp, Display, TEXT("UDirectXHandle::AddDepthStencilView::Duplicate Name"));
 		return S_OK;
 	}
 
@@ -694,7 +694,7 @@ HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UI
 	HRESULT hr = DepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
 	if (FAILED(hr))
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilView::Create Failed"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::AddDepthStencilView::Create Failed"));
 		return hr;
 	}
 
@@ -706,7 +706,7 @@ HRESULT UDirectXHandle::AddDepthStencilState(const FString& InName, const D3D11_
 {
 	if (DepthStencilStates.find(InName) != DepthStencilStates.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilState::Duplicate Name"));
+		UE_LOG(LogTemp, Display, TEXT("UDirectXHandle::AddDepthStencilState::Duplicate Name"));
 		return S_OK;
 	}
 
@@ -715,7 +715,7 @@ HRESULT UDirectXHandle::AddDepthStencilState(const FString& InName, const D3D11_
 	HRESULT hr = DepthStencilState->CreateDepthStencilState(DXDDevice, InDesc);
 	if (FAILED(hr))
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilState::Create Failed"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::AddDepthStencilState::Create Failed"));
 		return hr;
 	}
 
@@ -743,7 +743,7 @@ HRESULT UDirectXHandle::AddRasterizerState(const FString& InName, const D3D11_RA
 {
 	if (RasterizerStates.find(InName) != RasterizerStates.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddDepthStencilView::Duplicate Name"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::AddDepthStencilView::Duplicate Name"));
 		return S_OK;
 	}
 
@@ -752,7 +752,7 @@ HRESULT UDirectXHandle::AddRasterizerState(const FString& InName, const D3D11_RA
 	HRESULT hr = RasterizerState->CreateRasterizerState(DXDDevice, InDesc);
 	if (FAILED(hr))
 	{
-		UE_LOG(TEXT("UDirectXHandle::AddRasterizerState::Create Failed"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::AddRasterizerState::Create Failed"));
 		return hr;
 	}
 
@@ -764,7 +764,7 @@ UDXDRenderTarget* UDirectXHandle::GetRenderTarget(const FString& InName)
 {
 	if (RenderTargets.find(InName) == RenderTargets.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::GetRenderTarget::Invalid Name"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetRenderTarget::Invalid Name"));
 		return nullptr;
 	}
 	return RenderTargets[InName];
@@ -774,7 +774,7 @@ UDXDDepthStencilView* UDirectXHandle::GetDepthStencilView(const FString& InName)
 {
 	if (DepthStencilViews.find(InName) == DepthStencilViews.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::GetDepthStencilView::Invalid Name"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetDepthStencilView::Invalid Name"));
 		return nullptr;
 	}
 	return DepthStencilViews[InName];
@@ -784,7 +784,7 @@ UDXDDepthStencilState* UDirectXHandle::GetDepthStencilStates(const FString& InNa
 {
 	if (DepthStencilStates.find(InName) == DepthStencilStates.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::GetDepthStencilStates::Invalid Name"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetDepthStencilStates::Invalid Name"));
 		return nullptr;
 	}
 	return DepthStencilStates[InName];
@@ -794,7 +794,7 @@ UDXDRasterizerState* UDirectXHandle::GetRasterizerState(const FString& InName)
 {
 	if (RasterizerStates.find(InName) == RasterizerStates.end())
 	{
-		UE_LOG(TEXT("UDirectXHandle::GetRasterizerState::Invalid Name"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetRasterizerState::Invalid Name"));
 		return nullptr;
 	}
 	return RasterizerStates[InName];
@@ -974,6 +974,9 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 
 		// 인덱스를 기반으로 그리기
 		DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
+		
+		VertexInfo.VertexBuffer->Release();
+		IndexInfo.IndexBuffer->Release();
 	}
 }
 

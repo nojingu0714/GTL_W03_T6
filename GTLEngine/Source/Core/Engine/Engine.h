@@ -104,4 +104,3 @@ public:
 
 };
 
-extern TArray<UObject*> GUObjectArray;

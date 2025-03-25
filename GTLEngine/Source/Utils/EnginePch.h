@@ -113,5 +113,5 @@ bool GetFlag(T& target, const T flag) {
 
 #include "NameTypes.h"
 #include "LogManager.h"
-#define UE_LOG(str, ...) ULogManager::AddLog(str, __VA_ARGS__);
 
+#include "UObject/UObjectIterator.h"

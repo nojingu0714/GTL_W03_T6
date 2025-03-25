@@ -19,8 +19,6 @@
 #include "Core/Window/ViewportClient.h"
 
 
-TArray<UObject*> GUObjectArray = TArray<UObject*>();
-
 bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 {
     WindowInfo = InWindowInfo;
@@ -208,6 +206,7 @@ void UEngine::ClearEngine()
 		delete TimeManager;
 		TimeManager = nullptr;
 	}
+
 }
 
 

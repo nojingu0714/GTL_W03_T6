@@ -32,13 +32,13 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	hr = Handle->AddRenderTarget(InName, TextureDesc);
 	if (FAILED(hr))
 	{
-		UE_LOG(TEXT("FViewport::Init::Failed to add render target"));
+		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
 		return hr;
 	}
 	hr = Handle->AddDepthStencilView(InName, hWnd, InWidth, InHeight);
 	if (FAILED(hr))
 	{
-		UE_LOG(TEXT("FViewport::Init::Failed to add render target"));
+		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
 		return hr;
 	}
 	return hr;

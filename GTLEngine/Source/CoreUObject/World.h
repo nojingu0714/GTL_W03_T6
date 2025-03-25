@@ -44,7 +44,7 @@ public:
 
 			ActiveActors.push_back(newActor);
 
-			UE_LOG(TEXT("Spawn %s"), InName.c_str());
+			UE_LOG(LogTemp, Display, TEXT("Spawn %s"), InName.c_str());
 		}
 		return NewObject;
 	}
