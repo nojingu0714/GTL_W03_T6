@@ -46,7 +46,13 @@ struct FVertexPNCT
     FVector2 UV;
 };
 
-struct FVertexFont
+struct FVertexPC
+{
+    FVector Position;
+    FVector4 Color;
+};
+
+struct FVertexPT
 {
     FVector Position;
     FVector2 UV;
@@ -83,6 +89,7 @@ enum class EConstantBufferType
     ChangesEveryObject,
     ViewportRatio,
     Material,
+    Gizmo,
     Max,
 };
 
@@ -131,6 +138,11 @@ struct FCbLine
     float R, G, B, A;
 };
 
+struct FCbGizmo
+{
+	FVector4 Color;
+};
+
 struct FRay {
     FVector Origin;
     FVector Direction;
@@ -141,8 +153,25 @@ struct FRay {
 struct FBoundingBox {
     FVector min;
     FVector max;
+    FBoundingBox() : min({ FLT_MAX, FLT_MAX ,FLT_MAX }), max({ -FLT_MAX, -FLT_MAX ,-FLT_MAX }) {}
     FBoundingBox(FVector min, FVector max) : min(min), max(max) {};
     FVector GetGap() { return max - min; }
+    void GetCenterAndExtents(FVector& Center, FVector& Extents) const
+    {
+        Center = (min + max) * 0.5f;
+        Extents = (max - min) * 0.5f;
+    }
+
+    inline FBoundingBox& operator+=(const FBoundingBox& Other)
+    {
+        min.X = std::min(min.X, Other.min.X);
+        min.Y = std::min(min.Y, Other.min.Y);
+        min.Z = std::min(min.Z, Other.min.Z);
+        max.X = std::max(max.X, Other.max.X);
+        max.Y = std::max(max.Y, Other.max.Y);
+        max.Z = std::max(max.Z, Other.max.Z);
+        return *this;
+    }
 };
 
 enum class EDepthComparisonMode

@@ -1,15 +1,13 @@
 #pragma once
 
-//#include "Components/PrimitiveComponent.h"
 #include "Core/Resource/Types.h"
 #include "CoreUObject/GameFrameWork/Actor.h"
-#include "Core/UI/UIInterface.h"
 #include "Core/Engine/Engine.h"
 #include "CoreUObject/World.h"
 #include "Utils/Math/Geometry.h"
 #include "Resource/ResourceManager.h"
 
-class UGizmoBase : public UObject, public IDragable
+class UGizmoBase : public UObject
 {
 	DECLARE_CLASS(UGizmoBase, UObject)
 public:
@@ -36,7 +34,7 @@ public:
 
 	virtual FBoundingBox GetAABB() const;
 
-	virtual bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint) override;
+	virtual bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint);
 	EGizmoViewType GetGizmoViewType() const { return GizmoViewType; }
 	AActor* GetTargetActor() { return Target; }
 	EGizmoModeIndex GizmoMode;

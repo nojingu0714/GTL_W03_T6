@@ -6,6 +6,7 @@
 #include "Utils/Math/Geometry.h"
 #include "Components/SceneComponent.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
+#include "CoreUObject/Components/StaticMeshComponent.h"
 
 AActor::AActor()
 	: UObject()
@@ -75,18 +76,15 @@ void AActor::SetActorScale(const FVector& InScale)
 }
 
 FBoundingBox AActor::GetAABB() const {
-	FVector min = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
-	FVector max = FVector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-	for (UActorComponent* comp: OwnedComponent) {
-		FBoundingBox compAABB = comp->GetAABB();
-		if ( compAABB.min.X < min.X ) min.X = compAABB.min.X;
-		if ( compAABB.min.Y < min.Y ) min.Y = compAABB.min.Y;
-		if ( compAABB.min.Z < min.Z ) min.Z = compAABB.min.Z;
-		if ( compAABB.max.X > max.X ) max.X = compAABB.max.X;
-		if ( compAABB.max.Y > max.Y ) max.Y = compAABB.max.Y;
-		if ( compAABB.max.Z > max.Z ) max.Z = compAABB.max.Z;
+	FBoundingBox Box(FVector(FLT_MAX, FLT_MAX, FLT_MAX), FVector(-FLT_MAX, -FLT_MAX, -FLT_MAX));
+	for (UActorComponent* comp : OwnedComponent) {
+		if (UStaticMeshComponent* StaticMeshComp = Cast<UStaticMeshComponent>(comp))
+		{
+			FBoundingBox compAABB = StaticMeshComp->GetAABB(StaticMeshComp->GetWorldMatrix());
+			Box += compAABB;
+		}
 	}
-	return FBoundingBox(min, max);
+	return Box;
 }
 
 void AActor::OnClick(int mx, int my) {
@@ -103,22 +101,12 @@ bool AActor::IsClicked(FRay ray, float maxDistance, FVector& hitpoint) {
 	if ( !Geometry::IsRayIntersectAABB(aabb, ray, 100.f) ) {
 		return false;
 	}
-	bool result = false;
-	float minDistancePow = FLT_MAX;
-	AActor* camera = UEngine::GetEngine().GetWorld()->GetCamera();
-	if (camera == nullptr) {
-		return false;
+	else
+	{
+		return true;
 	}
-	// 각 객체의 알고리즘(default: moller-trumbore algorithm)으로 2차 검사
-	for ( UActorComponent* comp : GetOwnedComponent() ) {
-		FVector hitp;
-		if ( comp->IsRayIntersect(ray, 100.f, hitp) &&
-			minDistancePow > (camera->GetActorLocation() - hitp).LengthSquared()
-			) {
-			minDistancePow = (camera->GetActorLocation() - hitp).LengthSquared();
-			result = true;
-			hitpoint = hitp;
-		}
-	}
-	return result;
+
+
+
+
 }

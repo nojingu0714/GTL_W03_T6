@@ -22,7 +22,7 @@
 //	//// Quad Vertex Buffer 생성
 //	//// 0  0     1  0
 //	//// 0 -1     1 -1
-//	//FVertexFont QuadVertices[] =
+//	//FVertexPT QuadVertices[] =
 //	//{
 //	//	{ FVector(1.f, -1.f, 0.f), FVector2(1.0f, 1.0f) }, // 우하단.
 //	//	{ FVector(0.f, 0.f, 0.f), FVector2(0.0f, 0.0f) }, // 좌상단.
@@ -34,7 +34,7 @@
 //
 //	//D3D11_BUFFER_DESC BufferDesc = {};
 //	//BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-//	//BufferDesc.ByteWidth = sizeof(FVertexFont) * 6;
+//	//BufferDesc.ByteWidth = sizeof(FVertexPT) * 6;
 //	//BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 //
 //	//D3D11_SUBRESOURCE_DATA InitData = {};
@@ -48,7 +48,7 @@
 //	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 //	ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
 //
-//	UINT Stride = sizeof(FVertexFont);
+//	UINT Stride = sizeof(FVertexPT);
 //	UINT Offset = 0;
 //
 //	Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("FontVS")));
@@ -66,7 +66,7 @@
 //	//UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 //	//ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
 //
-//	//UINT Stride = sizeof(FVertexFont);
+//	//UINT Stride = sizeof(FVertexPT);
 //	//UINT Offset = 0;
 //
 //	//Context->IASetInputLayout(Handle->GetShaderManager()->GetInputLayoutByKey(TEXT("ViewportVS")));

@@ -2,19 +2,24 @@
 
 #include "GameFrameWork/Actor.h"
 
-class UGizmoArrow;
+class UGizmoTranslateComponent;
+class UGizmoRotateComponent;
+class UGizmoScaleComponent;
 
 class AGizmoActor : public AActor
 {
 	DECLARE_CLASS(AGizmoActor, AActor)
+
 public:
 	AGizmoActor();
 
-public:
-	virtual void Tick(float TickTime) override;
-	virtual void Destroy() override;
+	UGizmoTranslateComponent* GetGizmoTranslateComponent() const { return GizmoTranslateComponent; }
+	UGizmoRotateComponent* GetGizmoRotateComponent() const { return GizmoRotateComponent; }
+	UGizmoScaleComponent* GetGizmoScaleComponent() const { return GizmoScaleComponent; }
 
 private:
-	UGizmoArrow* ArrowComponent;
+	UGizmoTranslateComponent* GizmoTranslateComponent;
+	UGizmoRotateComponent* GizmoRotateComponent;
+	UGizmoScaleComponent* GizmoScaleComponent;
 
 };

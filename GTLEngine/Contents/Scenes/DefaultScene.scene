@@ -1,0 +1,24 @@
+"Primitives" : {
+  "3": {
+    "ObjStaticMeshAsset": "Data/Cube.obj",
+    "Location": [ -0.563450, 0.573828, -0.020000 ],
+    "Rotation": [ 0.860000, 0.000000, 5.990000 ],
+    "Scale": [ 1.000000, 1.000000, 1.000000 ],
+    "Type": "StaticMeshComp"
+  },
+  "4": {
+    "ObjStaticMeshAsset": "Data/TeaPot.obj",
+    "Location": [ -1.900000, -0.052847, 0.290000 ],
+    "Rotation": [ 0.000000, -1.120000, 1.590000 ],
+    "Scale": [ 2.520000, 2.930000, 2.390000 ],
+    "Type": "StaticMeshComp"
+  }
+}
+ 
+"PerspectiveCamera": {
+  "Location": [0.000000, 2.000000, -5.000000],
+  "Rotation": [0.100000, 0.000000, 0.000000],
+  "FOV": 60.0,
+  "NearClip": 0.100000,
+  "FarClip": 1000.000000
+}

@@ -39,7 +39,7 @@ public:
 	void Tick(float DeltaTime);
 	void TickWhenSelected(float DeltaTime);
 	void TickWhenHovered(float DeltaTime);
-	void ProcessInput(float DeltaTime);
+	void ProcessCameraMovement(float DeltaTime);
 
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
@@ -48,7 +48,7 @@ public:
 	const FMatrix& GetProjectionMatrix() const { return Camera->CachedProjectionMatrix; }
 	const FMatrix& GetViewMatrix() const { return Camera->CachedViewMatrix; }
 	FViewportCamera* GetCamera() const { return Camera; }
-	void GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& OutRayOriginOnWorld, FVector& OutRayDirOnWorld);
+	FRay GetRayOnWorld(int InClientMouseX, int InClientMouseY);
 
 	bool Contains(int x, int y) const;
 
@@ -61,4 +61,6 @@ private:
 	D3D11_VIEWPORT Viewport;
 	FViewportCamera* Camera;
 	
+public:
+	static TArray<FRay> DebugRays;
 };

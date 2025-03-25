@@ -43,4 +43,6 @@ private:
 	USceneComponent* AttachParent;
 	TArray<USceneComponent*> AttachChildren;
 
+public:
+	FBoundingBox Bounds = { FVector(),FVector() };
 };

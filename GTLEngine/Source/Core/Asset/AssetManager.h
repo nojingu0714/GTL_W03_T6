@@ -27,6 +27,7 @@ public:
 		return Instance;
 	}
 
+	FSceneManager* GetSceneManager() const { return SceneManager; }
 
 private:
 	FSceneManager* SceneManager;

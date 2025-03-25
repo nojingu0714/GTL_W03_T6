@@ -25,7 +25,7 @@ HRESULT UDXDBufferManager::CreateIndexBuffer(ID3D11Device* Device, const TArray<
 
 HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset)
 {
-	TArray<FVertexFont> Vertices;
+	TArray<FVertexPT> Vertices;
 	TArray<uint32> Indices;
 
 	

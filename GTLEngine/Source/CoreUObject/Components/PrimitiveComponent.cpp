@@ -22,7 +22,7 @@ void UPrimitiveComponent::Destroy()
 //
 //}
 
-FBoundingBox UPrimitiveComponent::GetAABB() const {
+FBoundingBox UPrimitiveComponent::GetAABB(const FMatrix& LocalToWorld) const {
     FVector min = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
     FVector max = FVector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 

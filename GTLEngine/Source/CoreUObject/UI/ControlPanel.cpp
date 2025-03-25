@@ -22,7 +22,8 @@
 #include "GameFrameWork/Shapes/Cone.h"
 
 UControlPanel::UControlPanel()
-	: UUIBase(), CurrentPrimitiveType(0), SpawnNum(1), SceneName("NewScene"), blsOrthogonal(nullptr), Location{ 0.f, 0.f,0.f }, Rotation{ 0.f,0.f,0.f }, Scale{ 1.f,1.f,1.f },
+	: UUIBase(), CurrentPrimitiveType(0), SpawnNum(1), SceneName("NewScene"), blsOrthogonal(nullptr), 
+    //Location{ 0.f, 0.f,0.f }, Rotation{ 0.f,0.f,0.f }, Scale{ 1.f,1.f,1.f },
     FOV(nullptr), CameraLocation(nullptr), CameraRotation(nullptr), WindowWidth(360.f), WindowHeight(400.f)
 {
 }
@@ -37,23 +38,15 @@ void UControlPanel::Tick(float DeltaTime)
     ImGui::SetNextWindowPos(ImVec2(5, 10), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(WinSize, ImGuiCond_Appearing);
 
-    ImGui::Begin("Control Panel", nullptr, ImGuiWindowFlags_NoResize);
+    ImGui::Begin("System Info", nullptr);
 
     EnvironmentPanel();
-    
     ImGui::Separator();
-
-    GizmoPanel();
-
-    ImGui::Separator();
-
-    SceneManagementPanel();
-
-    ImGui::Separator();
-
-    // TODO: 메모리 가져와서 UI 업데이트 해주기.
     MemoryPanel();
-
+    ImGui::Separator();
+	// CameraSpeed();
+    ImGui::Separator();
+    // GridScale();
     ImGui::Separator();
 
     ImGui::End();
@@ -61,24 +54,9 @@ void UControlPanel::Tick(float DeltaTime)
 
 void UControlPanel::EnvironmentPanel()
 {
-    ImGui::Text("HELLO GTL!!");
-
     // FPS 및 창 크기출력.
     ImGui::Text("FPS %.0f (%.0f ms)", io.Framerate, 1000.0f / io.Framerate);
     ImGui::Text("Window %dx%d", UEngine::GetEngine().GetWindowInfo().Width, UEngine::GetEngine().GetWindowInfo().Height);
-    ImGui::Text("Mouse %d,%d", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-
-    ACamera* cam = UEngine::GetEngine().GetWorld()->GetCamera();
-    if (cam)
-    {
-        ImGui::DragFloat("Grid Scale", &cam->GridScale, 0.1f, 0.1f, 100.f, "%.1f");
-        ImGui::DragFloat("Camera speed", &cam->MoveSpeed, 0.1f, 0.1f, 100.f, "%.1f");
-        ImGui::DragFloat("Mouse Sensitive", &cam->MouseSensitive, 0.1f, 0.1f, 10.f, "%.1f");
-    }
-    else
-    {
-        ImGui::Text("Can not find main camera");
-    }
 }
 
 void UControlPanel::GizmoPanel()
@@ -95,102 +73,10 @@ void UControlPanel::GizmoPanel()
     if (!World)
         return;
 
-    ACamera* Camera = World->GetCamera();
+   /* ACamera* Camera = World->GetCamera();
     if (Camera)
-        UCameraComponent* camera = Camera->GetCameraComponent();
+        UCameraComponent* camera = Camera->GetCameraComponent();*/
 
-    bool IsTranslateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoTranslate;
-    if (IsTranslateActive)
-        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_TRANSLATE, ControlButtonSize)) // 기즈모 이동버튼
-    {
-        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoTranslate;
-    }
-    if (IsTranslateActive)
-        ImGui::PopStyleColor();
-
-    ImGui::SameLine(0, 5.0f);
-
-    bool IsRotateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoRotate;
-    if (IsRotateActive)
-        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_ROTATE, ControlButtonSize))
-    {
-        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoRotate;
-    }
-    if (IsRotateActive)
-        ImGui::PopStyleColor();
-
-    ImGui::SameLine(0, 5.0f);
-
-    bool IsScaleActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoScale;
-    if (IsScaleActive)
-        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_SCALE, ControlButtonSize))
-    {
-        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoScale;
-    }
-    if (IsScaleActive)
-        ImGui::PopStyleColor();
-
-    ImGui::SameLine();
-    float windowContentWidth = ImGui::GetWindowContentRegionMax().x;
-
-    float buttonsTotalWidth = ControlButtonSize.x * 2 + 5.0f;
-    float posX = windowContentWidth - buttonsTotalWidth;
-    if (posX < 0)
-        posX = 0;
-
-    ImGui::SetCursorPosX(posX);
-
-    if (ImGui::Button(ICON_BUTTON_CONSOLE, ControlButtonSize)); // console 창
-
-    ImGui::SameLine(0, 5.0f);
-
-    if (ImGui::Button(ICON_BUTTON_STAT, ControlButtonSize)); // stat 창
-
-    ImGui::PopFont();
-
-    // render mode
-    const char* renderModes[3] = {
-        "Lit",
-        "UnLit",
-        "Wireframe"
-    };
-    int32 viewModeIndex = static_cast<int32>(UEngine::GetEngine().ViewModeIndex);
-    ImGui::Combo("Render mode", &viewModeIndex, renderModes, ARRAYSIZE(renderModes));
-    UEngine::GetEngine().ViewModeIndex = static_cast<EViewModeIndex>(viewModeIndex);
-
-    // set draw targets
-    if (ImGui::CollapsingHeader("Rendering Entity")) {
-        EEngineShowFlags flags = UEngine::GetEngine().ShowFlags;
-
-        // primitive
-        bool Primitive = GetFlag(flags, EEngineShowFlags::SF_Primitives);
-        ImGui::Checkbox("Primitives", &Primitive);
-        if (Primitive)
-            SetFlagOn(flags, EEngineShowFlags::SF_Primitives);
-        else
-            SetFlagOff(flags, EEngineShowFlags::SF_Primitives);
-
-        // line
-        bool Line = GetFlag(flags, EEngineShowFlags::SF_Line);
-        ImGui::Checkbox("Line", &Line);
-        if (Line)
-            SetFlagOn(flags, EEngineShowFlags::SF_Line);
-        else
-            SetFlagOff(flags, EEngineShowFlags::SF_Line);
-
-        // BillboardText
-        bool BillboardText = GetFlag(flags, EEngineShowFlags::SF_BillboardText);
-        ImGui::Checkbox("UUID", &BillboardText);
-        if (BillboardText)
-            SetFlagOn(flags, EEngineShowFlags::SF_BillboardText);
-        else
-            SetFlagOff(flags, EEngineShowFlags::SF_BillboardText);
-
-        UEngine::GetEngine().ShowFlags = flags;
-    }
 }
 
 void UControlPanel::SceneManagementPanel()
@@ -207,20 +93,20 @@ void UControlPanel::SceneManagementPanel()
 
     if (ImGui::Button(ICON_BUTTON_NEW_SCENE, ControlButtonSize))     // New Scene
     {
-        ResourceManager->NewScene();
+        //ResourceManager->NewScene();
     }
 
     ImGui::SameLine(0, 5.0f);
     if (ImGui::Button(ICON_BUTTON_LOAD_SCENE, ControlButtonSize))   // Load Scene
     {
-        ResourceManager->LoadScene(SceneName);
+        //ResourceManager->LoadScene(SceneName);
     }
 
 
     ImGui::SameLine(0, 5.0f);
     if (ImGui::Button(ICON_BUTTON_SAVE_SCENE, ControlButtonSize))   // Save Scene
     {
-        ResourceManager->SaveScene(SceneName);
+        //ResourceManager->SaveScene(SceneName);
     }
 
     ImGui::PopFont();

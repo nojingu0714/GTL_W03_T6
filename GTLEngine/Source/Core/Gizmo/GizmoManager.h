@@ -2,31 +2,35 @@
 
 #include "Object.h"
 
-#include "Gizmo/GizmoBase.h"
-
 struct FRay;
+class UDirectXHandle;
+class AGizmoActor;
 
-class UGizmoManager
+enum class GizmoState
+{
+	None,
+	Translate,
+	Rotate,
+	Scale,
+};
+
+class FGizmoManager
 {
 
 public:
-	UGizmoManager();
+	FGizmoManager();
 
+	void Init();
 	void Tick(float DeltaTime);
 	void Destroy();
 
 	void Picking();
 
+	AGizmoActor* GetGizmoActor() const { return GizmoActor; }
+
 private:
-	AActor* SelectedActor;
-	IDragable* DragTarget;
-	TArray<UGizmoBase*> Gizmo;
-public:
-	IClickable* PickClickable(float MouseX, float MouseY) const;
-	void ClearSelected();
-	const TArray<UGizmoBase*> GetGizmo();
-	void AttachGizmo(AActor* target);
-	inline AActor* GetSelected() const { return SelectedActor; }
-	inline void SetSelected(AActor* actor) { SelectedActor = actor; }
+	GizmoState state;
+	AGizmoActor* GizmoActor;
+	
 };
 

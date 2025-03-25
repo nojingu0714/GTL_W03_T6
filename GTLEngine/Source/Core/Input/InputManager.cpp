@@ -22,14 +22,13 @@ void UInputManager::Tick(float TickTime)
 {
     // 현재 키 상태를 이전 상태에 복사
     PrevKeyStates = CurrentKeyStates;
+    PrevMouseState = CurrentMouseState;
     // 0~255 범위의 가상키에 대해 GetAsyncKeyState를 호출하여 현재 상태 업데이트
     for (int i = 0; i < 256; ++i)
     {
         CurrentKeyStates[i] = (GetAsyncKeyState(i) & 0x8000) != 0;
     }
 
-    // 현재 마우스 상태를 이전 상태에 복사
-    PrevMouseState = CurrentMouseState;
     // 마우스 버튼 상태 업데이트
     CurrentMouseState.LeftButton = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
     CurrentMouseState.RightButton = (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
@@ -38,27 +37,43 @@ void UInputManager::Tick(float TickTime)
     // 마우스 커서 위치 업데이트
     FWindowInfo WindowInfo = UEngine::GetEngine().GetWindowInfo();
     POINT pt;
-    if (GetCursorPos(&pt))
+
+    if (!IsMouseLocked)
     {
-        CurrentMouseState.ScreenX = pt.x;
-        CurrentMouseState.ScreenY = pt.y;
-        if (ScreenToClient(WindowInfo.WindowHandle, &pt))
+        // 현재 마우스 상태를 이전 상태에 복사
+        if (GetCursorPos(&pt))
         {
-            CurrentMouseState.ClientX = pt.x;
-            CurrentMouseState.ClientY = pt.y;
-            ConvertMouseToNDC(WindowInfo.WindowHandle, WindowInfo.Width, WindowInfo.Height);
-            
+            CurrentMouseState.ScreenX = pt.x;
+            CurrentMouseState.ScreenY = pt.y;
+            if (ScreenToClient(WindowInfo.WindowHandle, &pt))
+            {
+                CurrentMouseState.ClientX = pt.x;
+                CurrentMouseState.ClientY = pt.y;
+                ConvertMouseToNDC(WindowInfo.WindowHandle, WindowInfo.Width, WindowInfo.Height);
+            }
         }
     }
-    if (IsMouseLocked)
+    // Lock 되어있을때에는 다른 방법으로 복사
+    else
     {
-        SetCursorPos(MousePosWhenLocked.x, MousePosWhenLocked.y);
-        PrevMouseState.ScreenX = MousePosWhenLocked.x;
-		PrevMouseState.ScreenY = MousePosWhenLocked.y;
-		POINT pt = MousePosWhenLocked;
-		ScreenToClient(WindowInfo.WindowHandle, &pt);
-		PrevMouseState.ClientX = pt.x;
-		PrevMouseState.ClientY = pt.y;
+        if (GetCursorPos(&pt))
+        {
+            PrevMouseState.ScreenX = 2 * MousePosWhenLocked.x - pt.x;
+            PrevMouseState.ScreenY = 2 * MousePosWhenLocked.y - pt.y;
+            pt = { PrevMouseState.ScreenX,PrevMouseState.ScreenY };
+            ScreenToClient(WindowInfo.WindowHandle, &pt);
+            PrevMouseState.ClientX = pt.x;
+            PrevMouseState.ClientY = pt.y;
+
+            CurrentMouseState.ScreenX = MousePosWhenLocked.x;
+            CurrentMouseState.ScreenY = MousePosWhenLocked.y;
+            pt = { MousePosWhenLocked.x,MousePosWhenLocked.y };
+            ScreenToClient(WindowInfo.WindowHandle, &pt);
+            CurrentMouseState.ClientX = pt.x;
+            CurrentMouseState.ClientY = pt.y;
+
+            SetCursorPos(MousePosWhenLocked.x, MousePosWhenLocked.y);
+        }
     }
 }
 

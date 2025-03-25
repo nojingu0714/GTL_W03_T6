@@ -18,7 +18,7 @@ void ULogManager::AddLog(FLogCategory* Category, ELogVerbosity Verbosity, const 
 	Get().Items.push_back({ cbuf, Category, Verbosity });
 }
 
-void ULogManager::AddLog(FLogCategory* Category, ELogVerbosity Verbosity, FString fmt, ...)
+void ULogManager::AddLog(FLogCategory* Category, ELogVerbosity Verbosity, const FString fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);

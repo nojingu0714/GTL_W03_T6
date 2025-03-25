@@ -4,6 +4,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "Asset/Mesh/StaticMeshAsset.h"
+
 class UDXDDevice;
 class UDXDSwapChain;
 class UDXDRenderTarget;
@@ -19,8 +21,8 @@ class UDXDResourceManager;
 class UObject;
 class AActor;
 class ACamera;
-class UGizmoBase;
-class UGizmoManager;
+class AGizmoActor;
+class FGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
 class USceneComponent;
@@ -47,12 +49,11 @@ public:
 	void UpdateCameraMatrix(FViewportCamera* Camera);
 	void RenderWorldPlane(const FViewportCamera* Camera);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
-	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
+	void RenderGizmo(AGizmoActor* Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderLines(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);
-	void RenderComponentUUID(USceneComponent* TargetComponent);
 
 public:
 	//void InitView();
@@ -83,7 +84,7 @@ private:
 public:
 	template<typename T>
 	HRESULT AddVertexBuffer(FString KeyName, const TArray<T> vertices, const TArray<uint32>& indices);
-
+	FVertexInfo GetVertexBuffer(FString KeyName);
 	// for batch line render
 	template<typename T>
 	HRESULT CheckAndAddDynamicVertexBuffer(FString KeyName, const uint32 size);
@@ -94,7 +95,7 @@ public:
 	HRESULT ResizeWindow(int width, int height);
 
 private:
-	void RenderAABB(FBoundingBox aabb);
+	void RenderAABB(FBoundingBox InBox);
 
 
 public:
@@ -121,7 +122,7 @@ public:
 
 	UDXDRenderTarget* GetRenderTarget(const FString& InName);
 	UDXDDepthStencilView* GetDepthStencilView(const FString& InName);
-	UDXDDepthStencilState* GetDepthStencilStates(const FString& InName);
+	UDXDDepthStencilState* GetDepthStencilState(const FString& InName);
 	UDXDRasterizerState* GetRasterizerState(const FString& InName);
 	
 	UDXDShaderManager* GetShaderManager() const { return ShaderManager; }
@@ -147,6 +148,11 @@ private:
 
 	uint32 DynamicVertexBufferSize;
 
+
+	////////////////////////////////////////
+	// Render Debugging
+public:
+	void RenderDebugRays(const TArray<FRay>& Rays);
 };
 
 template<typename T>

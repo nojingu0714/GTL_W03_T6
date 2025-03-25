@@ -14,9 +14,7 @@ public:
 
 public:
 
-	//virtual void Serialize(bool bIsLoading, json::JSON Handle);
-
-	virtual FBoundingBox GetAABB() const override;
+	virtual FBoundingBox GetAABB(const FMatrix& LocalToWorld) const;
 	virtual bool IsRayIntersect(FRay ray, float hitDistance, FVector& hitPoint) const override;
 
 protected:

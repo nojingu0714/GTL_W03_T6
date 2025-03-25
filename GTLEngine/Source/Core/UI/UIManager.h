@@ -6,7 +6,7 @@
 #include "CoreUObject/UI/ConsolePanel.h"
 
 class UUIBase;
-class UGizmoManager;
+class FGizmoManager;
 class UConsolePanel;
 class IDragable;
 
@@ -31,26 +31,6 @@ public:
 	inline const bool IsImGuiWantTextInput() const { return ImGui::GetIO().WantTextInput; }
 	inline const bool IsImGuiWantMouseInput() const { return ImGui::GetIO().WantCaptureMouse; }
 	inline UConsolePanel* GetConsole() const { return Console; }
-
-	// Property Window Function
-	bool GetObjectTranslation(FVector& outTranslation);
-	void OnObjectTranslationChanged(FVector& inTranslation);
-
-	bool GetObjectRotation(FVector& outRotation);
-	void OnObjectRotationChanged(FVector& inRotation);
-
-	bool GetObjectScale(FVector& outScale);
-
-	bool GetFOV(float& outFOV);
-	void OnFOVChanged(float& inFOV);
-
-	bool GetCameraLocation(FVector& outLocation);
-	void OnCameraLocationChanged(FVector& inLocation);
-
-	bool GetCameraRotation(FVector& outRotation);
-	void OnCameraRotationChanged(FVector& inRotation);
-
-	void OnGizmoModeChanged(int modeNum);
 
 	void CreateUsingFont();
 

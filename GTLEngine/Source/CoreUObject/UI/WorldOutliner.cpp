@@ -1,10 +1,9 @@
 #include "pch.h"
-#include "UISceneManager.h"
+#include "WorldOutliner.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
-#include "Core/Input/InputManager.h"
-#include "Core/Gizmo/GizmoManager.h"
+#include "Editor/EditorManager.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
 #include "Utils/Math/Geometry.h"
 
@@ -13,19 +12,11 @@
 #include "GameFrameWork/Shapes/Cube.h"
 #include "GameFrameWork/Shapes/Cylinder.h"
 #include "GameFrameWork/Shapes/Cone.h"
-#include "GameFrameWork/Shapes/Line.h"
 
 #include <functional>
 
-void UUISceneManager::DeleteActor(uint32 uuid) {
 
-}
-
-void UUISceneManager::DeleteActor(FString InName) {
-
-}
-
-void UUISceneManager::Tick(float TickTime) {
+void UWorldOutliner::Tick(float TickTime) {
     ImGui::Begin("Scene Manager");
 
     ActorSpawner();
@@ -40,24 +31,9 @@ void UUISceneManager::Tick(float TickTime) {
 
     ImGui::End();
 
-    //DebugLine 생성
-    UInputManager* inputManager = UEngine::GetEngine().GetInputManager();
-    if ( DebugSpawnLine && inputManager->GetMouseDown(UInputManager::EMouseButton::LEFT) ) {
-		float mouse_x = inputManager->GetMouseNdcX();
-		float mouse_y = inputManager->GetMouseNdcY();
-		FRay ray = Geometry::CreateRayWithMouse(mouse_x, mouse_y);
-		ALine* line = UEngine::GetEngine().GetWorld()->SpawnActor<ALine>(
-			TEXT("Line"),
-			FVector::ZeroVector,
-			FRotator::ZeroRotator,
-			FVector::OneVector,
-			nullptr
-		);
-        line->SetRay(ray);
-	}
 }
 
-void UUISceneManager::ActorSpawner()
+void UWorldOutliner::ActorSpawner()
 {
     const char* items[] = { "Triangle", "Sphere", "Cube", "Cylinder", "Cone" };
 
@@ -65,8 +41,11 @@ void UUISceneManager::ActorSpawner()
         SpawnNum = 1;
 
     ImGui::DragFloat3("Location", SpawnLocation);
+	FVector Location(SpawnLocation[0], SpawnLocation[1], SpawnLocation[2]);
     ImGui::DragFloat3("Rotation", SpawnRotation);
+	FRotator Rotation(SpawnRotation[0], SpawnRotation[1], SpawnRotation[2]);
     ImGui::DragFloat3("Scale", SpawnScale);
+	FVector Scale(SpawnScale[0], SpawnScale[1], SpawnScale[2]);
     ImGui::Combo("Primitive", &CurrentPrimitiveType, items, ARRAYSIZE(items));
     int adjustedType = CurrentPrimitiveType + 2;
     ImGui::InputInt("Number of Spawn", &SpawnNum);
@@ -76,19 +55,19 @@ void UUISceneManager::ActorSpawner()
         for (int i = 0; i < SpawnNum; i++) {
             switch (static_cast<EPrimitiveType>(adjustedType)) {
             case EPrimitiveType::Triangle:
-                World->SpawnActor<ATriangle>(TEXT("Triangle"));
+                World->SpawnActor<ATriangle>(TEXT("Triangle"), Location, Rotation, Scale);
                 break;
             case EPrimitiveType::Sphere:
-                World->SpawnActor<ASphere>(TEXT("Sphere"));
+                World->SpawnActor<ASphere>(TEXT("Sphere"), Location, Rotation, Scale);
                 break;
             case EPrimitiveType::Cube:
-                World->SpawnActor<ACube>(TEXT("Cube"));
+                World->SpawnActor<ACube>(TEXT("Cube"), Location, Rotation, Scale);
                 break;
             case EPrimitiveType::Cylinder:
-                World->SpawnActor<ACylinder>(TEXT("Cylinder"));
+                World->SpawnActor<ACylinder>(TEXT("Cylinder"), Location, Rotation, Scale);
                 break;
             case EPrimitiveType::Cone:
-                World->SpawnActor<ACone>(TEXT("Cone"));
+                World->SpawnActor<ACone>(TEXT("Cone"), Location, Rotation, Scale);
                 break;
             default:
                 break;
@@ -97,17 +76,18 @@ void UUISceneManager::ActorSpawner()
     }
 }
 
-void UUISceneManager::DebugLineToggle()
+void UWorldOutliner::DebugLineToggle()
 {
     ImGui::Checkbox("Spawn debug line", &DebugSpawnLine);
 }
 
-void UUISceneManager::SceneHierarchy()
+void UWorldOutliner::SceneHierarchy()
 {
-    ImGui::Checkbox("Show Hierachy", &bShowActorList);
-    if ( !bShowActorList )
-        return;
     ImGui::BeginChild("ScrollingRegion");
+
+	UWorld* World = UEngine::GetEngine().GetWorld();
+	if (!World)
+		return;
 
     // create node for child
     std::function<void(USceneComponent*)> createNode = [&createNode](USceneComponent* comp)->void {
@@ -119,31 +99,35 @@ void UUISceneManager::SceneHierarchy()
         if (comp->GetAllChildren().size() == 0)
             flags |= ImGuiTreeNodeFlags_Leaf;
 
-        if ( ImGui::TreeNodeEx(s.c_str(), flags) ) {
-            for ( auto& child : comp->GetAllChildren() ) {
+        bool nodeOpen = ImGui::TreeNodeEx(s.c_str(), flags);
+
+        // 노드 클릭 시 특정 동작 실행 (예: 로그 출력, 선택 처리 등)
+        if (ImGui::IsItemClicked()) {
+            // 원하는 동작을 여기에 추가합니다.
+            // 예: 선택한 컴포넌트의 이름 출력
+			UE_LOG(LogTemp, Warning, TEXT("Click Actor : %s"), comp->GetOwner()->GetName().c_str());
+			UEngine::GetEngine().GetEditorManager()->SetSelectedActor( comp->GetOwner());
+        }
+
+        // 노드가 열렸다면 하위 노드 처리
+        if (nodeOpen) {
+            for (auto& child : comp->GetAllChildren()) {
                 createNode(child);
             }
             ImGui::TreePop();
         }
+    };
 
+	for (auto& actor : World->GetActors()) {
+		createNode(actor->GetRootComponent());
+	}
 
-        };
-    for (AActor* obj : UEngine::GetEngine().GetWorld()->GetActors()) {
-        // cast가 안먹힌다
-        if ( dynamic_cast<ALine*>(obj) != nullptr )
-            continue;
-        if (obj) {
-            FString ws = obj->GetName();
-            std::string s;
-            s.assign(ws.begin(), ws.end());
-            if (ImGui::TreeNodeEx(s.c_str())) {
-                createNode(obj->GetRootComponent());
-                ImGui::TreePop();
-            }
+    ImGui::IsItemClicked();
 
-        }
-    }
     ImGui::EndChild();
 }
 
-void UUISceneManager::Destroy() {}
+void UWorldOutliner::Destroy()
+{
+    Super::Destroy();
+}

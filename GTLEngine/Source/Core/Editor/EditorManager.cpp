@@ -6,10 +6,29 @@
 #include "Engine/Engine.h"
 #include "Gizmo/GizmoManager.h"
 #include "Input/InputManager.h"
+#include "World.h"
 #include "Window/Splitter.h"
+
 
 void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 {
+	/*const int num = 2;
+	const int W = InWindowInfo.Width / num;
+	const int H = InWindowInfo.Height / num;
+	for (int i = 0; i < num; i++)
+	{
+		for (int j = 0; j < num; j++)
+		{
+			wchar_t buf[300];
+			_itow_s(i * num + j, buf, 10);
+			FViewport Viewport;
+			Viewport.Init(buf, InWindowInfo.WindowHandle, W * i, H * j, W, H);
+			Viewports.push_back(Viewport);
+		}
+	}*/
+	//FViewport DefaultViewport;
+	//DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, InWindowInfo.Width/4, InWindowInfo.Height/4, InWindowInfo.Width / 4, InWindowInfo.Height / 4);
+	//Viewports.push_back(DefaultViewport);
 
 	FViewport DefaultViewport;
 	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
@@ -37,6 +56,10 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 
 	SplitterV = new FSplitterV();
 	SplitterV->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
+
+	GizmoManager = new FGizmoManager();
+	GizmoManager->Init();
+
 }
 
 void FEditorManager::Tick(float DeltaTime)
@@ -65,7 +88,7 @@ void FEditorManager::Tick(float DeltaTime)
 	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
 	{
 		InputManager->LockMouse();
-		HoveredViewport->ProcessInput(DeltaTime);
+		HoveredViewport->ProcessCameraMovement(DeltaTime);
 	}
 	else
 	{
@@ -83,9 +106,10 @@ void FEditorManager::Tick(float DeltaTime)
 
 void FEditorManager::Draw()
 {
+	// TODO : DXDHANDLE에서 하도록 옮기기.
 	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	UWorld* World = UEngine::GetEngine().GetWorld();
-	UGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
+	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 
 	// viewport (Texture2D) 에 그리기.
 	for (const FViewport& Viewport : Viewports)
@@ -98,9 +122,12 @@ void FEditorManager::Draw()
 		Handle->RenderBoundingBox(World->GetActors());
 		Handle->RenderLines(World->GetActors());
 
+		Handle->RenderDebugRays(FViewport::DebugRays);
+
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
-		Handle->RenderGizmo(GizmoManager->GetGizmo());
+		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
+		Handle->RenderBoundingBox(World->GetActors());
 	}
 
 	Handle->PrepareWindow();
@@ -157,4 +184,3 @@ void FEditorManager::UpdateSelectedViewport()
 		}
 	}
 }
-

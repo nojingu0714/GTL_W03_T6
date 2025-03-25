@@ -21,6 +21,23 @@ void UStaticMeshComponent::Destroy()
 	Super::Destroy();
 }
 
+FBoundingBox UStaticMeshComponent::GetAABB(const FMatrix& LocalToWorld) const
+{
+	FVector min = { FLT_MAX, FLT_MAX ,FLT_MAX };
+	FVector max = { -FLT_MAX, -FLT_MAX ,-FLT_MAX };
+	for (FVector v : StaticMesh->GetAsset()->Vertices)
+	{
+		v = LocalToWorld.TransformPositionVector(v);
+		min.X = std::min(min.X, v.X);
+		min.Y = std::min(min.Y, v.Y);
+		min.Z = std::min(min.Z, v.Z);
+		max.X = std::max(max.X, v.X);
+		max.Y = std::max(max.Y, v.Y);
+		max.Z = std::max(max.Z, v.Z);
+	}
+	return FBoundingBox(min, max);
+}
+
 void UStaticMeshComponent::SetStaticMesh(UStaticMesh* InStaticMesh)
 {
 	StaticMesh = InStaticMesh;

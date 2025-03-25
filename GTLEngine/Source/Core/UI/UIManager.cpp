@@ -3,11 +3,10 @@
 
 #include "Math/Matrix.h"
 #include "UI/UIBase.h"
-#include "UI/UIManager.h"
 #include "UI/ControlPanel.h"
 #include "UI/ConsolePanel.h"
 #include "UI/PropertyPanel.h"
-#include "UI/UISceneManager.h"
+#include "UI/WorldOutliner.h"
 
 #include "Asset/IconDefs.h"
 #include "Asset/RawFonts.h"
@@ -51,7 +50,7 @@ void UUIManager::CreateDefaultUI() {
 	RegistUI(FObjectFactory::ConstructObject<UControlPanel>());
 	RegistUI(FObjectFactory::ConstructObject<UConsolePanel>());
 	RegistUI(FObjectFactory::ConstructObject<UPropertyPanel>());
-	RegistUI(FObjectFactory::ConstructObject<UUISceneManager>());
+	RegistUI(FObjectFactory::ConstructObject<UWorldOutliner>());
 }
 
 void UUIManager::Tick(float DeltaTime)
@@ -92,110 +91,6 @@ void UUIManager::Destroy()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 	UnRegistUI();
-}
-
-bool UUIManager::GetObjectTranslation(FVector& outTranslation)
-{
-	if (true) {
-		// TODO: Translation 대입
-		outTranslation;
-		return true;
-	}
-
-	return false;
-}
-
-void UUIManager::OnObjectTranslationChanged(FVector& inTranslation)
-{
-
-}
-
-bool UUIManager::GetObjectRotation(FVector& outRotation)
-{
-	if (true) {
-		// TODO: OuRotation 대입
-		outRotation;
-		return true;
-	}
-
-	return false;
-}
-
-void UUIManager::OnObjectRotationChanged(FVector& inRotation)
-{
-
-}
-
-bool UUIManager::GetObjectScale(FVector& outScale)
-{
-	if (true) {
-		// TODO: OutScale 대입
-		outScale;
-		return true;
-	}
-	return false;
-}
-
-
-bool UUIManager::GetFOV(float& outFOV)
-{
-	if (true) 
-	{
-		// TODO outFOV 입력
-		outFOV;
-		return true;
-	}
-	return false;
-}
-
-void UUIManager::OnFOVChanged(float& inFOV)
-{
-	
-}
-
-bool UUIManager::GetCameraLocation(FVector& outLocation)
-{
-	if (true) 
-	{
-		// TODO: outLocation 입력
-		outLocation;
-		return true;
-	}
-	return false;
-}
-
-void UUIManager::OnCameraLocationChanged(FVector& inLocation)
-{
-}
-
-bool UUIManager::GetCameraRotation(FVector& outRotation)
-{
-	if (true) 
-	{
-		// TODO: outRotation 입력
-		outRotation;
-		return true;
-	}
-	return false;
-}
-
-void UUIManager::OnCameraRotationChanged(FVector& inRotation)
-{
-
-}
-
-void UUIManager::OnGizmoModeChanged(int modeNum)
-{
-	switch (modeNum) {
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	default:
-		break;
-	}
 }
 
 void UUIManager::CreateUsingFont()

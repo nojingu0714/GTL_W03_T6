@@ -16,6 +16,7 @@ public:
 public:
 	const FString& GetAssetPathFileName();
 	void SetStaticMeshAsset(FStaticMesh* InStaticMeshAsset);
+	const FStaticMesh* const GetAsset() { return StaticMeshAsset; }
 
 private:
 	FStaticMesh* StaticMeshAsset;

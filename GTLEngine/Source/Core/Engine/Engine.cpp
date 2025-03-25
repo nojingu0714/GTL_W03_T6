@@ -5,16 +5,13 @@
 #include "DirectX11/DirectXHandle.h"
 #include "Time/TimeManager.h"
 #include "Input/InputManager.h"
-#include "Resource/ResourceManager.h"
 #include "UI/UIManager.h"
 #include "Editor/EditorManager.h"
-#include "UI/ConsolePanel.h"
+#include "Asset/SceneManager.h"
 
 #include "World.h"
-#include "Core/Engine/LogManager.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
 #include "GameFrameWork/Actor.h"
-#include "Gizmo/GizmoManager.h"
 
 #include "Core/Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
@@ -24,9 +21,6 @@
 bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 {
     WindowInfo = InWindowInfo;
-
-    // 리소스 매니저 추가.
-    ResourceManager = new UResourceManager();
 
     DirectX11Handle = new UDirectXHandle();
     HRESULT hr = DirectX11Handle->CreateDirectX11Handle(WindowInfo.WindowHandle);
@@ -71,8 +65,6 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 	UIManager = new UUIManager();
 	UIManager->InitUI(WindowInfo, DirectX11Handle->GetD3DDevice(), DirectX11Handle->GetD3DDeviceContext());
 
-    GizmoManager = new UGizmoManager();
-
     // 인풋 매니저 추가.
     InputManager = new UInputManager();
 
@@ -81,7 +73,9 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 	EditorManager->Init(InWindowInfo);
 
     // 월드 추가.
-    ResourceManager->LoadScene("DefaultScene");
+    //ResourceManager->LoadScene("DefaultScene");
+
+	FSceneManager::LoadScene("DefaultScene");
 
     return true;
 }
@@ -101,8 +95,6 @@ void UEngine::Tick()
 
     // World 오브젝트 값들 없데이트.
     World->Tick(TimeManager->DeltaTime());
-
-	GizmoManager->Tick(TimeManager->DeltaTime());
 
     // EditorManager Tick
 	EditorManager->Tick(TimeManager->DeltaTime());
@@ -154,12 +146,6 @@ void UEngine::ClearEngine()
     {
         World->Destroy();
 		FObjectFactory::DestroyObject(World);
-    }
-
-    if (ResourceManager)
-    {
-        delete ResourceManager;
-        ResourceManager = nullptr;
     }
 
     if (UIManager)

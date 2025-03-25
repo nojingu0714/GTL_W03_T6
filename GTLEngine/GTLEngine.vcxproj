@@ -63,14 +63,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Components\LineComponent.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\CoreUObject\Components\MeshComponent.cpp" />
     <ClCompile Include="Source\CoreUObject\Components\PrimitiveComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\Primitives\PrimitiveVertices.cpp" />
+    <ClCompile Include="Source\CoreUObject\Components\Primitives\PrimitiveVertices.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\Components\SceneComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -97,10 +97,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Line.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\CoreUObject\GameFrameWork\Shapes\Sphere.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -113,22 +109,22 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotate.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoScale.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoTranslate.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoActor.cpp" />
     <ClCompile Include="Source\CoreUObject\Gizmo\GizmoBase.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotate.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotateComponent.cpp" />
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoScale.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoScaleComponent.cpp" />
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoTranslate.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoTranslateComponent.cpp" />
     <ClCompile Include="Source\CoreUObject\Mesh\UStaticMesh.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -159,7 +155,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\UI\UISceneManager.cpp">
+    <ClCompile Include="Source\CoreUObject\UI\WorldOutliner.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -253,10 +249,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Core\UI\UIInterface.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\Core\UI\UIManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -315,7 +307,6 @@
     <ClInclude Include="Source\CoreUObject\Class.h" />
     <ClInclude Include="Source\CoreUObject\Components\ActorComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\CameraComponent.h" />
-    <ClInclude Include="Source\CoreUObject\Components\LineComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\MeshComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\PrimitiveComponent.h" />
     <ClInclude Include="Source\CoreUObject\Components\SceneComponent.h" />
@@ -328,10 +319,22 @@
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Sphere.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\Shapes\Triangle.h" />
     <ClInclude Include="Source\CoreUObject\GameFrameWork\StaticMeshActor.h" />
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotate.h" />
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScale.h" />
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslate.h" />
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoBase.h" />
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoActor.h" />
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoBase.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotate.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotateComponent.h" />
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScale.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScaleComponent.h" />
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslate.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslateComponent.h" />
     <ClInclude Include="Source\CoreUObject\Mesh\UStaticMesh.h" />
     <ClInclude Include="Source\CoreUObject\NameTypes.h" />
     <ClInclude Include="Source\CoreUObject\Object.h" />
@@ -342,7 +345,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\UI\PropertyPanel.h" />
-    <ClInclude Include="Source\CoreUObject\UI\UISceneManager.h" />
+    <ClInclude Include="Source\CoreUObject\UI\WorldOutliner.h" />
     <ClInclude Include="Source\CoreUObject\UI\UIBase.h" />
     <ClInclude Include="Source\CoreUObject\UObject\UObjectArray.h" />
     <ClInclude Include="Source\CoreUObject\UObject\UObjectIterator.h" />
@@ -377,7 +380,6 @@
     <ClInclude Include="Source\Core\Resource\Shape\PrimitiveShape.h" />
     <ClInclude Include="Source\Core\Resource\Types.h" />
     <ClInclude Include="Source\Core\Time\TimeManager.h" />
-    <ClInclude Include="Source\Core\UI\UIInterface.h" />
     <ClInclude Include="Source\Core\UI\UIManager.h" />
     <ClInclude Include="Source\Core\Window\Splitter.h" />
     <ClInclude Include="Source\Core\Window\Viewport.h" />
@@ -415,12 +417,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Resource\Shader\GizmoShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Resource\Shader\ViewportShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Source\CoreUObject\GameFrameWork\Shapes\Line.h" />
     <Text Include="Source\CoreUObject\UI\ConsolePanel.h" />
     <Text Include="Source\Core\Engine\LogManager.h" />
   </ItemGroup>

@@ -25,6 +25,7 @@ struct alignas(16) FMatrix
 	static FMatrix GetRotateMatrix(const FQuat& Q); // 회전행렬.
 	static FMatrix LookAtLH(const FVector& EyePosition, const FVector& FocusPoint, const FVector& WorldUp); // 뷰 변환 행렬.
 	static FMatrix PerspectiveFovLH(float FieldOfView, float AspectRatio, float NearPlane, float FarPlane); // 투영 행렬.
+	static FMatrix OrthogonalLH(float Width, float Height, float NearPlane, float FarPlane); // 직교 투영 행렬.
 	static FMatrix MakeFromDirection(const FVector& direction, const FVector& WorldUp);
 
 	FMatrix operator+(const FMatrix& Other) const;
