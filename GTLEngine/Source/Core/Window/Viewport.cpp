@@ -178,7 +178,18 @@ void FViewport::GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& O
 	float NDCMouseX = (InScreenMouseX - Viewport.TopLeftX) / (float)Viewport.Width * 2 - 1;
 	float NDCMouseY = (InScreenMouseY - Viewport.TopLeftY) / (float)Viewport.Height * -2 + 1;
 
-	FVector4 NDCRayOrigin = FVector4(NDCMouseX, NDCMouseY, 0, 1);
-	FVector4 NDCRayDir = FVector4(NDCMouseX, NDCMouseY, 1, 1);
+	FVector4 NDCRayNear = FVector4(NDCMouseX, NDCMouseY, 0, 1);
+	FVector4 NDCRayFar = FVector4(NDCMouseX, NDCMouseY, 1, 1);
 
+	// Clip -> (ProjMat).Inv -> View -> (View).Inv -> World
+	FMatrix ViewProjInv = (Camera->CachedViewMatrix * Camera->CachedProjectionMatrix).Inverse();
+
+	FVector4 WorldRayNear = ViewProjInv.TransformVector4(NDCRayNear);
+	FVector4 WorldRayFar = ViewProjInv.TransformVector4(NDCRayFar);
+
+	WorldRayNear /= WorldRayNear.W;
+	WorldRayFar /= NDCRayFar.W;
+
+	OutRayOriginOnWorld = WorldRayNear.xyz();
+	OutRayDirOnWorld = (WorldRayFar - WorldRayNear).xyz();
 }

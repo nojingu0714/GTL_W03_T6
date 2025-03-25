@@ -344,6 +344,75 @@ struct  FVector4 : public FVector
 	FVector4(FVector InVec3, float InW)
 		: FVector(InVec3), W(InW) {
 	}
+
+	inline FVector4 operator+(const FVector4& Other) const
+	{
+		return { X + Other.X, Y + Other.Y, Z + Other.Z, W + Other.W};
+	}
+
+	inline FVector4& operator+=(const FVector4& Other)
+	{
+		X += Other.X; Y += Other.Y; Z += Other.Z; W += Other.W;
+		return *this;
+	}
+
+	inline FVector4 operator-(const FVector4& Other) const
+	{
+		return { X - Other.X, Y - Other.Y, Z - Other.Z, W - Other.W};
+	}
+
+	inline FVector4& operator-=(const FVector4& Other)
+	{
+		X -= Other.X; Y -= Other.Y; Z -= Other.Z; W -= Other.W;
+		return *this;
+	}
+
+	inline FVector4 operator*(const FVector4& Other) const
+	{
+		return { X * Other.X, Y * Other.Y, Z * Other.Z, W * Other.W };
+	}
+
+	inline FVector4 operator*(float Scalar) const
+	{
+		return { X * Scalar, Y * Scalar, Z * Scalar, W * Scalar };
+	}
+
+	inline FVector4& operator*=(float Scalar)
+	{
+		X *= Scalar; Y *= Scalar; Z *= Scalar; W *= Scalar;
+		return *this;
+	}
+
+	inline FVector4 operator/(const FVector4& Other) const
+	{
+		return { X / Other.X, Y / Other.Y, Z / Other.Z , W / Other.W };
+	}
+
+	inline FVector4 operator/(float Scalar) const
+	{
+		return { X / Scalar, Y / Scalar, Z / Scalar, W / Scalar};
+	}
+
+	inline FVector4& operator/=(float Scalar)
+	{
+		X /= Scalar; Y /= Scalar; Z /= Scalar; W /= Scalar;
+		return *this;
+	}
+
+	inline FVector4 operator-() const
+	{
+		return { -X, -Y, -Z, -W};
+	}
+
+	inline bool operator==(const FVector4& Other) const
+	{
+		return X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
+	}
+
+	inline bool operator!=(const FVector4& Other) const
+	{
+		return !(*this == Other);
+	}
 	FORCEINLINE FVector xyz() { return static_cast<FVector>(*this); }
 	FORCEINLINE FVector XYZ() { return static_cast<FVector>(*this); }
 };
