@@ -16,6 +16,9 @@ struct FObjImporter
         FString CurrentMaterial;  // 현재 활성화된 텍스처 이름
         std::string line;
 
+        FVector TempVector;
+        FVector2 TempVector2;
+
         if (!ObjFile.is_open()) {
             throw std::runtime_error("Failed to open OBJ file.");
             return false;
@@ -34,12 +37,12 @@ struct FObjImporter
 
             // Handle vertices (v)
             if (line.substr(0, 2) == "v ") {
-                FVector Vertex;
+                
                 FVector4 Color(0.0f,0.0f, 0.0f, 1.0f); // Default color: white
 
                 // Parse vertex coordinates
-                ss >> token >> Vertex.X >> Vertex.Y >> Vertex.Z;
-                OutObjInfo.Vertices.push_back({ Vertex });
+                ss >> token >> TempVector.X >> TempVector.Y >> TempVector.Z;
+                OutObjInfo.Vertices.push_back({ TempVector });
 
                 // Check if color (RGBA) is provided (i.e., 4 components)
                 if (ss >> Color.X >> Color.Y >> Color.Z >> Color.W) {
@@ -51,17 +54,15 @@ struct FObjImporter
                 // If no color was provided, use default color (white)
             }
             // Handle normals (vn)
-            else if (line.substr(0, 3) == "vn ") {
-                FVector normal;
-                ss >> token >> normal.X >> normal.Y >> normal.Z;
-                OutObjInfo.Normals.push_back(FVector{ normal });  // 0 is a placeholder for index
+            else if (line.substr(0, 3) == "vn ") {   
+                ss >> token >> TempVector.X >> TempVector.Y >> TempVector.Z;
+                OutObjInfo.Normals.push_back(FVector{ TempVector });  // 0 is a placeholder for index
             }
             // Handle texture coordinates (vt)
             else if (line.substr(0, 3) == "vt ") {
-                FVector2 uv;
-                ss >> token >> uv.X >> uv.Y;
-                uv.Y = -uv.Y;
-                OutObjInfo.UV.push_back({ uv });  // 0 is a placeholder for index
+                ss >> token >> TempVector2.X >> TempVector2.Y;
+                TempVector2.Y = -TempVector2.Y;
+                OutObjInfo.UV.push_back({ TempVector2 });  // 0 is a placeholder for index
             }
             // Handle face (f) which contains vertex indices
             // Handle material library (mtllib)
@@ -137,6 +138,8 @@ struct FObjImporter
                     OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
 
             }
+            TempVector.X = TempVector.Y = TempVector.Z = 0;
+            TempVector2.X = TempVector2.Y = 0;
         }
         ObjFile.close();
 
