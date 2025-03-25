@@ -70,23 +70,25 @@ void UUISceneManager::ActorSpawner()
     ImGui::Combo("Primitive", &CurrentPrimitiveType, items, ARRAYSIZE(items));
     int adjustedType = CurrentPrimitiveType + 2;
     ImGui::InputInt("Number of Spawn", &SpawnNum);
+    
     if (ImGui::Button("Spawn")) {
+        UWorld* World = UEngine::GetEngine().GetWorld();
         for (int i = 0; i < SpawnNum; i++) {
             switch (static_cast<EPrimitiveType>(adjustedType)) {
             case EPrimitiveType::Triangle:
-                SpawnActor<ATriangle>(TEXT("Triangle"));
+                World->SpawnActor<ATriangle>(TEXT("Triangle"));
                 break;
             case EPrimitiveType::Sphere:
-                SpawnActor<ASphere>(TEXT("Sphere"));
+                World->SpawnActor<ASphere>(TEXT("Sphere"));
                 break;
             case EPrimitiveType::Cube:
-                SpawnActor<ACube>(TEXT("Cube"));
+                World->SpawnActor<ACube>(TEXT("Cube"));
                 break;
             case EPrimitiveType::Cylinder:
-                SpawnActor<ACylinder>(TEXT("Cylinder"));
+                World->SpawnActor<ACylinder>(TEXT("Cylinder"));
                 break;
             case EPrimitiveType::Cone:
-                SpawnActor<ACone>(TEXT("Cone"));
+                World->SpawnActor<ACone>(TEXT("Cone"));
                 break;
             default:
                 break;

@@ -326,9 +326,6 @@ struct FObjImporter
 
 };
 
-class UMaterial;
-class UTexture;
-
 class FObjManager
 {
 private:
@@ -341,8 +338,6 @@ public:
     static FStaticMesh* LoadObjStaticMeshAsset(const FString& PathFileName);
 
     static UStaticMesh* LoadObjStaticMesh(const FString& PathFileName);
-
-	static UMaterial* LoadMaterial(const FString& PathFileName);
 
 };
 
