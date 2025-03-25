@@ -19,6 +19,7 @@
 #include "Core/Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
 
+#include <stdlib.h>
 
 TArray<UObject*> GUObjectArray = TArray<UObject*>();
 
@@ -40,6 +41,22 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     // 기본 뷰포트 설정.
     DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
 
+    const int num = 3;
+    const int W = InWindowInfo.Width / num;
+    const int H = InWindowInfo.Height / num;
+    for (int i = 0; i < num; i++)
+    {
+        for (int j = 0; j < num; j++)
+        {
+            wchar_t buf[300];
+            _itow_s(i * num + j, buf, 10);
+            FViewport Viewport;
+            Viewport.Init(buf, InWindowInfo.WindowHandle, W * i, H * j, W, H);
+            Viewports.push_back(Viewport);
+        }
+    }
+	
+    // 텍스쳐용 UV 버퍼 추가.
 
     // for batch line rendering
     hr = DirectX11Handle->CheckAndAddDynamicVertexBuffer<FVertexPNCT>(L"Dynamic", 1024);
@@ -107,8 +124,32 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-    // Texture2D를 쓰는 Quad를 그리기
-    EditorManager->Draw();
+    int index = 0;
+    // viewport (Texture2D) 에 그리기.
+    for (const FViewport& Viewport : Viewports)
+    {
+        DirectX11Handle->PrepareViewport(Viewport);
+        auto cam = World->GetCamera();
+        cam->SetActorLocation(FVector(-index -1, 0, 0));
+        DirectX11Handle->UpdateCameraMatrix(cam);
+
+        DirectX11Handle->SetLineMode();
+        DirectX11Handle->RenderWorldPlane(World->GetCamera());
+        DirectX11Handle->RenderBoundingBox(World->GetActors());
+        DirectX11Handle->RenderLines(World->GetActors());
+
+        DirectX11Handle->SetFaceMode();
+        DirectX11Handle->RenderObject(World->GetActors());
+        DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
+        index++;
+    }
+
+        DirectX11Handle->PrepareWindow();
+    for (const FViewport& Viewport : Viewports)
+    {
+        // Texture2D를 쓰는 Quad를 그리기
+        DirectX11Handle->RenderViewport(Viewport);
+    }
 
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();

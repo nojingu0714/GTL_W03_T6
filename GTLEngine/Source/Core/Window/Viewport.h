@@ -16,6 +16,7 @@ struct FViewportCamera
 	float Sensitive;
 	float MaxPitch;
 	float MinPitch;
+
 };
 
 // 엔진에 TArray로 저장.
@@ -37,14 +38,17 @@ public:
 	const D3D11_VIEWPORT& GetViewport() const { return Viewport; }
 	const FString& GetName() const { return Name; }
 	const FMatrix& GetProjectionMatrix() const { return CachedProjectionMatrix; }
+	const FMatrix& GetViewMatrix() const { return CachedViewMatrix; }
 	const FViewportCamera& GetCamera() const { return Camera; }
 
 
 private:
 	FString Name;
 	FMatrix CachedProjectionMatrix;
+	FMatrix CachedViewMatrix;
 	EDepthComparisonMode DepthComparisonMode = EDepthComparisonMode::Less;
 	ERasterizerMode RasterizerMode = ERasterizerMode::Solid_Back;
 	D3D11_VIEWPORT Viewport;
 	FViewportCamera Camera;
+	
 };

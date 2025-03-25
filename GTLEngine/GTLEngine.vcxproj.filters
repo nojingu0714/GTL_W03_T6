@@ -602,7 +602,9 @@
     <FxCompile Include="Resource\Shader\StaticMeshShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Resource\Shader\ViewportShader.hlsl" />
+    <FxCompile Include="Resource\Shader\ViewportShader.hlsl">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Source\CoreUObject\UI\ConsolePanel.h">

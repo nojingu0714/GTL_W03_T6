@@ -9,6 +9,8 @@ UDXDResourceManager::UDXDResourceManager(ID3D11Device* Device)
 
 HRESULT UDXDResourceManager::CreateTextureSRV(const FString& FilePath)
 {
+	if (FilePath.empty())
+		return S_FALSE;
 	FString ext = FilePath.substr(FilePath.find_last_of(TEXT(".")));
 
 	DirectX::ScratchImage Image;
@@ -25,7 +27,8 @@ HRESULT UDXDResourceManager::CreateTextureSRV(const FString& FilePath)
 	}
 	else // WIC (png, jpg, jpeg, bmp )
 	{
-		if (FAILED(LoadFromWICFile(FilePath.c_str(), DirectX::WIC_FLAGS::WIC_FLAGS_NONE, nullptr, Image)))
+		HRESULT hr = LoadFromWICFile(FilePath.c_str(), DirectX::WIC_FLAGS::WIC_FLAGS_NONE, nullptr, Image);
+		if (FAILED(hr))
 			return S_FALSE;
 	}
 

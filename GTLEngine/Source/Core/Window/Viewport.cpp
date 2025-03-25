@@ -86,6 +86,11 @@ void FViewport::SetProjectionMatrix(const FMatrix& InProjectionMatrix)
 	CachedProjectionMatrix = InProjectionMatrix;
 }
 
+void FViewport::SetViewMatrix(const FMatrix& InViewMatrix)
+{
+	CachedViewMatrix = InViewMatrix;
+}
+
 void FViewport::Tick(float TickTime)
 {
 	// 카메라 업데이트
