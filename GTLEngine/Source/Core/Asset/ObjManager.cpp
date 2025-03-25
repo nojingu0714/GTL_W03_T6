@@ -73,11 +73,10 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
         FStaticMeshSection NewSection;
         NewSection.MaterialName = MaterialName;
 
-        int32 NextIndex = 0;
-
+        IndexCount = 0;
         TMap<std::string, int> UniqueVertexMap;
 
-        for (int b = 0;b < 12;b++)
+        for (int b = 0;b < Faces.size();b++)
         {
             for (int a = 0;a < RenderMode;a++)
             {
