@@ -94,6 +94,7 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
 
                 FVertexPNCT Vertex(Position, Normal, Color, UV);
                 NewSection.Vertices.push_back(Vertex);
+                NewStaticMesh->Vertices.push_back(Position);
 
                 // 새로운 정점 인덱스 맵핑
                 UniqueVertexMap[VertexKey]= IndexCount;

@@ -27,6 +27,7 @@ struct FStaticMesh
 {
     FString PathFileName;  // Mesh OBJ 파일 경로
     TArray<FStaticMeshSection> Sections; // 여러 개의 Sub-Mesh(메터리얼 섹션)
+    TArray<FVector> Vertices;
 };
 
 struct FObjMaterialInfo
