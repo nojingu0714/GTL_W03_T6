@@ -9,7 +9,8 @@ void ULineComponent::TickComponent(float TickTime) {}
 
 void ULineComponent::Destroy() {}
 
-FBoundingBox ULineComponent::GetAABB() const {
+// TODO: 변경하기
+FBoundingBox ULineComponent::GetAABB(const FMatrix& LocalToWorld) const {
 	FVector min, max;
 	FMatrix transformation = GetWorldMatrix();
 	FVector start = transformation.TransformPositionVector(FVector::Zero());

@@ -3,7 +3,11 @@
 #include "DirectX11/DirectXHandle.h"
 #include "Engine/Engine.h"
 #include "Input/InputManager.h"
+#include "CoreUObject/GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
+#include "DirectX11/DirectXHandle.h"
 
+TArray<FRay> FViewport::DebugRays;
 
 HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight)
 {
@@ -42,7 +46,7 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	Camera->NearClip = 0.1f;
 	Camera->FarClip = 1000.f;
 	Camera->Speed = 10.f;
-	Camera->Sensitive = 5.f;
+	Camera->Sensitive = 10.f;
 	Camera->MaxPitch = 89.f;
 	Camera->MinPitch = -89.f;
 
@@ -125,6 +129,23 @@ void FViewport::TickWhenSelected(float DeltaTime)
 
 void FViewport::TickWhenHovered(float DeltaTime)
 {
+	// 클릭으로 선택
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+	FVector _v;
+	if (InputManager->GetMouseDown(UInputManager::EMouseButton::LEFT))
+	{
+		FRay ray = GetRayOnWorld(InputManager->GetMouseClientX(), InputManager->GetMouseClientY());
+		DebugRays.push_back(ray);
+		for (TObjectIterator<AStaticMeshActor> It; It; ++It)
+		{
+			AStaticMeshActor* Actor = *It;
+			if (Actor->IsClicked(ray, 1.f, _v))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s"), Actor->GetName().c_str());
+			}
+		}
+
+	}
 
 }
 
@@ -191,10 +212,10 @@ void FViewport::Destroy()
 	Camera = nullptr;
 }
 
-void FViewport::GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& OutRayOriginOnWorld, FVector& OutRayDirOnWorld)
+FRay FViewport::GetRayOnWorld(int InClientMouseX, int InClientMouseY)
 {
-	float NDCMouseX = (InScreenMouseX - Viewport.TopLeftX) / (float)Viewport.Width * 2 - 1;
-	float NDCMouseY = (InScreenMouseY - Viewport.TopLeftY) / (float)Viewport.Height * -2 + 1;
+	float NDCMouseX = (InClientMouseX - Viewport.TopLeftX) / (float)Viewport.Width * 2 - 1;
+	float NDCMouseY = (InClientMouseY - Viewport.TopLeftY) / (float)Viewport.Height * -2 + 1;
 
 	FVector4 NDCRayNear = FVector4(NDCMouseX, NDCMouseY, 0, 1);
 	FVector4 NDCRayFar = FVector4(NDCMouseX, NDCMouseY, 1, 1);
@@ -206,10 +227,9 @@ void FViewport::GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& O
 	FVector4 WorldRayFar = ViewProjInv.TransformVector4(NDCRayFar);
 
 	WorldRayNear /= WorldRayNear.W;
-	WorldRayFar /= NDCRayFar.W;
+	WorldRayFar /= WorldRayFar.W;
 
-	OutRayOriginOnWorld = WorldRayNear.xyz();
-	OutRayDirOnWorld = (WorldRayFar - WorldRayNear).xyz();
+	return FRay(WorldRayNear.xyz(), (WorldRayFar - WorldRayNear).xyz());
 }
 
 bool FViewport::Contains(int x, int y) const

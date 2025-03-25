@@ -7,9 +7,10 @@
 #include "Gizmo/GizmoManager.h"
 #include "Input/InputManager.h"
 
+
 void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 {
-	const int num = 7;
+	const int num = 2;
 	const int W = InWindowInfo.Width / num;
 	const int H = InWindowInfo.Height / num;
 	for (int i = 0; i < num; i++)
@@ -41,6 +42,7 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	//ViewportClient->Init();
 	HoveredViewport = &Viewports[0];
 	SelectedViewport = &Viewports[0];
+
 }
 
 void FEditorManager::Tick(float DeltaTime)
@@ -85,6 +87,8 @@ void FEditorManager::Draw()
 		Handle->RenderWorldPlane(Viewport.GetCamera());
 		Handle->RenderBoundingBox(World->GetActors());
 		Handle->RenderLines(World->GetActors());
+
+		Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
@@ -145,4 +149,3 @@ void FEditorManager::UpdateSelectedViewport()
 		}
 	}
 }
-

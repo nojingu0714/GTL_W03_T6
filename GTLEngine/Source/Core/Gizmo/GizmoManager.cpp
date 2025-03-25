@@ -151,6 +151,7 @@ const TArray<UGizmoBase*> UGizmoManager::GetGizmo() {
 }
 
 void UGizmoManager::AttachGizmo(AActor* target) {
+	return;
 	UGizmoTranslate* GizmoTranslate;
 	GizmoTranslate = FObjectFactory::ConstructObject<UGizmoTranslate>();
 	GizmoTranslate->Init(UGizmoBase::EAxis::X, target);

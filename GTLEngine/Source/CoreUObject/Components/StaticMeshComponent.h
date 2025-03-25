@@ -16,6 +16,7 @@ public:
 public:
 	// Primitive
 	//void Serialize(bool bIsLoading, json::JSON Handle);
+	virtual FBoundingBox GetAABB(const FMatrix& LocalToWorld) const;
 
 public:
 	// Static Mesh

@@ -22,6 +22,7 @@ void UInputManager::Tick(float TickTime)
 {
     // 현재 키 상태를 이전 상태에 복사
     PrevKeyStates = CurrentKeyStates;
+    PrevMouseState = CurrentMouseState;
     // 0~255 범위의 가상키에 대해 GetAsyncKeyState를 호출하여 현재 상태 업데이트
     for (int i = 0; i < 256; ++i)
     {
@@ -40,7 +41,6 @@ void UInputManager::Tick(float TickTime)
     if (!IsMouseLocked)
     {
         // 현재 마우스 상태를 이전 상태에 복사
-        PrevMouseState = CurrentMouseState;
         if (GetCursorPos(&pt))
         {
             CurrentMouseState.ScreenX = pt.x;
@@ -50,7 +50,6 @@ void UInputManager::Tick(float TickTime)
                 CurrentMouseState.ClientX = pt.x;
                 CurrentMouseState.ClientY = pt.y;
                 ConvertMouseToNDC(WindowInfo.WindowHandle, WindowInfo.Width, WindowInfo.Height);
-            
             }
         }
     }
@@ -75,8 +74,6 @@ void UInputManager::Tick(float TickTime)
 
             SetCursorPos(MousePosWhenLocked.x, MousePosWhenLocked.y);
         }
-        SetCursorPos(MousePosWhenLocked.x, MousePosWhenLocked.y);
-
     }
 }
 

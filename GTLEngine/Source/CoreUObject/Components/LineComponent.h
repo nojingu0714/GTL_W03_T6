@@ -11,7 +11,7 @@ public:
 	ULineComponent();
 	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
-	virtual FBoundingBox GetAABB() const override;
+	virtual FBoundingBox GetAABB(const FMatrix& LocalToWorld) const override;
 	virtual bool IsRayIntersect(FRay ray, float hitDistance, FVector& hitPoint) const override;
 	//inline FVector GetPosition() const { return RelativeLocation; };
 	//inline FVector GetDirection() const { return (end - start).GetSafeNormal(); }

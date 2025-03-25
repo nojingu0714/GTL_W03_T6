@@ -84,7 +84,7 @@ private:
 public:
 	template<typename T>
 	HRESULT AddVertexBuffer(FString KeyName, const TArray<T> vertices, const TArray<uint32>& indices);
-
+	FVertexInfo GetVertexBuffer(FString KeyName);
 	// for batch line render
 	template<typename T>
 	HRESULT CheckAndAddDynamicVertexBuffer(FString KeyName, const uint32 size);
@@ -148,6 +148,11 @@ private:
 
 	uint32 DynamicVertexBufferSize;
 
+
+	////////////////////////////////////////
+	// Render Debugging
+public:
+	void RenderDebugRays(const TArray<FRay>& Rays);
 };
 
 template<typename T>
