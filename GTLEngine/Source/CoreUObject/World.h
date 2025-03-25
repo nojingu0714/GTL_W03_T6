@@ -20,10 +20,6 @@ public:
 		T* NewObject = FObjectFactory::ConstructObject<T>();
 		
 		AActor* newActor = Cast<AActor>(NewObject);
-		// newActor-> SetLocation, SetScale, SetRotation.
-		newActor->SetActorLocation(InLocation);
-		newActor->SetActorScale(InScale);
-		newActor->SetActorRotation(InRotation);
 
 		if (newActor != nullptr)
 		{

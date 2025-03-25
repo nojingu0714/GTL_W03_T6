@@ -22,7 +22,8 @@
 #include "GameFrameWork/Shapes/Cone.h"
 
 UControlPanel::UControlPanel()
-	: UUIBase(), CurrentPrimitiveType(0), SpawnNum(1), SceneName("NewScene"), blsOrthogonal(nullptr), Location{ 0.f, 0.f,0.f }, Rotation{ 0.f,0.f,0.f }, Scale{ 1.f,1.f,1.f },
+	: UUIBase(), CurrentPrimitiveType(0), SpawnNum(1), SceneName("NewScene"), blsOrthogonal(nullptr), 
+    //Location{ 0.f, 0.f,0.f }, Rotation{ 0.f,0.f,0.f }, Scale{ 1.f,1.f,1.f },
     FOV(nullptr), CameraLocation(nullptr), CameraRotation(nullptr), WindowWidth(360.f), WindowHeight(400.f)
 {
 }
@@ -37,23 +38,15 @@ void UControlPanel::Tick(float DeltaTime)
     ImGui::SetNextWindowPos(ImVec2(5, 10), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(WinSize, ImGuiCond_Appearing);
 
-    ImGui::Begin("Control Panel", nullptr, ImGuiWindowFlags_NoResize);
+    ImGui::Begin("System Info", nullptr);
 
     EnvironmentPanel();
-    
     ImGui::Separator();
-
-    //GizmoPanel();
-
-    ImGui::Separator();
-
-    //SceneManagementPanel();
-
-    ImGui::Separator();
-
-    // TODO: 메모리 가져와서 UI 업데이트 해주기.
     MemoryPanel();
-
+    ImGui::Separator();
+	// CameraSpeed();
+    ImGui::Separator();
+    // GridScale();
     ImGui::Separator();
 
     ImGui::End();
@@ -61,24 +54,9 @@ void UControlPanel::Tick(float DeltaTime)
 
 void UControlPanel::EnvironmentPanel()
 {
-    ImGui::Text("HELLO GTL!!");
-
     // FPS 및 창 크기출력.
     ImGui::Text("FPS %.0f (%.0f ms)", io.Framerate, 1000.0f / io.Framerate);
     ImGui::Text("Window %dx%d", UEngine::GetEngine().GetWindowInfo().Width, UEngine::GetEngine().GetWindowInfo().Height);
-    ImGui::Text("Mouse %d,%d", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-
-    /*ACamera* cam = UEngine::GetEngine().GetWorld()->GetCamera();
-    if (cam)
-    {
-        ImGui::DragFloat("Grid Scale", &cam->GridScale, 0.1f, 0.1f, 100.f, "%.1f");
-        ImGui::DragFloat("Camera speed", &cam->MoveSpeed, 0.1f, 0.1f, 100.f, "%.1f");
-        ImGui::DragFloat("Mouse Sensitive", &cam->MouseSensitive, 0.1f, 0.1f, 10.f, "%.1f");
-    }
-    else
-    {
-        ImGui::Text("Can not find main camera");
-    }*/
 }
 
 void UControlPanel::GizmoPanel()

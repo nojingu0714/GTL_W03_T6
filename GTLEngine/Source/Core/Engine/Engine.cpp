@@ -153,12 +153,6 @@ void UEngine::ClearEngine()
 		FObjectFactory::DestroyObject(World);
     }
 
-    if (ResourceManager)
-    {
-        delete ResourceManager;
-        ResourceManager = nullptr;
-    }
-
     if (UIManager)
 	{
         UIManager->Destroy();

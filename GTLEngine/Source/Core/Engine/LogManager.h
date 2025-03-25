@@ -48,7 +48,7 @@ private:
 
 public:
 	static void AddLog(FLogCategory* Category, ELogVerbosity Verbosity, const wchar_t* fmt, ...);
-	static void AddLog(FLogCategory* Category, ELogVerbosity Verbosity, FString fmt, ...);
+	static void AddLog(FLogCategory* Category, ELogVerbosity Verbosity, const FString fmt, ...);
 	static void ClearLog();
 	inline static TArray<FLogItem> GetLogs() { return Get().Items; }
 };

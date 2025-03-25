@@ -265,7 +265,7 @@
     <ClCompile Include="Source\CoreUObject\UI\ConsolePanel.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\UI\UISceneManager.cpp">
+    <ClCompile Include="Source\CoreUObject\UI\WorldOutliner.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Engine\LogManager.cpp">
@@ -501,7 +501,7 @@
     <ClInclude Include="Plugins\ImGui\imstb_textedit.h">
       <Filter>Plugins\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\UI\UISceneManager.h">
+    <ClInclude Include="Source\CoreUObject\UI\WorldOutliner.h">
       <Filter>Source\CoreUObject\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\Components\StaticMeshComponent.h">
