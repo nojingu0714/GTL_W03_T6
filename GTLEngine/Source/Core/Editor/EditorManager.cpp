@@ -10,12 +10,17 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 {
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
+	FViewport DefaultViewport_1;
+	DefaultViewport_1.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height/ 2);
+	Viewports.push_back(DefaultViewport_1);
+	DefaultViewport_1.GetCamera()->Location = FVector(2.f, 2.f, 2.f);
+
 	// 뷰포트 클라이언트 생성
-	ViewportClient = new FViewportClient();
-	ViewportClient->Init();
+	//ViewportClient = new FViewportClient();
+	//ViewportClient->Init();
 }
 
 void FEditorManager::Tick(float TickTime)
@@ -36,10 +41,10 @@ void FEditorManager::Draw()
 	for (const FViewport& Viewport : Viewports)
 	{
 		Handle->PrepareViewport(Viewport);
-		Handle->UpdateCameraMatrix(&Viewport.GetCamera());
+		Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
 		Handle->SetLineMode();
-		Handle->RenderWorldPlane(&Viewport.GetCamera());
+		Handle->RenderWorldPlane(Viewport.GetCamera());
 		Handle->RenderBoundingBox(World->GetActors());
 		Handle->RenderLines(World->GetActors());
 
@@ -52,15 +57,14 @@ void FEditorManager::Draw()
 
 	for (FViewport& Viewport : Viewports)
 	{
-		ViewportClient->Draw(Viewport.GetName());
+		Handle->RenderViewport(Viewport);
 	}
 }
 
 void FEditorManager::Destroy()
 {
-	if (ViewportClient)
+	for (FViewport& Viewport : Viewports)
 	{
-		delete ViewportClient;
-		ViewportClient = nullptr;
+		Viewport.Destroy();
 	}
 }

@@ -12,7 +12,10 @@ public:
 	void Destroy();
 
 private:
+	
+	//FViewportClient* ViewportClient;
+
+public:
 	TArray<FViewport> Viewports;
-	FViewportClient* ViewportClient;
 };
 

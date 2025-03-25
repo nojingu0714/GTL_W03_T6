@@ -8,6 +8,8 @@ struct FViewportCamera
 	FVector Location;
 	FRotator Rotation;
 	EProjectionMode ProjectionMode;
+	FMatrix CachedProjectionMatrix;
+	FMatrix CachedViewMatrix;
 	float ScreenSize; // Orthogonal
 	float FieldOfView; // Perspective
 	float NearClip;
@@ -30,6 +32,7 @@ public:
 	void MoveViewport(int InX, int InY);
 	void ResizeViewport(UINT InWidth, UINT InHeight);
 	void SetProjectionMatrix(const FMatrix& InProjectionMatrix);
+	void SetViewMatrix(const FMatrix& InViewMatrix);
 
 	void Tick(float TickTime);
 
@@ -37,18 +40,18 @@ public:
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
 	const D3D11_VIEWPORT& GetViewport() const { return Viewport; }
 	const FString& GetName() const { return Name; }
-	const FMatrix& GetProjectionMatrix() const { return CachedProjectionMatrix; }
-	const FMatrix& GetViewMatrix() const { return CachedViewMatrix; }
-	const FViewportCamera& GetCamera() const { return Camera; }
+	const FMatrix& GetProjectionMatrix() const { return Camera->CachedProjectionMatrix; }
+	const FMatrix& GetViewMatrix() const { return Camera->CachedViewMatrix; }
+	FViewportCamera* GetCamera() const { return Camera; }
 
+	void Destroy();
 
 private:
 	FString Name;
-	FMatrix CachedProjectionMatrix;
-	FMatrix CachedViewMatrix;
+	
 	EDepthComparisonMode DepthComparisonMode = EDepthComparisonMode::Less;
 	ERasterizerMode RasterizerMode = ERasterizerMode::Solid_Back;
 	D3D11_VIEWPORT Viewport;
-	FViewportCamera Camera;
+	FViewportCamera* Camera;
 	
 };

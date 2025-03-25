@@ -32,17 +32,18 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	TextureDesc.MiscFlags = 0;
 
 	// 카메라 초기화
-	Camera.Location = FVector(0.f, 2.f, 0.f);
-	Camera.Rotation = FRotator(0.f, 0.f, 0.f);
-	Camera.ProjectionMode = EProjectionMode::Perspective;
-	Camera.ScreenSize = 0.f;
-	Camera.FieldOfView = 60.f;
-	Camera.NearClip = 0.1f;
-	Camera.FarClip = 1000.f;
-	Camera.Speed = 10.f;
-	Camera.Sensitive = 5.f;
-	Camera.MaxPitch = 89.f;
-	Camera.MinPitch = -89.f;
+	Camera = new FViewportCamera();
+	Camera->Location = FVector(0.f, 2.f, 0.f);
+	Camera->Rotation = FRotator(0.f, 0.f, 0.f);
+	Camera->ProjectionMode = EProjectionMode::Perspective;
+	Camera->ScreenSize = 0.f;
+	Camera->FieldOfView = 60.f;
+	Camera->NearClip = 0.1f;
+	Camera->FarClip = 1000.f;
+	Camera->Speed = 10.f;
+	Camera->Sensitive = 5.f;
+	Camera->MaxPitch = 89.f;
+	Camera->MinPitch = -89.f;
 
 	hr = Handle->AddRenderTarget(InName, TextureDesc);
 	if (FAILED(hr))
@@ -83,19 +84,19 @@ void FViewport::ResizeViewport(UINT InWidth, UINT InHeight)
 
 void FViewport::SetProjectionMatrix(const FMatrix& InProjectionMatrix)
 {
-	CachedProjectionMatrix = InProjectionMatrix;
+	Camera->CachedProjectionMatrix = InProjectionMatrix;
 }
 
 void FViewport::SetViewMatrix(const FMatrix& InViewMatrix)
 {
-	CachedViewMatrix = InViewMatrix;
+	Camera->CachedViewMatrix = InViewMatrix;
 }
 
 void FViewport::Tick(float TickTime)
 {
 	// 카메라 업데이트
-	FVector CameraLocation = Camera.Location;
-	FRotator CameraRotation = Camera.Rotation;
+	FVector CameraLocation = Camera->Location;
+	FRotator CameraRotation = Camera->Rotation;
 
 	// 카메라 기준 Forward, Right, Up Vector 구하기
 
@@ -107,27 +108,27 @@ void FViewport::Tick(float TickTime)
 
 	if (InputManager->GetKey('W'))
 	{
-		CameraLocation += ForwardDirection * Camera.Speed * TickTime;
+		CameraLocation += ForwardDirection * Camera->Speed * TickTime;
 	}
 	if (InputManager->GetKey('S'))
 	{
-		CameraLocation -= ForwardDirection * Camera.Speed * TickTime;
+		CameraLocation -= ForwardDirection * Camera->Speed * TickTime;
 	}
 	if (InputManager->GetKey('A'))
 	{
-		CameraLocation -= RightDirection * Camera.Speed * TickTime;
+		CameraLocation -= RightDirection * Camera->Speed * TickTime;
 	}
 	if (InputManager->GetKey('D'))
 	{
-		CameraLocation += RightDirection * Camera.Speed * TickTime;
+		CameraLocation += RightDirection * Camera->Speed * TickTime;
 	}
 	if (InputManager->GetKey('Q'))
 	{
-		CameraLocation -= UpDirection * Camera.Speed * TickTime;
+		CameraLocation -= UpDirection * Camera->Speed * TickTime;
 	}
 	if (InputManager->GetKey('E'))
 	{
-		CameraLocation += UpDirection * Camera.Speed * TickTime;
+		CameraLocation += UpDirection * Camera->Speed * TickTime;
 	}
 	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
 	{
@@ -137,13 +138,31 @@ void FViewport::Tick(float TickTime)
 		// Pitch, Yaw, Roll == Y, Z, X
 		// TODO: 회전 시 Roll 회전이 적용되는 문제가 생김. Rotator 문제일 수도 있음.
 
-		CameraRotation.Pitch -= MouseDeltaY * Camera.Sensitive * TickTime;
-		CameraRotation.Yaw += MouseDeltaX * Camera.Sensitive * TickTime;
+		CameraRotation.Pitch -= MouseDeltaY * Camera->Sensitive * TickTime;
+		CameraRotation.Yaw += MouseDeltaX * Camera->Sensitive * TickTime;
 
-		CameraRotation.Pitch = (CameraRotation.Pitch < Camera.MinPitch) ? Camera.MinPitch : (CameraRotation.Pitch > Camera.MaxPitch) ? Camera.MaxPitch : CameraRotation.Pitch;
+		CameraRotation.Pitch = (CameraRotation.Pitch < Camera->MinPitch) ? Camera->MinPitch : (CameraRotation.Pitch > Camera->MaxPitch) ? Camera->MaxPitch : CameraRotation.Pitch;
 		CameraRotation.Roll = 0;
 	}
 
-	Camera.Location = CameraLocation;
-	Camera.Rotation = CameraRotation;
+	Camera->Location = CameraLocation;
+	Camera->Rotation = CameraRotation;
+
+	// ViewMatrix Update
+
+	// Rotation Matrix 생성.
+	FVector ForwardVector = CameraRotation.TransformRotVecToMatrix(FVector::ForwardVector).GetSafeNormal();
+
+	//XMMatrixLookAtLH(Eye, At, Up);
+	FMatrix CameraViewMatrix = FMatrix::LookAtLH(CameraLocation, CameraLocation + ForwardVector, FVector::UpVector);
+	Camera->CachedViewMatrix = CameraViewMatrix;
+
+	float FOVRad = FMath::DegreesToRadians(Camera->FieldOfView);
+	Camera->CachedProjectionMatrix = FMatrix::PerspectiveFovLH(FOVRad, Viewport.Width / Viewport.Height, Camera->NearClip, Camera->FarClip);
+}
+
+void FViewport::Destroy()
+{
+	delete Camera;
+	Camera = nullptr;
 }

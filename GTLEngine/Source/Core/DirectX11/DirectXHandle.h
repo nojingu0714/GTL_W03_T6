@@ -44,7 +44,7 @@ public:
 	HRESULT CreateDirectX11Handle(HWND hWnd);
 	void ReleaseDirectX11Handle();
 
-	void UpdateCameraMatrix(const FViewportCamera* Camera);
+	void UpdateCameraMatrix(FViewportCamera* Camera);
 	void RenderWorldPlane(const FViewportCamera* Camera);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
@@ -94,9 +94,6 @@ public:
 	HRESULT ResizeWindow(int width, int height);
 
 private:
-	void UpdateWorldViewMatrix(const FViewportCamera* Camera);
-	void UpdateWorldProjectionMatrix(const FViewportCamera* Camera);
-
 	void RenderAABB(FBoundingBox aabb);
 
 

@@ -375,7 +375,7 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 	}
 }
 
-void UDirectXHandle::UpdateCameraMatrix(const FViewportCamera* Camera)
+void UDirectXHandle::UpdateCameraMatrix( FViewportCamera* Camera)
 {
 	// Camera->GetCameraComponent.
 	// MVP 계산 행렬 구하고
@@ -396,8 +396,7 @@ void UDirectXHandle::UpdateCameraMatrix(const FViewportCamera* Camera)
 	DXDDeviceContext->Map(CbChangesEveryFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &viewMappedData);
 	if (FCbChangesEveryFrame* Buffer = reinterpret_cast<FCbChangesEveryFrame*>(viewMappedData.pData))
 	{
-		UpdateWorldViewMatrix(Camera);
-		Buffer->ViewMatrix = UEngine::GetEngine().GetWorld()->GetViewMatrix();
+		Buffer->ViewMatrix = Camera->CachedViewMatrix;
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryFrame, 0);
 
@@ -412,8 +411,7 @@ void UDirectXHandle::UpdateCameraMatrix(const FViewportCamera* Camera)
     DXDDeviceContext->Map(CbChangesOnResize, 0, D3D11_MAP_WRITE_DISCARD, 0, &projectionMappedData);
     if (FCbChangesOnResize* Buffer = reinterpret_cast<FCbChangesOnResize*>(projectionMappedData.pData))
     {
-        UpdateWorldProjectionMatrix(Camera);
-		Buffer->ProjectionMatrix = UEngine::GetEngine().GetWorld()->GetProjectionMatrix();
+		Buffer->ProjectionMatrix = Camera->CachedProjectionMatrix;
 	}
 	DXDDeviceContext->Unmap(CbChangesOnResize, 0);
 	//XMMatrixTranspose(XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), Width / Height, 1.f, 1000.f));
@@ -1242,29 +1240,6 @@ HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)
 	return S_OK;
 }
 
-void UDirectXHandle::UpdateWorldViewMatrix(const FViewportCamera* Camera)
-{
-	if (!Camera)
-		return;
-	FVector CameraLocation = Camera->Location;
-	FRotator CameraRotation = Camera->Rotation;
-
-	// Rotation Matrix 생성.
-	FVector ForwardVector = CameraRotation.TransformRotVecToMatrix(FVector::ForwardVector).GetSafeNormal();
-
-	//XMMatrixLookAtLH(Eye, At, Up);
-	FMatrix CameraViewMatrix = FMatrix::LookAtLH(CameraLocation, CameraLocation + ForwardVector, FVector::UpVector);
-	UEngine::GetEngine().GetWorld()->SetViewMatrix(CameraViewMatrix);
-
-}
-
-void UDirectXHandle::UpdateWorldProjectionMatrix(const FViewportCamera* Camera)
-{
-	float FOVRad = FMath::DegreesToRadians(Camera->FieldOfView);
-	UEngine::GetEngine().GetWorld()->SetProjectionMatrix(
-		FMatrix::PerspectiveFovLH(FOVRad, WindowViewport.Width / WindowViewport.Height, Camera->NearClip, Camera->FarClip)
-	);
-}
 
 void UDirectXHandle::ResizeViewport(int width, int height) {
 	WindowViewport.Width = static_cast<float>(width);
