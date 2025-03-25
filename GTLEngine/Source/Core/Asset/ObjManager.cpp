@@ -5,8 +5,6 @@
 
 TMap<FString, FStaticMesh*> FObjManager::ObjStaticMeshMap;
 
-const int RenderMode = 3; // Triangle Render
-
 std::string CreateVertexKey(int VertexIndex, int NormalIndex, int UVIndex)
 {
     std::string key;
@@ -78,36 +76,37 @@ FStaticMesh* FObjManager::ConvertObjToStaticMesh(const FObjInfo& ObjInfo)
 
         for (int b = 0;b < Faces.size();b++)
         {
-            for (int a = 0;a < RenderMode;a++)
+            for (int a = 0;a <3;a++) // 3 : Triangulated Face 만 적용 가능.
             {
-            int VertexIndex = Faces[b].Vertices[a];
-            int UVIndex = Faces[b].TexCoords[a];
-            int NormalIndex = Faces[b].Normals[a];
+                int VertexIndex = Faces[b].Vertices[a];
+                // UV 및 Normal이 존재하는지 확인 후 인덱스 설정
+                int UVIndex = (Faces[b].TexCoords.size() > 0) ? Faces[b].TexCoords[a] : 0;
+                int NormalIndex = (Faces[b].Normals.size() > 0) ? Faces[b].Normals[a] : 0;
 
-            // 정점의 Key 생성 (정점, 노멀, UV를 기반으로 Key 생성)
-            std::string VertexKey = CreateVertexKey(VertexIndex, NormalIndex, UVIndex);
+                // 정점의 Key 생성 (정점, 노멀, UV를 기반으로 Key 생성)
+                std::string VertexKey = CreateVertexKey(VertexIndex, NormalIndex, UVIndex);
 
-            // 이미 존재하는 정점이면 건너뛰기
-            if (UniqueVertexMap.contains(VertexKey)) 
-            {
-                NewSection.Indices.push_back(UniqueVertexMap[VertexKey]);
-                continue;
-            }
+                // 이미 존재하는 정점이면 건너뛰기
+                if (UniqueVertexMap.contains(VertexKey)) 
+                {
+                    NewSection.Indices.push_back(UniqueVertexMap[VertexKey]);
+                    continue;
+                }
 
-            // 새로운 정점이면 정점 정보를 추가
-            FVector Position = ObjInfo.Vertices[VertexIndex];
-            FVector4 Color = ObjInfo.Colors[VertexIndex];
-            FVector Normal = ObjInfo.Normals[NormalIndex];
-            FVector2 UV = ObjInfo.UV[UVIndex];
+                // 새로운 정점이면 정점 정보를 추가
+                FVector Position = ObjInfo.Vertices[VertexIndex];
+                FVector4 Color = ObjInfo.Colors[VertexIndex];
+                FVector Normal = ObjInfo.Normals[NormalIndex];
+                FVector2 UV = ObjInfo.UV.size() >0? ObjInfo.UV[UVIndex]:FVector2(0,0);
 
-            FVertexPNCT Vertex(Position, Normal, Color, UV);
-            NewSection.Vertices.push_back(Vertex);
+                FVertexPNCT Vertex(Position, Normal, Color, UV);
+                NewSection.Vertices.push_back(Vertex);
 
-            // 새로운 정점 인덱스 맵핑
-            UniqueVertexMap[VertexKey]= IndexCount;
-            NewSection.Indices.push_back(IndexCount);  // 새로 추가된 정점의 인덱스를 인덱스 버퍼에 추가
+                // 새로운 정점 인덱스 맵핑
+                UniqueVertexMap[VertexKey]= IndexCount;
+                NewSection.Indices.push_back(IndexCount);  // 새로 추가된 정점의 인덱스를 인덱스 버퍼에 추가
 
-            IndexCount++;  // 인덱스 카운트를 증가
+                IndexCount++;  // 인덱스 카운트를 증가
              }
         }
        

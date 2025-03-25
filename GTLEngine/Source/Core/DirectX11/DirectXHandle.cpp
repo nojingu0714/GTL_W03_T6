@@ -185,7 +185,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	AddRasterizerState(TEXT("Gizmo"), GizmoRasterizerDesc);
 
 	D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
-	WireframeRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	WireframeRasterizerDesc.FillMode = D3D11_FILL_WIREFRAME; // 채우기 모드
 	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
 	AddRasterizerState(TEXT("Wireframe"), WireframeRasterizerDesc);
 
@@ -912,54 +912,57 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 		
 		UMaterial* Mat = FMaterialManager::LoadMaterial(Section.MaterialName);
 
-		
-		UTexture* AmbientTextureMap = Mat->GetAmbientTextureMap();
-		UTexture* DiffuseTextureMap = Mat->GetDiffuseTextureMap();
-		UTexture* SpecularTextureMap = Mat->GetSpecularTextureMap();
-		UTexture* EmissiveTextureMap = Mat->GetEmissiveTextureMap();
-		UTexture* BumpMap = Mat->GetBumpMap();
-		UTexture* DisplacementMap = Mat->GetDisplacementMap();
+		if (Mat)
+		{
+			UTexture* AmbientTextureMap = Mat->GetAmbientTextureMap();
+			UTexture* DiffuseTextureMap = Mat->GetDiffuseTextureMap();
+			UTexture* SpecularTextureMap = Mat->GetSpecularTextureMap();
+			UTexture* EmissiveTextureMap = Mat->GetEmissiveTextureMap();
+			UTexture* BumpMap = Mat->GetBumpMap();
+			UTexture* DisplacementMap = Mat->GetDisplacementMap();
 
-		ID3D11Buffer* CbMaterial = ConstantBuffers[EConstantBufferType::Material]->GetConstantBuffer();
-		if (!CbChangesEveryObject)
-		{
-			return;
-		}
-		D3D11_MAPPED_SUBRESOURCE MappedData = {};
-		DXDDeviceContext->Map(CbMaterial, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-		if (FCbMaterial* Buffer = reinterpret_cast<FCbMaterial*>(MappedData.pData))
-		{
-			Buffer->Ambient = Mat->GetAmbient();
-			Buffer->Diffuse = Mat->GetDiffuse();
-			Buffer->Specular = Mat->GetSpecular();
-			Buffer->Emissive = Mat->GetEmissive();
-			Buffer->SpecularExponent = Mat->GetSpecularExponent();
-			Buffer->IlluminationModel = Mat->GetIlluminationModel();
-			Buffer->Opacity = Mat->GetOpacity();
-			Buffer->Transparency = Mat->GetTransparency();
-			Buffer->RefractiveIndex = Mat->GetRefractiveIndex();
-		}
-		DXDDeviceContext->Unmap(CbMaterial, 0);
+			ID3D11Buffer* CbMaterial = ConstantBuffers[EConstantBufferType::Material]->GetConstantBuffer();
+			if (!CbChangesEveryObject)
+			{
+				return;
+			}
+			D3D11_MAPPED_SUBRESOURCE MappedData = {};
+			DXDDeviceContext->Map(CbMaterial, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+			if (FCbMaterial* Buffer = reinterpret_cast<FCbMaterial*>(MappedData.pData))
+			{
+				Buffer->Ambient = Mat->GetAmbient();
+				Buffer->Diffuse = Mat->GetDiffuse();
+				Buffer->Specular = Mat->GetSpecular();
+				Buffer->Emissive = Mat->GetEmissive();
+				Buffer->SpecularExponent = Mat->GetSpecularExponent();
+				Buffer->IlluminationModel = Mat->GetIlluminationModel();
+				Buffer->Opacity = Mat->GetOpacity();
+				Buffer->Transparency = Mat->GetTransparency();
+				Buffer->RefractiveIndex = Mat->GetRefractiveIndex();
+			}
+			DXDDeviceContext->Unmap(CbMaterial, 0);
 
-		// TODO: 모든 텍스쳐 적용할 수 있도록 잡기.
-		/*ID3D11ShaderResourceView* textures[] =
-		{
-			ResourceManager->TryGetTextureSRV(AmbientTextureMap->GetTextureName()),
-			ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName()),
-			ResourceManager->TryGetTextureSRV(SpecularTextureMap->GetTextureName()),
-			ResourceManager->TryGetTextureSRV(EmissiveTextureMap->GetTextureName()),
-			ResourceManager->TryGetTextureSRV(BumpMap->GetTextureName()),
-			ResourceManager->TryGetTextureSRV(DisplacementMap->GetTextureName()),
-		};*/
-		if (DiffuseTextureMap)
-		{
-			ID3D11ShaderResourceView* DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
-			DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+			// TODO: 모든 텍스쳐 적용할 수 있도록 잡기.
+			/*ID3D11ShaderResourceView* textures[] =
+			{
+				ResourceManager->TryGetTextureSRV(AmbientTextureMap->GetTextureName()),
+				ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName()),
+				ResourceManager->TryGetTextureSRV(SpecularTextureMap->GetTextureName()),
+				ResourceManager->TryGetTextureSRV(EmissiveTextureMap->GetTextureName()),
+				ResourceManager->TryGetTextureSRV(BumpMap->GetTextureName()),
+				ResourceManager->TryGetTextureSRV(DisplacementMap->GetTextureName()),
+			};*/
+			if (DiffuseTextureMap)
+			{
+				ID3D11ShaderResourceView* DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
+				DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+			}
+
+			ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
+			DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
+
 		}
 		
-		ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
-		DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
-	
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;
 		FIndexInfo IndexInfo;
