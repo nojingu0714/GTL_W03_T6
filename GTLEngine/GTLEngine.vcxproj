@@ -213,6 +213,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Core\Editor\EditorManager.cpp" />
     <ClCompile Include="Source\Core\Engine\Engine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -358,6 +359,7 @@
     <ClInclude Include="Source\Core\DirectX11\DXDBufferManager.h" />
     <ClInclude Include="Source\Core\DirectX11\State\DXDBlendState.h" />
     <ClInclude Include="Source\Core\DirectX11\State\DXDDepthStencilState.h" />
+    <ClInclude Include="Source\Core\Editor\EditorManager.h" />
     <ClInclude Include="Source\Core\Engine\Engine.h" />
     <ClInclude Include="Source\Core\Engine\EngineStatics.h" />
     <ClInclude Include="Source\Core\Gizmo\GizmoManager.h" />

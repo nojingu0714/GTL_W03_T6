@@ -27,6 +27,8 @@ class USceneComponent;
 class UStaticMeshComponent;
 class FViewport;
 
+struct FViewportCamera;
+
 class UDirectXHandle
 {
 public:
@@ -42,8 +44,8 @@ public:
 	HRESULT CreateDirectX11Handle(HWND hWnd);
 	void ReleaseDirectX11Handle();
 
-	void UpdateCameraMatrix(ACamera* Camera);
-	void RenderWorldPlane(ACamera* Camera);
+	void UpdateCameraMatrix(const FViewportCamera* Camera);
+	void RenderWorldPlane(const FViewportCamera* Camera);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
@@ -93,8 +95,8 @@ public:
 	HRESULT ResizeWindow(int width, int height);
 
 private:
-	void UpdateWorldViewMatrix(ACamera* Camera);
-	void UpdateWorldProjectionMatrix(ACamera* Camera);
+	void UpdateWorldViewMatrix(const FViewportCamera* Camera);
+	void UpdateWorldProjectionMatrix(const FViewportCamera* Camera);
 
 	void RenderAABB(FBoundingBox aabb);
 

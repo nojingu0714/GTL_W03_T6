@@ -95,6 +95,9 @@
     <Filter Include="Source\Core\Asset\Mesh">
       <UniqueIdentifier>{a1f2b6c4-d229-4760-b133-e1b5d2b3596e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core\Editor">
+      <UniqueIdentifier>{d64e0c86-16e4-40e6-8bee-522c5e26b820}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\EnginePch.cpp">
@@ -324,6 +327,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Window\ViewportClient.cpp">
       <Filter>Source\Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Editor\EditorManager.cpp">
+      <Filter>Source\Core\Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -576,6 +582,9 @@
     <ClInclude Include="Source\Core\Window\ViewportClient.h">
       <Filter>Source\Core\Window</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Editor\EditorManager.h">
+      <Filter>Source\Core\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\PrimitiveShader.hlsl">
@@ -593,6 +602,7 @@
     <FxCompile Include="Resource\Shader\StaticMeshShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\Shader\ViewportShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Source\CoreUObject\UI\ConsolePanel.h">

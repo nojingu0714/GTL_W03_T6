@@ -29,6 +29,7 @@
 
 #include "Math/Matrix.h"
 
+#include "Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
 
 
@@ -436,7 +437,7 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 	}
 }
 
-void UDirectXHandle::UpdateCameraMatrix(ACamera* Camera)
+void UDirectXHandle::UpdateCameraMatrix(const FViewportCamera* Camera)
 {
 	// Camera->GetCameraComponent.
 	// MVP 계산 행렬 구하고
@@ -481,7 +482,7 @@ void UDirectXHandle::UpdateCameraMatrix(ACamera* Camera)
 }
 
 // use when D3D11_PRIMITIVE_TOPOLOGY_LINELIST state
-void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
+void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
 
 	if (!Camera)
 		return;
@@ -498,8 +499,8 @@ void UDirectXHandle::RenderWorldPlane(ACamera* Camera) {
 	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
 
     // set position
-	float s = Camera->GridScale;
-    FVector campos = Camera->GetActorLocation();
+	float s = 1.F;//Camera->GridScale;
+    FVector campos = Camera->Location;
     FVector truncpos = FVector(floor(campos.X/s)*s, floor(campos.Y/s)*s, 0.f);
 
     ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
@@ -1182,12 +1183,12 @@ HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)
 	return S_OK;
 }
 
-void UDirectXHandle::UpdateWorldViewMatrix(ACamera* Camera)
+void UDirectXHandle::UpdateWorldViewMatrix(const FViewportCamera* Camera)
 {
 	if (!Camera)
 		return;
-	FVector CameraLocation = Camera->GetActorLocation();
-	FRotator CameraRotation = Camera->GetActorRotation();
+	FVector CameraLocation = Camera->Location;
+	FRotator CameraRotation = Camera->Rotation;
 
 	// Rotation Matrix 생성.
 	FVector ForwardVector = CameraRotation.TransformRotVecToMatrix(FVector::ForwardVector).GetSafeNormal();
@@ -1198,11 +1199,11 @@ void UDirectXHandle::UpdateWorldViewMatrix(ACamera* Camera)
 
 }
 
-void UDirectXHandle::UpdateWorldProjectionMatrix(ACamera* Camera)
+void UDirectXHandle::UpdateWorldProjectionMatrix(const FViewportCamera* Camera)
 {
-	float FOVRad = FMath::DegreesToRadians(Camera->GetFieldOfView());
+	float FOVRad = FMath::DegreesToRadians(Camera->FieldOfView);
 	UEngine::GetEngine().GetWorld()->SetProjectionMatrix(
-		FMatrix::PerspectiveFovLH(FOVRad, WindowViewport.Width / WindowViewport.Height, Camera->GetNearClip(), Camera->GetFarClip())
+		FMatrix::PerspectiveFovLH(FOVRad, WindowViewport.Width / WindowViewport.Height, Camera->NearClip, Camera->FarClip)
 	);
 }
 

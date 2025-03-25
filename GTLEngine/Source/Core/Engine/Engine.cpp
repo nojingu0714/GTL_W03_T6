@@ -7,6 +7,7 @@
 #include "Input/InputManager.h"
 #include "Resource/ResourceManager.h"
 #include "UI/UIManager.h"
+#include "Editor/EditorManager.h"
 #include "UI/ConsolePanel.h"
 
 #include "World.h"
@@ -39,14 +40,6 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     // 기본 뷰포트 설정.
     DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
 
-	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width/2, InWindowInfo.Height/2);
-	Viewports.push_back(DefaultViewport);
-
-    // 뷰포트 클라이언트 생성
-	ViewportClient = new FViewportClient();
-    ViewportClient->Init();
-    // 텍스쳐용 UV 버퍼 추가.
 
     // for batch line rendering
     hr = DirectX11Handle->CheckAndAddDynamicVertexBuffer<FVertexPNCT>(L"Dynamic", 1024);
@@ -67,6 +60,10 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 
     // 인풋 매니저 추가.
     InputManager = new UInputManager();
+
+    // 에디터 매니저 추가.
+	EditorManager = new FEditorManager();
+	EditorManager->Init(InWindowInfo);
 
     // 월드 추가.
     ResourceManager->LoadScene("DefaultScene");
@@ -91,6 +88,9 @@ void UEngine::Tick()
     World->Tick(TimeManager->DeltaTime());
 
 	GizmoManager->Tick(TimeManager->DeltaTime());
+
+    // EditorManager Tick
+	EditorManager->Tick(TimeManager->DeltaTime());
 }
 
 void UEngine::TickWindowInfo() {
@@ -107,28 +107,8 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-    // viewport (Texture2D) 에 그리기.
-    for (const FViewport& Viewport : Viewports)
-    {
-        DirectX11Handle->PrepareViewport(Viewport);
-        DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
-
-        DirectX11Handle->SetLineMode();
-        DirectX11Handle->RenderWorldPlane(World->GetCamera());
-        DirectX11Handle->RenderBoundingBox(World->GetActors());
-        DirectX11Handle->RenderLines(World->GetActors());
-
-        DirectX11Handle->SetFaceMode();
-        DirectX11Handle->RenderObject(World->GetActors());
-        DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
-    }
-
-        DirectX11Handle->PrepareWindow();
-    for (const FViewport& Viewport : Viewports)
-    {
-        // Texture2D를 쓰는 Quad를 그리기
-        ViewportClient->Draw(Viewport.GetName());
-    }
+    // Texture2D를 쓰는 Quad를 그리기
+    EditorManager->Draw();
 
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();
@@ -208,6 +188,13 @@ void UEngine::ClearEngine()
 		delete TimeManager;
 		TimeManager = nullptr;
 	}
+
+    if (EditorManager)
+    {
+        EditorManager->Destroy();
+		delete EditorManager;
+		EditorManager = nullptr;
+    }
 }
 
 
