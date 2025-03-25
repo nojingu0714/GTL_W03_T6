@@ -98,6 +98,9 @@
     <Filter Include="Source\CoreUObject\UObject">
       <UniqueIdentifier>{8666750a-e63f-4594-9baf-f3f22b7330df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\CoreUObject\Components\Primitives">
+      <UniqueIdentifier>{419c9586-c091-4a8f-8e5c-f23535d22d0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\EnginePch.cpp">
@@ -318,6 +321,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Editor\DebugLine.cpp">
       <Filter>Source\Core\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\Primitives\PrimitiveVertices.h">
+      <Filter>Source\CoreUObject\Components\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\Primitives\PrimitiveVertices.cpp">
+      <Filter>Source\CoreUObject\Components\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

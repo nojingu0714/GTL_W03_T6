@@ -8,7 +8,7 @@ class UResourceManager;
 class UWorld;
 class UTimeManager;
 class UInputManager;
-class UGizmoManager;
+class FGizmoManager;
 class UObject;
 class UUIManager;
 class FEditorManager;
@@ -64,7 +64,6 @@ public:
 	UTimeManager* GetTimeManager() const { return TimeManager; }
     UInputManager* GetInputManager() const { return InputManager; }
     UUIManager* GetUIManager() const { return UIManager; }
-	UGizmoManager* GetGizmoManager() const { return GizmoManager; }
 	FEditorManager* GetEditorManager() const { return EditorManager; }
 
 private:
@@ -74,7 +73,6 @@ private:
     UTimeManager* TimeManager;
     UInputManager* InputManager;
     UUIManager* UIManager;
-    UGizmoManager* GizmoManager;
     FEditorManager* EditorManager;
 
 public:

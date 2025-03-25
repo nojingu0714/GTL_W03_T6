@@ -3,6 +3,7 @@
 class FViewport;
 class FViewportClient;
 class AActor;
+class FGizmoManager;
 
 class FEditorManager
 {
@@ -19,10 +20,13 @@ private:
 
 	//FViewportClient* ViewportClient;
 
-public:
+private:
 	TArray<FViewport> Viewports;
 	FViewport* HoveredViewport;
 	FViewport* SelectedViewport;
+
+	FGizmoManager* GizmoManager;
+
 	AActor* SelectedActor;
 };
 

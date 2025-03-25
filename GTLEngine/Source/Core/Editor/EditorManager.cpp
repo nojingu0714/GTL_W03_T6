@@ -74,9 +74,10 @@ void FEditorManager::Tick(float DeltaTime)
 
 void FEditorManager::Draw()
 {
+	// TODO : DXDHANDLE에서 하도록 옮기기.
 	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	UWorld* World = UEngine::GetEngine().GetWorld();
-	UGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
+	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 
 	// viewport (Texture2D) 에 그리기.
 	for (const FViewport& Viewport : Viewports)
@@ -93,6 +94,7 @@ void FEditorManager::Draw()
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
+		Handle->RenderBoundingBox(World->GetActors());
 		//Handle->RenderGizmo(GizmoManager->GetGizmo());
 	}
 

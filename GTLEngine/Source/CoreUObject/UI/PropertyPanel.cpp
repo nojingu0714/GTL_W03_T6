@@ -9,7 +9,8 @@
 UPropertyPanel::UPropertyPanel()
 	:UUIBase(), WindowWidth(280.f), WindowHeight(360.f)
 {
-	gizmoManager = UEngine::GetEngine().GetGizmoManager();
+	//assert(0);
+	//gizmoManager = UEngine::GetEngine().GetGizmoManager();
 }
 
 void UPropertyPanel::Tick(float DeltaTime)

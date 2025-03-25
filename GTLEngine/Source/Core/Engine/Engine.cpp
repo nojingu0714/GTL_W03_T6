@@ -12,7 +12,6 @@
 #include "World.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
 #include "GameFrameWork/Actor.h"
-#include "Gizmo/GizmoManager.h"
 
 #include "Core/Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
@@ -66,8 +65,6 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 	UIManager = new UUIManager();
 	UIManager->InitUI(WindowInfo, DirectX11Handle->GetD3DDevice(), DirectX11Handle->GetD3DDeviceContext());
 
-    GizmoManager = new UGizmoManager();
-
     // 인풋 매니저 추가.
     InputManager = new UInputManager();
 
@@ -98,8 +95,6 @@ void UEngine::Tick()
 
     // World 오브젝트 값들 없데이트.
     World->Tick(TimeManager->DeltaTime());
-
-	GizmoManager->Tick(TimeManager->DeltaTime());
 
     // EditorManager Tick
 	EditorManager->Tick(TimeManager->DeltaTime());

@@ -20,7 +20,7 @@ class UObject;
 class AActor;
 class ACamera;
 class UGizmoBase;
-class UGizmoManager;
+class FGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
 class USceneComponent;
@@ -94,7 +94,7 @@ public:
 	HRESULT ResizeWindow(int width, int height);
 
 private:
-	void RenderAABB(FBoundingBox aabb);
+	void RenderAABB(FBoundingBox InBox);
 
 
 public:

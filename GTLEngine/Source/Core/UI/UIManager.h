@@ -6,7 +6,7 @@
 #include "CoreUObject/UI/ConsolePanel.h"
 
 class UUIBase;
-class UGizmoManager;
+class FGizmoManager;
 class UConsolePanel;
 class IDragable;
 

@@ -31,6 +31,7 @@
 #include "Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
 
+HRESULT CreatePrimitives(UDirectXHandle* Handle);
 
 UDirectXHandle::~UDirectXHandle()
 {
@@ -284,18 +285,8 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	}
 
 	DynamicVertexBufferSize = 1024;
-
-
-	// 디버그용 레이 생성.
-	TArray<FVertexPC> RayVertices;
-	FVertexPC v;
-	v.Position = { 0,0,0 };
-	v.Color = { 1,0,0,1 };
-	RayVertices.push_back(v);
-	v.Position = { 1,0,0 };
-	RayVertices.push_back(v);
-
-	hr = AddVertexBuffer(TEXT("Line"), RayVertices, TArray<uint32>());
+	
+	CreatePrimitives(this);
 
 	if (FAILED(hr))
 	{
@@ -483,7 +474,7 @@ void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
 
 }
 
-void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
+void UDirectXHandle::RenderAABB(FBoundingBox InBox) {
     // Begin Object Matrix Update. 
     ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
     if ( !CbChangesEveryObject ) {
@@ -492,25 +483,23 @@ void UDirectXHandle::RenderAABB(FBoundingBox aabb) {
     D3D11_MAPPED_SUBRESOURCE MappedData = {};
     DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
     if ( FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData) ) {
-        FVector AABBScale = aabb.GetGap();
-        FVector AABBLocation = aabb.min;
+		FVector Scale, Location;
 
-        FMatrix ScaleMatrix = FMatrix::GetScaleMatrix(AABBScale); // 크기.
-        FMatrix TranslationMatrix = FMatrix::GetTranslateMatrix(AABBLocation); // 위치.
-
-        FMatrix WorldMatrix = ScaleMatrix * TranslationMatrix;
-        Buffer->WorldMatrix = WorldMatrix;
+		InBox.GetCenterAndExtents(Location, Scale);
+		Buffer->WorldMatrix = FMatrix::GetScaleMatrix(Scale*2) * FMatrix::GetTranslateMatrix(Location);
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexPNCT);
+    uint Stride = sizeof(FVertexPC);
     UINT offset = 0;
-    FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
-    ID3D11Buffer* VB = Info.VertexBuffer;
-    uint Num = Info.NumVertices;
+    FVertexInfo VertexInfo = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
+    ID3D11Buffer* VB = VertexInfo.VertexBuffer;
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
 
-    DXDDeviceContext->Draw(Num, 0);
+	FIndexInfo IndexInfo = IndexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
+	ID3D11Buffer* IB = IndexInfo.IndexBuffer;
+	DXDDeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
+	DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
 }
 
 void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
@@ -843,7 +832,7 @@ void UDirectXHandle::RenderDebugRays(const TArray<FRay>& Rays)
 
 	D3D11_PRIMITIVE_TOPOLOGY top;
 	DXDDeviceContext->IAGetPrimitiveTopology(&top);
-	DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	SetLineMode();
 
 	for (auto& ray : Rays)
 	{
@@ -883,16 +872,19 @@ void UDirectXHandle::RenderDebugRays(const TArray<FRay>& Rays)
 
 void UDirectXHandle::RenderBoundingBox(const TArray<AActor*> Actors) {
 
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("DefaultPS")), NULL, 0);
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("LineVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("LinePS")), NULL, 0);
 
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("LineVS")));
 
-    for ( AActor* Actor : Actors ) {
-        if (Actor->IsSelected)
-            RenderAABB(Actor->GetAABB());
+	SetLineMode();
 
-    }
+	for (TObjectIterator<AActor> It; It; ++It)
+	{
+		AActor* Actor = *It;
+		RenderAABB(Actor->GetAABB());
+	}
+
 }
 
 void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
