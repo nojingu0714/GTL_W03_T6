@@ -115,14 +115,14 @@ struct alignas(16) FCbViewportRatio
 struct FCbMaterial
 {
     FVector Ambient;
+    float Opacity;
     FVector Diffuse;
+    float Transparency;
     FVector Specular;
+    float RefractiveIndex;
     FVector Emissive;
     float SpecularExponent;
     int IlluminationModel;
-    float Opacity;
-    float Transparency;
-    float RefractiveIndex;
 };
 
 struct FCbLine
