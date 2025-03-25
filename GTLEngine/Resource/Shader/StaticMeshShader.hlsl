@@ -11,16 +11,25 @@ Texture2D TexNormalMap : register(t6);
 
 SamplerState MatSampler : register(s0);
 
-cbuffer MaterialCB : register(b3)
+cbuffer MaterialCB : register(b4)
 {
     float3 Ambient;
+    float Opacity;
+    
+    
     float3 Diffuse;
+    float Transparency;
+    
+    
     float3 Specular;
+    float RefractiveIndex;
+    
+    
     float3 Emissive;
     float SpecularExponent;
-    float Opacity;
-    float Transparency;
-    float RefractiveIndex;
+    
+
+    
     int IlluminationModel;
 };
 

@@ -5,17 +5,6 @@
 
 class UUISceneManager: public UUIBase {
 public:
-	template<typename T>
-	T* SpawnActor(FString InName) {
-		T* actor = UEngine::GetEngine().GetWorld()->SpawnActor<T>(
-			InName,
-			FVector(SpawnLocation[0], SpawnLocation[1], SpawnLocation[2]),
-			FRotator(SpawnRotation[0], SpawnRotation[1], SpawnRotation[2]),
-			FVector(SpawnScale[0], SpawnScale[1], SpawnScale[2]),
-			nullptr
-		);
-		return actor;
-	}
 	void DeleteActor(uint32 uuid);
 	void DeleteActor(FString InName);
 

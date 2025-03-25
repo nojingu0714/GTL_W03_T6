@@ -202,7 +202,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	{
 		if (ID3D11Buffer* CbMaterial = DXDCB->GetConstantBuffer())
 		{
-			DXDDeviceContext->VSSetConstantBuffers(4, 1, &CbMaterial);
+			DXDDeviceContext->PSSetConstantBuffers(4, 1, &CbMaterial);
 		}
 	}
 

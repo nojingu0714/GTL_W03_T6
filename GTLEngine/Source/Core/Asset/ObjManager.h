@@ -16,6 +16,9 @@ struct FObjImporter
         FString CurrentMaterial;  // 현재 활성화된 텍스처 이름
         std::string line;
 
+        FVector TempVector;
+        FVector2 TempVector2;
+
         if (!ObjFile.is_open()) {
             throw std::runtime_error("Failed to open OBJ file.");
             return false;
@@ -39,8 +42,8 @@ struct FObjImporter
                 Color = { 0.0f,0.0f, 0.0f, 1.0f }; // Default color: white
 
                 // Parse vertex coordinates
-                ss >> token >> Vertex.X >> Vertex.Y >> Vertex.Z;
-                OutObjInfo.Vertices.push_back({ Vertex });
+                ss >> token >> TempVector.X >> TempVector.Y >> TempVector.Z;
+                OutObjInfo.Vertices.push_back({ TempVector });
 
                 // Check if color (RGBA) is provided (i.e., 4 components)
                 if (ss >> Color.X >> Color.Y >> Color.Z >> Color.W) {
@@ -138,6 +141,8 @@ struct FObjImporter
                     OutObjInfo.FaceMap[CurrentMaterial].push_back(newFace);
 
             }
+            TempVector.X = TempVector.Y = TempVector.Z = 0;
+            TempVector2.X = TempVector2.Y = 0;
         }
         ObjFile.close();
 
@@ -326,9 +331,6 @@ struct FObjImporter
 
 };
 
-class UMaterial;
-class UTexture;
-
 class FObjManager
 {
 private:
@@ -341,8 +343,6 @@ public:
     static FStaticMesh* LoadObjStaticMeshAsset(const FString& PathFileName);
 
     static UStaticMesh* LoadObjStaticMesh(const FString& PathFileName);
-
-	static UMaterial* LoadMaterial(const FString& PathFileName);
 
 };
 

@@ -58,11 +58,11 @@ public:
 	}
 	T* operator*() const
 	{
-		return static_cast<T*>(GUObjectArray[Index]);
+		return static_cast<T*>(ObjectArray[Index]);
 	}
 	T* operator->() const
 	{
-		return static_cast<T*>(GUObjectArray[Index]);
+		return static_cast<T*>(ObjectArray[Index]);
 	}
 	bool operator !() const
 	{

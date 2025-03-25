@@ -23,7 +23,7 @@ public:
 	static UWorld* CreateWorld();
 
 	template<typename T>
-	T* SpawnActor(std::wstring InName, const FVector& InLocation, const FRotator& InRotation, const FVector& InScale, AActor* InOwner)
+	T* SpawnActor(std::wstring InName, const FVector& InLocation = FVector(), const FRotator& InRotation = FRotator(), const FVector& InScale = FVector::OneVector, AActor* InOwner = nullptr)
 	{
 		T* NewObject = FObjectFactory::ConstructObject<T>();
 		
