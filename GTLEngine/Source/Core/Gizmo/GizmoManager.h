@@ -3,19 +3,34 @@
 #include "Object.h"
 
 struct FRay;
+class UDirectXHandle;
+class AGizmoActor;
 
-class UGizmoManager
+enum class GizmoState
+{
+	None,
+	Translate,
+	Rotate,
+	Scale,
+};
+
+class FGizmoManager
 {
 
 public:
-	UGizmoManager();
+	FGizmoManager();
 
+	void Init();
 	void Tick(float DeltaTime);
 	void Destroy();
 
 	void Picking();
 
-private:
+	AGizmoActor* GetGizmoActor() const { return GizmoActor; }
 
+private:
+	GizmoState state;
+	AGizmoActor* GizmoActor;
+	
 };
 

@@ -4,6 +4,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "Asset/Mesh/StaticMeshAsset.h"
+
 class UDXDDevice;
 class UDXDSwapChain;
 class UDXDRenderTarget;
@@ -19,8 +21,8 @@ class UDXDResourceManager;
 class UObject;
 class AActor;
 class ACamera;
-class UGizmoBase;
-class UGizmoManager;
+class AGizmoActor;
+class FGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
 class USceneComponent;
@@ -47,12 +49,11 @@ public:
 	void UpdateCameraMatrix(FViewportCamera* Camera);
 	void RenderWorldPlane(const FViewportCamera* Camera);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
-	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
+	void RenderGizmo(AGizmoActor* Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderLines(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);
-
 
 public:
 	//void InitView();
@@ -94,7 +95,7 @@ public:
 	HRESULT ResizeWindow(int width, int height);
 
 private:
-	void RenderAABB(FBoundingBox aabb);
+	void RenderAABB(FBoundingBox InBox);
 
 
 public:

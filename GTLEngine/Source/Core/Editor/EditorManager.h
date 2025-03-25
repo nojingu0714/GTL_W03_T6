@@ -3,6 +3,7 @@
 class FViewport;
 class FViewportClient;
 class AActor;
+class FGizmoManager;
 
 class FEditorManager
 {
@@ -12,6 +13,10 @@ public:
 	void Draw();
 	void Destroy();
 
+
+	AActor* GetSelectedActor() const { return SelectedActor; }
+	void SetSelectedActor(AActor* InActor) { SelectedActor = InActor; }
+
 private:
 	void UpdateHoveredViewport();
 	void UpdateSelectedViewport();
@@ -19,10 +24,13 @@ private:
 
 	//FViewportClient* ViewportClient;
 
-public:
+private:
 	TArray<FViewport> Viewports;
 	FViewport* HoveredViewport;
 	FViewport* SelectedViewport;
+
+	FGizmoManager* GizmoManager;
+
 	AActor* SelectedActor;
 };
 

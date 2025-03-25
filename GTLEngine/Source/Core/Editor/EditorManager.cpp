@@ -44,6 +44,9 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	HoveredViewport = &Viewports[0];
 	SelectedViewport = &Viewports[0];
 
+	GizmoManager = new FGizmoManager();
+	GizmoManager->Init();
+
 }
 
 void FEditorManager::Tick(float DeltaTime)
@@ -74,9 +77,10 @@ void FEditorManager::Tick(float DeltaTime)
 
 void FEditorManager::Draw()
 {
+	// TODO : DXDHANDLE에서 하도록 옮기기.
 	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	UWorld* World = UEngine::GetEngine().GetWorld();
-	UGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
+	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 
 	// viewport (Texture2D) 에 그리기.
 	for (const FViewport& Viewport : Viewports)
@@ -93,7 +97,8 @@ void FEditorManager::Draw()
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
-		//Handle->RenderGizmo(GizmoManager->GetGizmo());
+		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
+		Handle->RenderBoundingBox(World->GetActors());
 	}
 
 	Handle->PrepareWindow();

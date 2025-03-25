@@ -25,5 +25,6 @@ private:
 	
 	float WindowWidth;
 	float WindowHeight;
+	FGizmoManager* gizmoManager;
 	ImGuiIO& io = ImGui::GetIO();
 };

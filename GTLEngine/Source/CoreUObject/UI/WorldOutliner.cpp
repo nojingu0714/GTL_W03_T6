@@ -106,7 +106,7 @@ void UWorldOutliner::SceneHierarchy()
             // 원하는 동작을 여기에 추가합니다.
             // 예: 선택한 컴포넌트의 이름 출력
 			UE_LOG(LogTemp, Warning, TEXT("Click Actor : %s"), comp->GetOwner()->GetName().c_str());
-			UEngine::GetEngine().GetEditorManager()->SelectedActor = comp->GetOwner();
+			UEngine::GetEngine().GetEditorManager()->SetSelectedActor( comp->GetOwner());
         }
 
         // 노드가 열렸다면 하위 노드 처리

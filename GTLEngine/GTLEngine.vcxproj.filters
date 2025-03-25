@@ -98,6 +98,12 @@
     <Filter Include="Source\CoreUObject\UObject">
       <UniqueIdentifier>{8666750a-e63f-4594-9baf-f3f22b7330df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\CoreUObject\Components\Primitives">
+      <UniqueIdentifier>{419c9586-c091-4a8f-8e5c-f23535d22d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\CoreUObject\Gizmo">
+      <UniqueIdentifier>{0ade6913-53e5-48cb-a95b-cf2573bcb070}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\EnginePch.cpp">
@@ -318,6 +324,36 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Editor\DebugLine.cpp">
       <Filter>Source\Core\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\Primitives\PrimitiveVertices.h">
+      <Filter>Source\CoreUObject\Components\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Components\Primitives\PrimitiveVertices.cpp">
+      <Filter>Source\CoreUObject\Components\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoScale.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoTranslate.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoBase.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotate.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoActor.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotateComponent.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoScaleComponent.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoTranslateComponent.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -564,6 +600,30 @@
     <ClInclude Include="Source\Core\Editor\DebugLine.h">
       <Filter>Source\Core\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScale.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslate.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoBase.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotate.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoActor.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotateComponent.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScaleComponent.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslateComponent.h">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\PrimitiveShader.hlsl">
@@ -582,6 +642,9 @@
       <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="Resource\Shader\ViewportShader.hlsl">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shader\GizmoShader.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
   </ItemGroup>
