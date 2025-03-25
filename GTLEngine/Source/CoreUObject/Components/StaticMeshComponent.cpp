@@ -7,7 +7,7 @@
 UStaticMeshComponent::UStaticMeshComponent()
 	: Super()
 {
-	StaticMesh = FObjManager::LoadObjStaticMesh(TEXT("Contents/cube-tex.obj"));
+	StaticMesh = FObjManager::LoadObjStaticMesh(TEXT("Contents/Tire.obj"));
 }
 
 void UStaticMeshComponent::TickComponent(float TickTime)

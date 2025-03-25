@@ -114,7 +114,7 @@ struct FObjImporter
                         // 정점만 있는 경우
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
                     }
-                    else if (parts.size() == 2) {
+                    else if (parts[1] == "") {
                         // 정점 + 텍스처
                         faceVertices.push_back(std::stoi(parts[0]) - 1);
                         faceTexCoords.push_back(std::stoi(parts[1]) - 1);
