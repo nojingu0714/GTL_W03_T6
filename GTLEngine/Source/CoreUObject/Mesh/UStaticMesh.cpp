@@ -7,7 +7,7 @@
 
 UStaticMesh::UStaticMesh()
 {
-	StaticMeshAsset = FObjManager::LoadObjStaticMeshAsset(TEXT("Contents/cube-tex.obj"));
+	StaticMeshAsset = FObjManager::LoadObjStaticMeshAsset(TEXT("Contents/cube.obj"));
 }
 
 void UStaticMesh::Destroy()

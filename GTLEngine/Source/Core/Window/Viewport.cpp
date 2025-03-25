@@ -34,7 +34,7 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 
 	// 카메라 초기화
 	Camera = new FViewportCamera();
-	Camera->Location = FVector(0.f, 2.f, 0.f);
+	Camera->Location = FVector(-10.f, 0.f, 0.0f);
 	Camera->Rotation = FRotator(0.f, 0.f, 0.f);
 	Camera->ProjectionMode = EProjectionMode::Perspective;
 	Camera->ScreenSize = 0.f;
@@ -98,7 +98,36 @@ void FViewport::SetViewMatrix(const FMatrix& InViewMatrix)
 	Camera->CachedViewMatrix = InViewMatrix;
 }
 
-void FViewport::Tick(float TickTime)
+void FViewport::Tick(float DeltaTime)
+{
+	FVector CameraLocation = Camera->Location;
+	FRotator CameraRotation = Camera->Rotation;
+	
+	// ViewMatrix Update
+	// Rotation Matrix 생성.
+	FVector ForwardVector = CameraRotation.TransformRotVecToMatrix(FVector::ForwardVector).GetSafeNormal();
+
+	//XMMatrixLookAtLH(Eye, At, Up);
+	FMatrix CameraViewMatrix = FMatrix::LookAtLH(CameraLocation, CameraLocation + ForwardVector, FVector::UpVector);
+	Camera->CachedViewMatrix = CameraViewMatrix;
+
+	float FOVRad = FMath::DegreesToRadians(Camera->FieldOfView);
+	// TODO: resize / fov / nearfar 변경되었을때만 변경할 수 있도록 저장.
+	Camera->CachedProjectionMatrix = FMatrix::PerspectiveFovLH(FOVRad, Viewport.Width / Viewport.Height, Camera->NearClip, Camera->FarClip);
+
+}
+
+void FViewport::TickWhenSelected(float DeltaTime)
+{
+
+}
+
+void FViewport::TickWhenHovered(float DeltaTime)
+{
+
+}
+
+void FViewport::ProcessInput(float DeltaTime)
 {
 	// 카메라 업데이트
 	FVector CameraLocation = Camera->Location;
@@ -114,27 +143,27 @@ void FViewport::Tick(float TickTime)
 
 	if (InputManager->GetKey('W'))
 	{
-		CameraLocation += ForwardDirection * Camera->Speed * TickTime;
+		CameraLocation += ForwardDirection * Camera->Speed * DeltaTime;
 	}
 	if (InputManager->GetKey('S'))
 	{
-		CameraLocation -= ForwardDirection * Camera->Speed * TickTime;
+		CameraLocation -= ForwardDirection * Camera->Speed * DeltaTime;
 	}
 	if (InputManager->GetKey('A'))
 	{
-		CameraLocation -= RightDirection * Camera->Speed * TickTime;
+		CameraLocation -= RightDirection * Camera->Speed * DeltaTime;
 	}
 	if (InputManager->GetKey('D'))
 	{
-		CameraLocation += RightDirection * Camera->Speed * TickTime;
+		CameraLocation += RightDirection * Camera->Speed * DeltaTime;
 	}
 	if (InputManager->GetKey('Q'))
 	{
-		CameraLocation -= UpDirection * Camera->Speed * TickTime;
+		CameraLocation -= UpDirection * Camera->Speed * DeltaTime;
 	}
 	if (InputManager->GetKey('E'))
 	{
-		CameraLocation += UpDirection * Camera->Speed * TickTime;
+		CameraLocation += UpDirection * Camera->Speed * DeltaTime;
 	}
 	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
 	{
@@ -144,8 +173,8 @@ void FViewport::Tick(float TickTime)
 		// Pitch, Yaw, Roll == Y, Z, X
 		// TODO: 회전 시 Roll 회전이 적용되는 문제가 생김. Rotator 문제일 수도 있음.
 
-		CameraRotation.Pitch -= MouseDeltaY * Camera->Sensitive * TickTime;
-		CameraRotation.Yaw += MouseDeltaX * Camera->Sensitive * TickTime;
+		CameraRotation.Pitch -= MouseDeltaY * Camera->Sensitive * DeltaTime;
+		CameraRotation.Yaw += MouseDeltaX * Camera->Sensitive * DeltaTime;
 
 		CameraRotation.Pitch = (CameraRotation.Pitch < Camera->MinPitch) ? Camera->MinPitch : (CameraRotation.Pitch > Camera->MaxPitch) ? Camera->MaxPitch : CameraRotation.Pitch;
 		CameraRotation.Roll = 0;
@@ -153,18 +182,6 @@ void FViewport::Tick(float TickTime)
 
 	Camera->Location = CameraLocation;
 	Camera->Rotation = CameraRotation;
-
-	// ViewMatrix Update
-
-	// Rotation Matrix 생성.
-	FVector ForwardVector = CameraRotation.TransformRotVecToMatrix(FVector::ForwardVector).GetSafeNormal();
-
-	//XMMatrixLookAtLH(Eye, At, Up);
-	FMatrix CameraViewMatrix = FMatrix::LookAtLH(CameraLocation, CameraLocation + ForwardVector, FVector::UpVector);
-	Camera->CachedViewMatrix = CameraViewMatrix;
-
-	float FOVRad = FMath::DegreesToRadians(Camera->FieldOfView);
-	Camera->CachedProjectionMatrix = FMatrix::PerspectiveFovLH(FOVRad, Viewport.Width / Viewport.Height, Camera->NearClip, Camera->FarClip);
 }
 
 void FViewport::Destroy()
@@ -192,4 +209,10 @@ void FViewport::GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& O
 
 	OutRayOriginOnWorld = WorldRayNear.xyz();
 	OutRayDirOnWorld = (WorldRayFar - WorldRayNear).xyz();
+}
+
+bool FViewport::Contains(int x, int y) const
+{
+	return(Viewport.TopLeftX <= x && x <= Viewport.TopLeftX + Viewport.Width &&
+		Viewport.TopLeftY <= y && y <= Viewport.TopLeftY + Viewport.Height);
 }

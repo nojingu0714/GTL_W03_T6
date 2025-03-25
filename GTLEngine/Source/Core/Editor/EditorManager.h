@@ -12,10 +12,12 @@ public:
 	void Destroy();
 
 private:
-	
+	void UpdateHoveredViewport();
+	void UpdateSelectedViewport();
 	//FViewportClient* ViewportClient;
 
 public:
 	TArray<FViewport> Viewports;
+	FViewport* HoveredViewport;
+	FViewport* SelectedViewport;
 };
-

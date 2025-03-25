@@ -5,6 +5,7 @@
 #include "DirectX11/DirectXHandle.h"
 #include "Engine/Engine.h"
 #include "Gizmo/GizmoManager.h"
+#include "Input/InputManager.h"
 
 void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 {
@@ -13,21 +14,45 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
-	FViewport DefaultViewport_1;
-	DefaultViewport_1.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height/ 2);
-	Viewports.push_back(DefaultViewport_1);
-	DefaultViewport_1.GetCamera()->Location = FVector(2.f, 2.f, 2.f);
+	DefaultViewport.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	Viewports.push_back(DefaultViewport);
+
+	DefaultViewport.Init(TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	Viewports.push_back(DefaultViewport);
+
+	DefaultViewport.Init(TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
+	Viewports.push_back(DefaultViewport);
 
 	// 뷰포트 클라이언트 생성
 	//ViewportClient = new FViewportClient();
 	//ViewportClient->Init();
+	HoveredViewport = &Viewports[0];
+	SelectedViewport = &Viewports[0];
 }
 
-void FEditorManager::Tick(float TickTime)
+void FEditorManager::Tick(float DeltaTime)
 {
+	UpdateHoveredViewport();
+	UpdateSelectedViewport();
+
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+
+	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
+	{
+		InputManager->LockMouse();
+		HoveredViewport->ProcessInput(DeltaTime);
+	}
+	else
+	{
+		InputManager->UnLockMouse();
+	}
+
+	SelectedViewport->TickWhenSelected(DeltaTime);
+	HoveredViewport->TickWhenHovered(DeltaTime);
+
 	for (FViewport& Viewport : Viewports)
 	{
-		Viewport.Tick(TickTime);
+		Viewport.Tick(DeltaTime);
 	}
 }
 
@@ -68,3 +93,43 @@ void FEditorManager::Destroy()
 		Viewport.Destroy();
 	}
 }
+
+void FEditorManager::UpdateHoveredViewport()
+{
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+
+	int x = InputManager->GetMouseClientX();
+	int y = InputManager->GetMouseClientY();
+
+	for (FViewport& Viewport : Viewports)
+	{
+		if (Viewport.Contains(x, y))
+		{
+			HoveredViewport = &Viewport;
+			//UE_LOG(LogTemp, Display, TEXT("Hovered Viewprot : %s"), HoveredViewport->GetName().c_str());
+			return;
+		}
+	}
+	// 마우스 밖으로 나가면 원래의 뷰포트 선택하도록 의도.
+}
+
+void FEditorManager::UpdateSelectedViewport()
+{
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+
+	if (InputManager->GetMouseDown(UInputManager::EMouseButton::LEFT))
+	{
+		int x = InputManager->GetMouseClientX();
+		int y = InputManager->GetMouseClientY();
+		for (FViewport& Viewport : Viewports)
+		{
+			if (Viewport.Contains(x, y))
+			{
+				SelectedViewport = &Viewport;
+				UE_LOG(LogTemp, Display, TEXT("Selected Viewport : %s"), SelectedViewport->GetName().c_str());
+				return;
+			}
+		}
+	}
+}
+

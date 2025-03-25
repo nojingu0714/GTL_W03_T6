@@ -50,6 +50,16 @@ void UInputManager::Tick(float TickTime)
             
         }
     }
+    if (IsMouseLocked)
+    {
+        SetCursorPos(MousePosWhenLocked.x, MousePosWhenLocked.y);
+        PrevMouseState.ScreenX = MousePosWhenLocked.x;
+		PrevMouseState.ScreenY = MousePosWhenLocked.y;
+		POINT pt = MousePosWhenLocked;
+		ScreenToClient(WindowInfo.WindowHandle, &pt);
+		PrevMouseState.ClientX = pt.x;
+		PrevMouseState.ClientY = pt.y;
+    }
 }
 
 void UInputManager::Destroy()
@@ -75,6 +85,21 @@ bool UInputManager::GetKeyUp(int key) const
     if ( ImGuiManager->IsImGuiWantTextInput() )
         return false;
     return !CurrentKeyStates[key] && PrevKeyStates[key];
+}
+
+void UInputManager::LockMouse()
+{
+    if (IsMouseLocked) return;
+    GetCursorPos(&MousePosWhenLocked);
+    ShowCursor(FALSE);
+    IsMouseLocked = true;
+}
+
+void UInputManager::UnLockMouse()
+{
+    if (!IsMouseLocked) return;
+    ShowCursor(TRUE);
+    IsMouseLocked = false;
 }
 
 void UInputManager::ConvertMouseToNDC(HWND hWnd, int Width, int Height)

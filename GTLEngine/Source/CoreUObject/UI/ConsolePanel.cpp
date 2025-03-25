@@ -91,7 +91,6 @@ void UConsolePanel::LogDisplay()
     const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
     ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_HorizontalScrollbar);
     for (const FLogItem& item : ULogManager::GetLogs()) {
-        std::wcout << item.Message << std::endl;
         ImGui::TextUnformatted(item.Message);
         //ImGui::Text(item);
     }

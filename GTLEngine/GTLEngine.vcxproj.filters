@@ -340,6 +340,9 @@
     <ClCompile Include="Source\Core\Editor\EditorManager.cpp">
       <Filter>Source\Core\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Editor\DebugLine.cpp">
+      <Filter>Source\Core\Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Utils\EnginePch.h">
@@ -599,6 +602,9 @@
     </ClInclude>
     <ClInclude Include="Source\CoreUObject\UObject\UObjectIterator.h">
       <Filter>Source\CoreUObject\UObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Editor\DebugLine.h">
+      <Filter>Source\Core\Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

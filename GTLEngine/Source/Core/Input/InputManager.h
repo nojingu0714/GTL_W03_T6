@@ -55,6 +55,13 @@ public:
     int GetMouseDeltaX() const { return CurrentMouseState.ClientX - PrevMouseState.ClientX; };
     int GetMouseDeltaY() const { return CurrentMouseState.ClientY - PrevMouseState.ClientY; };
 
+    // 마우스 숨기는 용도
+public:
+    void LockMouse();
+    void UnLockMouse();
+private:
+    POINT MousePosWhenLocked;
+    bool IsMouseLocked = false;
 
 protected:
     void ConvertMouseToNDC(HWND hWnd, int Width, int Height);

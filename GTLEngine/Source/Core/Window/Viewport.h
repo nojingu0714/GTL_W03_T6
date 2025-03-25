@@ -27,6 +27,8 @@ class FViewport
 public:
 	FViewport() = default;
 	HRESULT Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight);
+	void Destroy();
+
 	void SetDepthcomparisonMode(EDepthComparisonMode InDepthComparisonMode);
 	void SetRasterizerMode(ERasterizerMode InRasterizerMode);
 	void MoveViewport(int InX, int InY);
@@ -34,7 +36,10 @@ public:
 	void SetProjectionMatrix(const FMatrix& InProjectionMatrix);
 	void SetViewMatrix(const FMatrix& InViewMatrix);
 
-	void Tick(float TickTime);
+	void Tick(float DeltaTime);
+	void TickWhenSelected(float DeltaTime);
+	void TickWhenHovered(float DeltaTime);
+	void ProcessInput(float DeltaTime);
 
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
@@ -45,7 +50,8 @@ public:
 	FViewportCamera* GetCamera() const { return Camera; }
 	void GetRayOnWorld(int InScreenMouseX, int InScreenMouseY, FVector& OutRayOriginOnWorld, FVector& OutRayDirOnWorld);
 
-	void Destroy();
+	bool Contains(int x, int y) const;
+
 
 private:
 	FString Name;
