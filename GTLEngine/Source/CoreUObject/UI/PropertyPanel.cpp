@@ -3,7 +3,6 @@
 
 #include "ImGui/imgui.h"
 #include "UI/UIManager.h"
-#include "Gizmo/GizmoBase.h"
 #include "Utils/Math/Vector.h"
 #include "Engine.h"
 
@@ -39,12 +38,12 @@ void UPropertyPanel::Destroy()
 
 void UPropertyPanel::WorldCoordCheckbox()
 {
-	ImGui::Checkbox("WorldCoord", &UGizmoBase::IsAbsoluteCoord);
+	//ImGui::Checkbox("WorldCoord", &UGizmoBase::IsAbsoluteCoord);
 }
 
 void UPropertyPanel::PropertiesInspector()
 {
-	AActor* selected = UEngine::GetEngine().GetGizmoManager()->GetSelected();
+	/*AActor* selected = UEngine::GetEngine().GetGizmoManager()->GetSelected();
 
 	if (selected) {
 		Location[0] = selected->GetActorLocation().X;
@@ -66,5 +65,5 @@ void UPropertyPanel::PropertiesInspector()
 		selected->SetActorScale(FVector(Scale[0], Scale[1], Scale[2]));
 
 		ImGui::Text("GUID : %d", selected->GetUUID());
-	}
+	}*/
 }

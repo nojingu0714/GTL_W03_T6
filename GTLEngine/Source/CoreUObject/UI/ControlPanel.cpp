@@ -43,11 +43,11 @@ void UControlPanel::Tick(float DeltaTime)
     
     ImGui::Separator();
 
-    GizmoPanel();
+    //GizmoPanel();
 
     ImGui::Separator();
 
-    SceneManagementPanel();
+    //SceneManagementPanel();
 
     ImGui::Separator();
 
@@ -68,7 +68,7 @@ void UControlPanel::EnvironmentPanel()
     ImGui::Text("Window %dx%d", UEngine::GetEngine().GetWindowInfo().Width, UEngine::GetEngine().GetWindowInfo().Height);
     ImGui::Text("Mouse %d,%d", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
 
-    ACamera* cam = UEngine::GetEngine().GetWorld()->GetCamera();
+    /*ACamera* cam = UEngine::GetEngine().GetWorld()->GetCamera();
     if (cam)
     {
         ImGui::DragFloat("Grid Scale", &cam->GridScale, 0.1f, 0.1f, 100.f, "%.1f");
@@ -78,7 +78,7 @@ void UControlPanel::EnvironmentPanel()
     else
     {
         ImGui::Text("Can not find main camera");
-    }
+    }*/
 }
 
 void UControlPanel::GizmoPanel()
@@ -95,102 +95,10 @@ void UControlPanel::GizmoPanel()
     if (!World)
         return;
 
-    ACamera* Camera = World->GetCamera();
+   /* ACamera* Camera = World->GetCamera();
     if (Camera)
-        UCameraComponent* camera = Camera->GetCameraComponent();
+        UCameraComponent* camera = Camera->GetCameraComponent();*/
 
-    bool IsTranslateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoTranslate;
-    if (IsTranslateActive)
-        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_TRANSLATE, ControlButtonSize)) // 기즈모 이동버튼
-    {
-        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoTranslate;
-    }
-    if (IsTranslateActive)
-        ImGui::PopStyleColor();
-
-    ImGui::SameLine(0, 5.0f);
-
-    bool IsRotateActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoRotate;
-    if (IsRotateActive)
-        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_ROTATE, ControlButtonSize))
-    {
-        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoRotate;
-    }
-    if (IsRotateActive)
-        ImGui::PopStyleColor();
-
-    ImGui::SameLine(0, 5.0f);
-
-    bool IsScaleActive = UEngine::GetEngine().GizmoModeIndex == EGizmoModeIndex::GMI_GizmoScale;
-    if (IsScaleActive)
-        ImGui::PushStyleColor(ImGuiCol_Button, ActiveColor);
-    if (ImGui::Button(ICON_GIZMO_SCALE, ControlButtonSize))
-    {
-        UEngine::GetEngine().GizmoModeIndex = EGizmoModeIndex::GMI_GizmoScale;
-    }
-    if (IsScaleActive)
-        ImGui::PopStyleColor();
-
-    ImGui::SameLine();
-    float windowContentWidth = ImGui::GetWindowContentRegionMax().x;
-
-    float buttonsTotalWidth = ControlButtonSize.x * 2 + 5.0f;
-    float posX = windowContentWidth - buttonsTotalWidth;
-    if (posX < 0)
-        posX = 0;
-
-    ImGui::SetCursorPosX(posX);
-
-    if (ImGui::Button(ICON_BUTTON_CONSOLE, ControlButtonSize)); // console 창
-
-    ImGui::SameLine(0, 5.0f);
-
-    if (ImGui::Button(ICON_BUTTON_STAT, ControlButtonSize)); // stat 창
-
-    ImGui::PopFont();
-
-    // render mode
-    const char* renderModes[3] = {
-        "Lit",
-        "UnLit",
-        "Wireframe"
-    };
-    int32 viewModeIndex = static_cast<int32>(UEngine::GetEngine().ViewModeIndex);
-    ImGui::Combo("Render mode", &viewModeIndex, renderModes, ARRAYSIZE(renderModes));
-    UEngine::GetEngine().ViewModeIndex = static_cast<EViewModeIndex>(viewModeIndex);
-
-    // set draw targets
-    if (ImGui::CollapsingHeader("Rendering Entity")) {
-        EEngineShowFlags flags = UEngine::GetEngine().ShowFlags;
-
-        // primitive
-        bool Primitive = GetFlag(flags, EEngineShowFlags::SF_Primitives);
-        ImGui::Checkbox("Primitives", &Primitive);
-        if (Primitive)
-            SetFlagOn(flags, EEngineShowFlags::SF_Primitives);
-        else
-            SetFlagOff(flags, EEngineShowFlags::SF_Primitives);
-
-        // line
-        bool Line = GetFlag(flags, EEngineShowFlags::SF_Line);
-        ImGui::Checkbox("Line", &Line);
-        if (Line)
-            SetFlagOn(flags, EEngineShowFlags::SF_Line);
-        else
-            SetFlagOff(flags, EEngineShowFlags::SF_Line);
-
-        // BillboardText
-        bool BillboardText = GetFlag(flags, EEngineShowFlags::SF_BillboardText);
-        ImGui::Checkbox("UUID", &BillboardText);
-        if (BillboardText)
-            SetFlagOn(flags, EEngineShowFlags::SF_BillboardText);
-        else
-            SetFlagOff(flags, EEngineShowFlags::SF_BillboardText);
-
-        UEngine::GetEngine().ShowFlags = flags;
-    }
 }
 
 void UControlPanel::SceneManagementPanel()
@@ -207,20 +115,20 @@ void UControlPanel::SceneManagementPanel()
 
     if (ImGui::Button(ICON_BUTTON_NEW_SCENE, ControlButtonSize))     // New Scene
     {
-        ResourceManager->NewScene();
+        //ResourceManager->NewScene();
     }
 
     ImGui::SameLine(0, 5.0f);
     if (ImGui::Button(ICON_BUTTON_LOAD_SCENE, ControlButtonSize))   // Load Scene
     {
-        ResourceManager->LoadScene(SceneName);
+        //ResourceManager->LoadScene(SceneName);
     }
 
 
     ImGui::SameLine(0, 5.0f);
     if (ImGui::Button(ICON_BUTTON_SAVE_SCENE, ControlButtonSize))   // Save Scene
     {
-        ResourceManager->SaveScene(SceneName);
+        //ResourceManager->SaveScene(SceneName);
     }
 
     ImGui::PopFont();

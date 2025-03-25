@@ -5,13 +5,11 @@
 #include "DirectX11/DirectXHandle.h"
 #include "Time/TimeManager.h"
 #include "Input/InputManager.h"
-#include "Resource/ResourceManager.h"
 #include "UI/UIManager.h"
 #include "Editor/EditorManager.h"
-#include "UI/ConsolePanel.h"
+#include "Asset/SceneManager.h"
 
 #include "World.h"
-#include "Core/Engine/LogManager.h"
 #include "CoreUObject/GameFrameWork/Camera.h"
 #include "GameFrameWork/Actor.h"
 #include "Gizmo/GizmoManager.h"
@@ -24,9 +22,6 @@
 bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 {
     WindowInfo = InWindowInfo;
-
-    // 리소스 매니저 추가.
-    ResourceManager = new UResourceManager();
 
     DirectX11Handle = new UDirectXHandle();
     HRESULT hr = DirectX11Handle->CreateDirectX11Handle(WindowInfo.WindowHandle);
@@ -81,7 +76,9 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 	EditorManager->Init(InWindowInfo);
 
     // 월드 추가.
-    ResourceManager->LoadScene("DefaultScene");
+    //ResourceManager->LoadScene("DefaultScene");
+
+	FSceneManager::LoadScene("DefaultScene");
 
     return true;
 }

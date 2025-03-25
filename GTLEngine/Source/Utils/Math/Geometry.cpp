@@ -87,17 +87,17 @@ FRay Geometry::CreateRayWithMouse(float NDCMouseX, float NDCMouseY) {
 	FVector4 RayOrigin = FVector4(NDCX, NDCY, 0.0f, 1.0f);
 	FVector4 RayEnd = FVector4(NDCX, NDCY, 1.0f, 1.0f);
 
-	// View 공간으로 변환
-	FMatrix InvProjMat = UEngine::GetEngine().GetWorld()->GetProjectionMatrix().Inverse();
+	//// View 공간으로 변환
+	//FMatrix InvProjMat = UEngine::GetEngine().GetWorld()->GetProjectionMatrix().Inverse();
 
-	RayOrigin = InvProjMat.TransformVector4(RayOrigin);
-	RayEnd = InvProjMat.TransformVector4(RayEnd);
+	//RayOrigin = InvProjMat.TransformVector4(RayOrigin);
+	//RayEnd = InvProjMat.TransformVector4(RayEnd);
 
-	FMatrix InvViewMat = UEngine::GetEngine().GetWorld()->GetViewMatrix().Inverse();
-	RayOrigin = InvViewMat.TransformVector4(RayOrigin);
-	RayEnd = InvViewMat.TransformVector4(RayEnd);
-	RayOrigin /= RayOrigin.W;
-	RayEnd /= RayEnd.W;
+	//FMatrix InvViewMat = UEngine::GetEngine().GetWorld()->GetViewMatrix().Inverse();
+	//RayOrigin = InvViewMat.TransformVector4(RayOrigin);
+	//RayEnd = InvViewMat.TransformVector4(RayEnd);
+	//RayOrigin /= RayOrigin.W;
+	//RayEnd /= RayEnd.W;
 
 	FVector RayDir = (RayEnd - RayOrigin);
 

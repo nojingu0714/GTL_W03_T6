@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "Gizmo/GizmoManager.h"
 #include "Input/InputManager.h"
+#include "World.h"
 
 
 void FEditorManager::Init(const FWindowInfo& InWindowInfo)
@@ -92,7 +93,7 @@ void FEditorManager::Draw()
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
-		Handle->RenderGizmo(GizmoManager->GetGizmo());
+		//Handle->RenderGizmo(GizmoManager->GetGizmo());
 	}
 
 	Handle->PrepareWindow();
