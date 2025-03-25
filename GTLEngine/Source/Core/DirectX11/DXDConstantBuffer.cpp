@@ -60,6 +60,14 @@ HRESULT UDXDConstantBuffer::CreateBuffer(EConstantBufferType Type)
 		//BufferDesc.MiscFlags = 0;
 		//BufferDesc.StructureByteStride = 0;
 		break;
+    case EConstantBufferType::ViewportRatio:
+        BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        BufferDesc.ByteWidth = sizeof(FCbViewportRatio) + 0xf & 0xfffffff0; // ensure constant buffer size is multiple of 16 bytes
+        BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        //BufferDesc.MiscFlags = 0;
+        //BufferDesc.StructureByteStride = 0;
+        break;
     default:
         return S_FALSE;
         break;

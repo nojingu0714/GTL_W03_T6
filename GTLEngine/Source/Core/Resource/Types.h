@@ -161,6 +161,11 @@ enum class ERasterizerMode
     Wireframe_Back,
 };
 
+enum class EProjectionMode
+{
+	Perspective,
+	Orthogonal,
+};
 
 FString GetDepthComparisonModeAsString(enum class EDepthComparisonMode Mode);
 

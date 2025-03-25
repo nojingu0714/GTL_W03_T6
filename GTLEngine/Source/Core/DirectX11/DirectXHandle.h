@@ -27,6 +27,8 @@ class USceneComponent;
 class UStaticMeshComponent;
 class FViewport;
 
+struct FViewportCamera;
+
 class UDirectXHandle
 {
 public:
@@ -42,8 +44,8 @@ public:
 	HRESULT CreateDirectX11Handle(HWND hWnd);
 	void ReleaseDirectX11Handle();
 
-	void UpdateCameraMatrix(ACamera* Camera);
-	void RenderWorldPlane(ACamera* Camera);
+	void UpdateCameraMatrix(FViewportCamera* Camera);
+	void RenderWorldPlane(const FViewportCamera* Camera);
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(const TArray<UGizmoBase*> Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
@@ -74,7 +76,6 @@ private:
 	ID3D11DeviceContext* DXDDeviceContext;
 	IDXGISwapChain* DXDSwapChain;
 
-
 	////////////////////////////////////////
 	// Buffers
 	// TODO: Name으로 버텍스 버퍼 저장.
@@ -93,9 +94,6 @@ public:
 	HRESULT ResizeWindow(int width, int height);
 
 private:
-	void UpdateWorldViewMatrix(ACamera* Camera);
-	void UpdateWorldProjectionMatrix(ACamera* Camera);
-
 	void RenderAABB(FBoundingBox aabb);
 
 
@@ -107,19 +105,15 @@ private:
 	////////////////////////////////////////
 	// Window Renderings (using swapchain's backbuffer)
 	D3D11_VIEWPORT WindowViewport;
-	//UDXDRenderTarget* WindowRenderTarget;
-	//UDXDDepthStencilView* WindowDepthStencilView;
-	//UDXDDepthStencilState* WindowDepthStencilState;
-
 
 	////////////////////////////////////////
 	// Viewport Renderings
 public:
 	void PrepareViewport(const FViewport& InViewport);
-	//void RenderViewport(const FViewport& InViewport);
+	void RenderViewport(const FViewport& InViewport, bool isDepthStencil = false);
 
 public:
-	HRESULT AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc = { DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, D3D11_RTV_DIMENSION_TEXTURE2D , 0 });
+	HRESULT AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc);
 	HRESULT AddRenderTargetToSwapChain(const FString& InName);
 	HRESULT AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight);
 	HRESULT AddDepthStencilState(const FString& InName, const D3D11_DEPTH_STENCIL_DESC& InDesc);

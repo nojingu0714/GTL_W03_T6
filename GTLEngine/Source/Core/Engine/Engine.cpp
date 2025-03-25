@@ -7,6 +7,7 @@
 #include "Input/InputManager.h"
 #include "Resource/ResourceManager.h"
 #include "UI/UIManager.h"
+#include "Editor/EditorManager.h"
 #include "UI/ConsolePanel.h"
 
 #include "World.h"
@@ -18,6 +19,7 @@
 #include "Core/Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
 
+#include <stdlib.h>
 
 bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 {
@@ -37,13 +39,21 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
     // 기본 뷰포트 설정.
     DirectX11Handle->InitWindow(InWindowInfo.WindowHandle, InWindowInfo.Width, InWindowInfo.Height);
 
-	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width/2, InWindowInfo.Height/2);
-	Viewports.push_back(DefaultViewport);
-
-    // 뷰포트 클라이언트 생성
-	ViewportClient = new FViewportClient();
-    ViewportClient->Init();
+    //const int num = 3;
+    //const int W = InWindowInfo.Width / num;
+    //const int H = InWindowInfo.Height / num;
+    //for (int i = 0; i < num; i++)
+    //{
+    //    for (int j = 0; j < num; j++)
+    //    {
+    //        wchar_t buf[300];
+    //        _itow_s(i * num + j, buf, 10);
+    //        FViewport Viewport;
+    //        Viewport.Init(buf, InWindowInfo.WindowHandle, W * i, H * j, W, H);
+    //        Viewports.push_back(Viewport);
+    //    }
+    //}
+	
     // 텍스쳐용 UV 버퍼 추가.
 
     // for batch line rendering
@@ -65,6 +75,10 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 
     // 인풋 매니저 추가.
     InputManager = new UInputManager();
+
+    // 에디터 매니저 추가.
+	EditorManager = new FEditorManager();
+	EditorManager->Init(InWindowInfo);
 
     // 월드 추가.
     ResourceManager->LoadScene("DefaultScene");
@@ -89,6 +103,9 @@ void UEngine::Tick()
     World->Tick(TimeManager->DeltaTime());
 
 	GizmoManager->Tick(TimeManager->DeltaTime());
+
+    // EditorManager Tick
+	EditorManager->Tick(TimeManager->DeltaTime());
 }
 
 void UEngine::TickWindowInfo() {
@@ -105,53 +122,11 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-    // viewport (Texture2D) 에 그리기.
-    for (const FViewport& Viewport : Viewports)
-    {
-        DirectX11Handle->PrepareViewport(Viewport);
-        DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
-
-        DirectX11Handle->SetLineMode();
-        DirectX11Handle->RenderWorldPlane(World->GetCamera());
-        DirectX11Handle->RenderBoundingBox(World->GetActors());
-        DirectX11Handle->RenderLines(World->GetActors());
-
-        DirectX11Handle->SetFaceMode();
-        DirectX11Handle->RenderObject(World->GetActors());
-        DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
-    }
-
-        DirectX11Handle->PrepareWindow();
-    for (const FViewport& Viewport : Viewports)
-    {
-        // Texture2D를 쓰는 Quad를 그리기
-        ViewportClient->Draw(Viewport.GetName());
-    }
+	EditorManager->Draw();
 
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();
 
-
-
- //   // 그릴 렌더 타겟뷰 초기화.
- //   //DirectX11Handle->InitView();
- //   DirectX11Handle->PrepareViewport(&Viewports[TEXT("Default")]);
- //   DirectX11Handle->UpdateCameraMatrix(World->GetCamera());
-
- //   DirectX11Handle->SetLineMode();
- //   DirectX11Handle->RenderWorldPlane(World->GetCamera());
- //   DirectX11Handle->RenderBoundingBox(World->GetActors());
- //   DirectX11Handle->RenderLines(World->GetActors());
-
- //   DirectX11Handle->SetFaceMode();
- //   DirectX11Handle->RenderObject(World->GetActors());
- //   DirectX11Handle->RenderGizmo(GizmoManager->GetGizmo());
- //   // 오브젝트들 받아와서 DXD 핸들에 넘겨준 후 DXD 핸들에서 해당 오브젝트 값 읽어서 렌더링에 추가.
-
- //   // UI 그리기.
- //   UIManager->RenderUI();
-	//// 최종적으로 그린 결과물을 화면에 출력.
-	//DirectX11Handle->GetDXDSwapChain()->Present(1, 0);
 }
 
 HRESULT UEngine::ResizeWindow(int width, int height) {
@@ -207,6 +182,12 @@ void UEngine::ClearEngine()
 		TimeManager = nullptr;
 	}
 
+    if (EditorManager)
+    {
+        EditorManager->Destroy();
+		delete EditorManager;
+		EditorManager = nullptr;
+    }
 }
 
 

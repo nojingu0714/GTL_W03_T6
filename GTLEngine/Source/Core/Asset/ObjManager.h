@@ -37,8 +37,9 @@ struct FObjImporter
 
             // Handle vertices (v)
             if (line.substr(0, 2) == "v ") {
-                
-                FVector4 Color(0.0f,0.0f, 0.0f, 1.0f); // Default color: white
+                static FVector Vertex;
+                static FVector4 Color;
+                Color = { 0.0f,0.0f, 0.0f, 1.0f }; // Default color: white
 
                 // Parse vertex coordinates
                 ss >> token >> TempVector.X >> TempVector.Y >> TempVector.Z;
@@ -54,24 +55,26 @@ struct FObjImporter
                 // If no color was provided, use default color (white)
             }
             // Handle normals (vn)
-            else if (line.substr(0, 3) == "vn ") {   
-                ss >> token >> TempVector.X >> TempVector.Y >> TempVector.Z;
-                OutObjInfo.Normals.push_back(FVector{ TempVector });  // 0 is a placeholder for index
+            else if (line.substr(0, 3) == "vn ") {
+                static FVector normal;
+                ss >> token >> normal.X >> normal.Y >> normal.Z;
+                OutObjInfo.Normals.push_back(FVector{ normal });  // 0 is a placeholder for index
             }
             // Handle texture coordinates (vt)
             else if (line.substr(0, 3) == "vt ") {
-                ss >> token >> TempVector2.X >> TempVector2.Y;
-                TempVector2.Y = -TempVector2.Y;
-                OutObjInfo.UV.push_back({ TempVector2 });  // 0 is a placeholder for index
+                static FVector2 uv;
+                ss >> token >> uv.X >> uv.Y;
+                uv.Y = -uv.Y;
+                OutObjInfo.UV.push_back({ uv });  // 0 is a placeholder for index
             }
             // Handle face (f) which contains vertex indices
             // Handle material library (mtllib)
             else if (line.substr(0, 7) == "mtllib ") {
-                std::string MtlFileName;  // std::string으로 먼저 읽고
+                static std::string MtlFileName;  // std::string으로 먼저 읽고
                 ss >> token >> MtlFileName;
                 MtlFileName = InPath + "/" + MtlFileName;
                 
-                FObjMaterialInfo NewMtlInfo;
+                static FObjMaterialInfo NewMtlInfo;
                 if (!ParseMtlFile(InPath, MtlFileName, OutObjInfo.Materials))
                 {
                     return false;

@@ -11,7 +11,7 @@ class UInputManager;
 class UGizmoManager;
 class UObject;
 class UUIManager;
-class FViewportClient;
+class FEditorManager;
 
 enum class EViewModeIndex : uint32 {
     VMI_Lit,
@@ -74,17 +74,12 @@ private:
     UInputManager* InputManager;
     UUIManager* UIManager;
     UGizmoManager* GizmoManager;
+    FEditorManager* EditorManager;
 public:
     const FWindowInfo& GetWindowInfo() const { return WindowInfo; }
 
 private:
     FWindowInfo WindowInfo;
-
-public:
-    const FViewport& GetViewport(FString Name);
-//private:
-    TArray<FViewport> Viewports;
-    FViewportClient* ViewportClient;
 
 public:
 	float GetFPS() const { return FPS; }
