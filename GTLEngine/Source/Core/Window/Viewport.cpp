@@ -114,6 +114,7 @@ void FViewport::Tick(float DeltaTime)
 	float FOVRad = FMath::DegreesToRadians(Camera->FieldOfView);
 	// TODO: resize / fov / nearfar 변경되었을때만 변경할 수 있도록 저장.
 	Camera->CachedProjectionMatrix = FMatrix::PerspectiveFovLH(FOVRad, Viewport.Width / Viewport.Height, Camera->NearClip, Camera->FarClip);
+	//Camera->CachedProjectionMatrix = FMatrix::OrthogonalLH(Viewport.Width/32,Viewport.Height/32, Camera->NearClip, Camera->FarClip);
 
 }
 
@@ -127,7 +128,7 @@ void FViewport::TickWhenHovered(float DeltaTime)
 
 }
 
-void FViewport::ProcessInput(float DeltaTime)
+void FViewport::ProcessCameraMovement(float DeltaTime)
 {
 	// 카메라 업데이트
 	FVector CameraLocation = Camera->Location;

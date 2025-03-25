@@ -627,6 +627,7 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
 	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), GetDepthStencilView(InViewport.GetName())->GetDepthStencilView());
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
 }
 
 // quad를 그립니다.
@@ -790,11 +791,11 @@ UDXDDepthStencilView* UDirectXHandle::GetDepthStencilView(const FString& InName)
 	return DepthStencilViews[InName];
 }
 
-UDXDDepthStencilState* UDirectXHandle::GetDepthStencilStates(const FString& InName)
+UDXDDepthStencilState* UDirectXHandle::GetDepthStencilState(const FString& InName)
 {
 	if (DepthStencilStates.find(InName) == DepthStencilStates.end())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetDepthStencilStates::Invalid Name"));
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetDepthStencilState::Invalid Name"));
 		return nullptr;
 	}
 	return DepthStencilStates[InName];
@@ -858,7 +859,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
 
-    DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Always"))->GetDepthStencilState(), 0);
+    DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Always"))->GetDepthStencilState(), 0);
 	for (UGizmoBase* Gizmo : Gizmos)
 	{
 		if (Gizmo->GizmoMode != UEngine::GetEngine().GizmoModeIndex)
@@ -883,7 +884,7 @@ void UDirectXHandle::RenderGizmo(const TArray<UGizmoBase*> Gizmos) {
         }
     }
 
-	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Default"))->GetDepthStencilState(), 0);
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
 }
 
 void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
@@ -1097,7 +1098,7 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("FontPS")), NULL, 0);
 	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("FontVS")));
 	// 깊이 테스트 무시하는 DepthStencilState로 변경.
-	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Always"))->GetDepthStencilState(), 0);
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Always"))->GetDepthStencilState(), 0);
 
     // Begin Object Matrix Update. 
     ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
@@ -1142,7 +1143,7 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 	DXDDeviceContext->DrawIndexed(Info.IndexInfo.NumIndices, 0, 0);
 
 	// DepthStencilState 기본으로 변경
-	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilStates(TEXT("Default"))->GetDepthStencilState(), 0);
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
 
 
 	Info.VertexInfo.VertexBuffer->Release();

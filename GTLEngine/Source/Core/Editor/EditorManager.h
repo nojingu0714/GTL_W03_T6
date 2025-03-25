@@ -2,6 +2,7 @@
 
 class FViewport;
 class FViewportClient;
+class AActor;
 
 class FEditorManager
 {
@@ -14,10 +15,16 @@ public:
 private:
 	void UpdateHoveredViewport();
 	void UpdateSelectedViewport();
+
 	//FViewportClient* ViewportClient;
 
 public:
 	TArray<FViewport> Viewports;
 	FViewport* HoveredViewport;
 	FViewport* SelectedViewport;
+	AActor* SelectedActor;
 };
+
+
+
+

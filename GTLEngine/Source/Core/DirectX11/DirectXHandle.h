@@ -54,6 +54,7 @@ public:
 	void RenderActorUUID(AActor* TargetActor);
 	void RenderComponentUUID(USceneComponent* TargetComponent);
 
+
 public:
 	//void InitView();
 
@@ -121,7 +122,7 @@ public:
 
 	UDXDRenderTarget* GetRenderTarget(const FString& InName);
 	UDXDDepthStencilView* GetDepthStencilView(const FString& InName);
-	UDXDDepthStencilState* GetDepthStencilStates(const FString& InName);
+	UDXDDepthStencilState* GetDepthStencilState(const FString& InName);
 	UDXDRasterizerState* GetRasterizerState(const FString& InName);
 	
 	UDXDShaderManager* GetShaderManager() const { return ShaderManager; }

@@ -39,7 +39,7 @@ public:
 	void Tick(float DeltaTime);
 	void TickWhenSelected(float DeltaTime);
 	void TickWhenHovered(float DeltaTime);
-	void ProcessInput(float DeltaTime);
+	void ProcessCameraMovement(float DeltaTime);
 
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
