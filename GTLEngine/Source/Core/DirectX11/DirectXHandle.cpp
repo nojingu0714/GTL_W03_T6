@@ -513,7 +513,7 @@ void UDirectXHandle::RenderWorldXYZAxis()
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexPNCT);
+    uint Stride = sizeof(FVertexPC);
     uint offset = 0;
     FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
     ID3D11Buffer* VB = Info.VertexBuffer;

@@ -107,6 +107,10 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->PrepareViewport(Viewport);
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
+		Handle->SetFaceMode();
+		Handle->RenderObject(World->GetActors());
+
+		Handle->SetLineMode();
 		Handle->RenderWorldPlane(Viewport.GetCamera());
 		Handle->RenderWorldXYZAxis();
 		Handle->RenderBoundingBox(World->GetActors());
@@ -115,9 +119,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 			Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
-		Handle->RenderObject(World->GetActors());
 		Handle->RenderGizmo(GizmoManager->GetGizmoActor()); // TODO: 메모리 누수중.
-		Handle->RenderBoundingBox(World->GetActors());
 		Handle->EndRenderViewport();
 	}
 
