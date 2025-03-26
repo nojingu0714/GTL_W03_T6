@@ -541,7 +541,7 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	AddRenderTargetToSwapChain(TEXT("Window"));
 
 	// depth stencil view
-	AddDepthStencilView(TEXT("Window"), hWnd, InWidth, InHeight);
+	AddDepthStencilView(TEXT("Window"), InWidth, InHeight);
 
 	// depth stencil state
 	D3D11_DEPTH_STENCIL_DESC DepthStencilDesc = {};
@@ -714,7 +714,7 @@ HRESULT UDirectXHandle::AddRenderTargetToSwapChain(const FString& InName)
 	return S_OK;
 }
 
-HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight)
+HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, UINT InWidth, UINT InHeight)
 {
 	if (DepthStencilViews.find(InName) != DepthStencilViews.end())
 	{
@@ -724,7 +724,7 @@ HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UI
 
 	UDXDDepthStencilView* DepthStencilView = new UDXDDepthStencilView();
 
-	HRESULT hr = DepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
+	HRESULT hr = DepthStencilView->CreateDepthStencilView(DXDDevice, InWidth, InHeight);
 	if (FAILED(hr))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::AddDepthStencilView::Create Failed"));
@@ -815,6 +815,34 @@ UDXDRasterizerState* UDirectXHandle::GetRasterizerState(const FString& InName)
 		return nullptr;
 	}
 	return RasterizerStates[InName];
+}
+
+HRESULT UDirectXHandle::ReleaseRenderTarget(const FString& InName)
+{
+	if (RenderTargets.find(InName) == RenderTargets.end())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::ReleaseRenderTarget::Invalid Name"));
+		return S_FALSE;
+	}
+
+	RenderTargets[InName]->ReleaseRenderTarget();
+	RenderTargets.erase(InName);
+
+	return S_OK;
+}
+
+HRESULT UDirectXHandle::ReleaseDepthStencilView(const FString& InName)
+{
+	if (DepthStencilViews.find(InName) == DepthStencilViews.end())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::ReleaseDepthStencilView::Invalid Name"));
+		return S_FALSE;
+	}
+
+	DepthStencilViews[InName]->ReleaseDepthStencilView();
+	DepthStencilViews.erase(InName);
+
+	return S_OK;
 }
 
 void UDirectXHandle::RenderDebugRays(const TArray<FRay>& Rays)
@@ -1229,7 +1257,7 @@ HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 		return hr;
 
 	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
-	hr = DepthStencilViews[TEXT("Window")]->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(width), static_cast<float>(height));
+	hr = DepthStencilViews[TEXT("Window")]->CreateDepthStencilView(DXDDevice, static_cast<float>(width), static_cast<float>(height));
 	if ( FAILED(hr) )
 		return hr;
 

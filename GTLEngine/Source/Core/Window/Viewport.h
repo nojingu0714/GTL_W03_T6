@@ -26,13 +26,13 @@ class FViewport
 {
 public:
 	FViewport() = default;
-	HRESULT Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight);
+	HRESULT Init(const FString& InName, int InX, int InY, UINT InWidth, UINT InHeight);
 	void Destroy();
 
 	void SetDepthcomparisonMode(EDepthComparisonMode InDepthComparisonMode);
 	void SetRasterizerMode(ERasterizerMode InRasterizerMode);
 	void MoveViewport(int InX, int InY);
-	void ResizeViewport(UINT InWidth, UINT InHeight);
+	HRESULT ResizeViewport(UINT InWidth, UINT InHeight);
 	void SetProjectionMatrix(const FMatrix& InProjectionMatrix);
 	void SetViewMatrix(const FMatrix& InViewMatrix);
 

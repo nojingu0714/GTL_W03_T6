@@ -9,7 +9,7 @@
 
 TArray<FRay> FViewport::DebugRays;
 
-HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight)
+HRESULT FViewport::Init(const FString& InName, int InX, int InY, UINT InWidth, UINT InHeight)
 {
 	Name = InName;
 	Viewport.TopLeftX = InX;
@@ -61,7 +61,7 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
 		return hr;
 	}
-	hr = Handle->AddDepthStencilView(InName, hWnd, InWidth, InHeight);
+	hr = Handle->AddDepthStencilView(InName, InWidth, InHeight);
 	if (FAILED(hr))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
@@ -86,10 +86,51 @@ void FViewport::MoveViewport(int InX, int InY)
 	Viewport.TopLeftY = InY;
 }
 
-void FViewport::ResizeViewport(UINT InWidth, UINT InHeight)
+HRESULT FViewport::ResizeViewport(UINT InWidth, UINT InHeight)
 {
 	Viewport.Width = InWidth;
 	Viewport.Height = InHeight;
+	
+	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
+
+	Handle->ReleaseRenderTarget(Name);
+	Handle->ReleaseDepthStencilView(Name);
+
+	// 컬러 버퍼.
+	D3D11_TEXTURE2D_DESC TextureDesc = {};
+	TextureDesc.Width = InWidth;
+	TextureDesc.Height = InHeight;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	TextureDesc.SampleDesc.Count = 1;
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.CPUAccessFlags = 0;
+	TextureDesc.MiscFlags = 0;
+
+	D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc = {};
+	RenderTargetViewDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	RenderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	RenderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	HRESULT hr = S_OK;
+
+	hr = Handle->AddRenderTarget(Name, TextureDesc, RenderTargetViewDesc);
+	if (FAILED(hr))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FViewport::ResizeViewport::Failed to add render target"));
+		return hr;
+	}
+	hr = Handle->AddDepthStencilView(Name, InWidth, InHeight);
+	if (FAILED(hr))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FViewport::ResizeViewport::Failed to add render target"));
+		return hr;
+	}
+	return hr;
+
 }
 
 void FViewport::SetProjectionMatrix(const FMatrix& InProjectionMatrix)

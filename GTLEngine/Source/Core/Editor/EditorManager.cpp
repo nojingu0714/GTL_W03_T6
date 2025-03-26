@@ -31,16 +31,16 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	//Viewports.push_back(DefaultViewport);
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(TEXT("Default_0"), 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(TEXT("Default_1"), 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(TEXT("Default_2"), InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(TEXT("Default_3"), InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
 	// 뷰포트 클라이언트 생성

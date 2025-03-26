@@ -116,7 +116,7 @@ public:
 public:
 	HRESULT AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc);
 	HRESULT AddRenderTargetToSwapChain(const FString& InName);
-	HRESULT AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight);
+	HRESULT AddDepthStencilView(const FString& InName, UINT InWidth, UINT InHeight);
 	HRESULT AddDepthStencilState(const FString& InName, const D3D11_DEPTH_STENCIL_DESC& InDesc);
 	HRESULT AddRasterizerState(const FString& InName, const D3D11_RASTERIZER_DESC& InDesc);
 
@@ -124,6 +124,9 @@ public:
 	UDXDDepthStencilView* GetDepthStencilView(const FString& InName);
 	UDXDDepthStencilState* GetDepthStencilState(const FString& InName);
 	UDXDRasterizerState* GetRasterizerState(const FString& InName);
+
+	HRESULT ReleaseRenderTarget(const FString& InName);
+	HRESULT ReleaseDepthStencilView(const FString& InName);
 	
 	UDXDShaderManager* GetShaderManager() const { return ShaderManager; }
 
