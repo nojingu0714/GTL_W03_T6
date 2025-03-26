@@ -972,7 +972,7 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 		
 		UMaterial* Mat = FMaterialManager::LoadMaterial(Section.MaterialName);
 		
-		ID3D11ShaderResourceView* DiffuseSRV = nullptr;
+		ID3D11ShaderResourceView* DiffuseSRV = ResourceManager->TryGetTextureSRV(L"Contents/Default.png");
 
 		if (Mat)
 		{
