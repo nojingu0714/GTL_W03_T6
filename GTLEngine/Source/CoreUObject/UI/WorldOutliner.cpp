@@ -14,7 +14,7 @@
 #include "GameFrameWork/Shapes/Cone.h"
 
 #include "Utils/GTLStringLibrary.h"
-
+#include "Asset/SceneManager.h"
 #include <functional>
 
 
@@ -37,6 +37,23 @@ void UWorldOutliner::Tick(float TickTime) {
 
 void UWorldOutliner::ActorSpawner()
 {
+    if (ImGui::Button("New Scene"))
+    {
+        FSceneManager::NewScene();
+    }
+
+
+    if (ImGui::Button("Load Scene"))
+    {
+        FSceneManager::LoadScene("Woojae");
+    }
+
+
+    if (ImGui::Button("Save Scene"))
+    {
+        FSceneManager::SaveScene("Woojae");
+    }
+
     const char* items[] = { "Triangle", "Sphere", "Cube", "Cylinder", "Cone" };
 
     if (SpawnNum < 1)

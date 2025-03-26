@@ -71,8 +71,8 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 
     // 월드 추가.
     //ResourceManager->LoadScene("DefaultScene");
-
-	FSceneManager::LoadScene("DefaultScene");
+    
+    CreateNewWorld();
 
     return true;
 }
@@ -179,6 +179,7 @@ void UEngine::CreateNewWorld()
     if (World)
     {
         DestroyWorld();
+        FObjectFactory::DestroyObject(World);
     }
     World = UWorld::CreateWorld();
     //World->CreateDefaultUI();
