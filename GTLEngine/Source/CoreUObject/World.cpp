@@ -5,9 +5,10 @@
 #include "GameFrameWork/Camera.h"
 
 #include "Engine.h"
-#include "Core/Gizmo/GizmoManager.h"
+#include "Core/GizmoManager/GizmoManager.h"
 
 #include "GameFrameWork/StaticMeshActor.h"
+#include "CoreUObject/gizmo/GizmoActor.h"
 
 UWorld* UWorld::CreateWorld()
 {
@@ -39,6 +40,6 @@ void UWorld::Destroy()
 		}
 	}
 	ActiveActors.clear();
-	/*IClickable::GetClickableList().clear();
+	/*AActor::GetClickableList().clear();
 	IDragable::GetClickableList().clear();*/
 }

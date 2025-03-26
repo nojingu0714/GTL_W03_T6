@@ -2,14 +2,17 @@
 #include "GizmoBase.h"
 #include "Utils/Math/Geometry.h"
 
-bool AGizmoBase::IsAbsoluteCoord = false;
+bool UGizmoBase::IsAbsoluteCoord = false;
 
-AGizmoBase::AGizmoBase(): mat() {
+UGizmoBase::UGizmoBase(): mat() {
 }
 
-void AGizmoBase::Init() {}
+void UGizmoBase::Init(EAxis axis, AActor* Target) {
+    this->axis = axis;
+    this->Target = Target;
+}
 
-void AGizmoBase::Tick(float TickTime) {
+void UGizmoBase::Tick(float TickTime) {
     if ( IsAbsoluteCoord ) {
         mat = FMatrix::GetTranslateMatrix(Target->GetActorLocation());
     } else {
@@ -20,15 +23,15 @@ void AGizmoBase::Tick(float TickTime) {
     }
 }
 
-void AGizmoBase::Destroy() {}
+void UGizmoBase::Destroy() {}
 
-FBoundingBox AGizmoBase::GetAABB() const {
+FBoundingBox UGizmoBase::GetAABB() const {
     FVector min = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
     FVector max = FVector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
     FVector vecs[8];
     if ( Target == nullptr ) {
-        OutputDebugString(L"AGizmoBase::GetAABB(): Target nullptr");
+        OutputDebugString(L"UGizmoBase::GetAABB(): Target nullptr");
         return FBoundingBox(min, max);
     }
 
@@ -43,4 +46,8 @@ FBoundingBox AGizmoBase::GetAABB() const {
     }
 
     return FBoundingBox(min, max);
+}
+
+bool UGizmoBase::IsClicked(FRay ray, float maxDistance, FVector& hitpoint) {
+	return Geometry::IsRayIntersectAABB(GetAABB(), ray, hitDistance);
 }

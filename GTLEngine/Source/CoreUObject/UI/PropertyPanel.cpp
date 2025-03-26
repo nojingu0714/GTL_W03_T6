@@ -46,7 +46,7 @@ void UPropertyPanel::Destroy()
 
 void UPropertyPanel::WorldCoordCheckbox()
 {
-	//ImGui::Checkbox("WorldCoord", &UGizmoBase::IsAbsoluteCoord);
+	//ImGui::Checkbox("WorldCoord", &AGizmoBase::IsAbsoluteCoord);
 }
 
 void UPropertyPanel::PropertiesInspector()

@@ -21,7 +21,7 @@ class UDXDResourceManager;
 class UObject;
 class AActor;
 class ACamera;
-class AGizmoActor;
+class AGizmoBase;
 class FGizmoManager;
 class UPrimitiveComponent;
 class ULineComponent;
@@ -49,7 +49,7 @@ public:
 	void RenderWorldPlane(const FViewportCamera* Camera);
 	void RenderWorldXYZAxis();
 	void RenderBoundingBox(const TArray<AActor*> Actors);
-	void RenderGizmo(AGizmoActor* Gizmos);
+	void RenderGizmo(AGizmoBase* Gizmo);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);

@@ -13,7 +13,7 @@
 
 #include "Engine/Engine.h"
 #include "Input/InputManager.h"
-#include "Core/Gizmo/GizmoManager.h"
+#include "Core/GizmoManager/GizmoManager.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"

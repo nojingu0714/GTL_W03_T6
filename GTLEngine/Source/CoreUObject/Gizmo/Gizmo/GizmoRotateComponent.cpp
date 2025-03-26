@@ -3,7 +3,7 @@
 
 #include "Asset/ObjManager.h"
 
-UGizmoRotateComponent::UGizmoRotateComponent()
+UGizmoRotateMesh::UGizmoRotateMesh()
 {
 	SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Resource/Shape/GizmoRotate.obj")));
 }

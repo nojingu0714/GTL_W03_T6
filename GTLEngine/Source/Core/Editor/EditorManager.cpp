@@ -4,11 +4,11 @@
 #include "Window/ViewportClient.h"
 #include "DirectX11/DirectXHandle.h"
 #include "Engine/Engine.h"
-#include "Gizmo/GizmoManager.h"
+#include "GizmoManager/GizmoManager.h"
 #include "Input/InputManager.h"
 #include "World.h"
+#include "CoreUObject/GameFrameWork/StaticMeshActor.h"
 #include "Window/Splitter.h"
-
 
 void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handle)
 {
@@ -83,6 +83,13 @@ void FEditorManager::Tick(float DeltaTime)
 	SelectedViewport->TickWhenSelected(DeltaTime);
 	HoveredViewport->TickWhenHovered(DeltaTime);
 
+	GizmoManager->Tick(DeltaTime);
+	GizmoManager->ProcessPicking(GetRayOnWorld());
+	
+	TObjectIterator<AStaticMeshActor> it;
+	if(it)
+		GizmoManager->AttachTo(*it);
+
 	for (FViewport& Viewport : Viewports)
 	{
 		Viewport.Tick(DeltaTime);
@@ -94,15 +101,12 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 	// TODO : DXDHANDLE에서 하도록 옮기기.
 	UWorld* World = UEngine::GetEngine().GetWorld();
 
-	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
-
 	// viewport (Texture2D) 에 그리기.
 	for (FViewport& Viewport : Viewports)
 	{
 		Handle->PrepareViewport(Viewport);
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
-		Handle->SetLineMode();
 		Handle->RenderWorldPlane(Viewport.GetCamera());
 		Handle->RenderWorldXYZAxis();
 		Handle->RenderBoundingBox(World->GetActors());
@@ -112,7 +116,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
-		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
+		Handle->RenderGizmo(GizmoManager->GetGizmoActor()); // TODO: 메모리 누수중.
 		Handle->RenderBoundingBox(World->GetActors());
 		Handle->EndRenderViewport();
 	}
@@ -234,4 +238,12 @@ void FEditorManager::UpdateSplitterDragging()
 		SplitterV->bIsDragging = false;
 	}
 }
-		
+
+FRay FEditorManager::GetRayOnWorld()
+{
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+	if (HoveredViewport)
+	{
+		return HoveredViewport->GetRayOnWorld(InputManager->GetMouseClientX(), InputManager->GetMouseClientY());
+	}
+}
