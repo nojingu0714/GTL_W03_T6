@@ -15,8 +15,6 @@ UWorld* UWorld::CreateWorld()
 
 	// TODO: 나중에 분리.
 
-	NewWorld->SpawnActor<AStaticMeshActor>(TEXT("StaticMeshActor"), FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 0.f), FVector::OneVector, nullptr);
-
     return NewWorld;
 }
 

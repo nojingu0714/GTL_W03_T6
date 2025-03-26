@@ -25,6 +25,7 @@ FBoundingBox UStaticMeshComponent::GetAABB(const FMatrix& LocalToWorld) const
 {
 	FVector min = { FLT_MAX, FLT_MAX ,FLT_MAX };
 	FVector max = { -FLT_MAX, -FLT_MAX ,-FLT_MAX };
+
 	for (FVector v : StaticMesh->GetAsset()->Vertices)
 	{
 		v = LocalToWorld.TransformPositionVector(v);

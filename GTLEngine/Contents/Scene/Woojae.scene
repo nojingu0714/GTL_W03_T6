@@ -1,0 +1,25 @@
+{
+  "Primitives" : {
+    "AStaticMeshActor_34" : {
+      "Location" : [2.259998, 0.000000, 0.000000],
+      "ObjStaticMeshAsset" : "Contents/Conan.obj",
+      "Rotation" : [0.000000, 0.000000, 22.600050],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "AStaticMeshActor_37" : {
+      "Location" : [2.559998, 0.000000, 0.000000],
+      "ObjStaticMeshAsset" : "Contents/Conan.obj",
+      "Rotation" : [0.000000, 0.000000, 25.600061],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "AStaticMeshActor_40" : {
+      "Location" : [8.020088, 0.000000, 0.000000],
+      "ObjStaticMeshAsset" : "Contents/Conan.obj",
+      "Rotation" : [0.000000, 0.000000, 80.199348],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    }
+  }
+}

@@ -10,8 +10,8 @@ AStaticMeshActor::AStaticMeshActor()
 
 void AStaticMeshActor::Tick(float TickTime)
 {
-	static FVector pos(0, 0, 0);
-	static FRotator rot(0, 0, 0);
+	FVector pos = GetActorLocation();
+	FRotator rot = GetActorRotation();
 
 	pos.X += 0.01;
 	rot.Yaw += 0.1;

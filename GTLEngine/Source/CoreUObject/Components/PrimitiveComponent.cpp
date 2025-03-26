@@ -15,6 +15,7 @@ void UPrimitiveComponent::TickComponent(float TickTime)
 
 void UPrimitiveComponent::Destroy()
 {
+    Super::Destroy();
 }
 
 void UPrimitiveComponent::Serialize()

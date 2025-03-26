@@ -11,6 +11,7 @@ class FSceneManager
 
 public:
 	static void SaveScene(const std::string& InSceneName, const std::string& InPath = "Contents/Scene/");
+	static void NewScene();
 	static void LoadScene(const std::string& InSceneName);
 
 };

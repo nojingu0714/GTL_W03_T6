@@ -25,7 +25,7 @@ void FSceneManager::SaveScene(const std::string& InSceneName, const std::string&
     if (!World) return;
 
     json::JSON Scene;
-    json::JSON Primitives = json::Object();
+    json::JSON Primitives = json::Object();  // Primitives 객체 생성
 
     for (const AActor* Actor : World->GetActors())
     {
@@ -45,16 +45,22 @@ void FSceneManager::SaveScene(const std::string& InSceneName, const std::string&
         }
         else
         {
-		    Primitive["Type"] = UGTLStringLibrary::WStringToString(RootComponent->StaticClass()->GetName());
+            Primitive["Type"] = UGTLStringLibrary::WStringToString(RootComponent->StaticClass()->GetName());
         }
+
+        // ✅ Actor의 이름을 키로 사용하여 Primitives에 추가
+        Primitives[UGTLStringLibrary::WStringToString(Actor->GetName())] = Primitive;
     }
 
-	std::string ScenePath = InPath + InSceneName + ".scene";
+    // ✅ Scene에 Primitives 추가
+    Scene["Primitives"] = Primitives;
 
-	if (!std::filesystem::exists(InPath))
-	{
-		std::filesystem::create_directories(InPath);
-	}
+    std::string ScenePath = InPath + InSceneName + ".scene";
+
+    if (!std::filesystem::exists(InPath))
+    {
+        std::filesystem::create_directories(InPath);
+    }
 
     std::ofstream outFile(ScenePath);
     if (outFile.is_open())
@@ -65,14 +71,20 @@ void FSceneManager::SaveScene(const std::string& InSceneName, const std::string&
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to save: %s"), UGTLStringLibrary::StringToWString(ScenePath));
+        UE_LOG(LogTemp, Warning, TEXT("Failed to save: %s"), UGTLStringLibrary::StringToWString(ScenePath).c_str());
     }
+}
 
+void FSceneManager::NewScene()
+{
+    UEngine::GetEngine().CreateNewWorld();
 }
 
 void FSceneManager::LoadScene(const std::string& InSceneName)
 {
-    std::string ScenePath = "Contents/Scenes/" + InSceneName + ".scene";
+    UEngine::GetEngine().CreateNewWorld();
+
+    std::string ScenePath = "Contents/Scene/" + InSceneName + ".scene";
 
     std::ifstream inFile(ScenePath);
     if (!inFile.is_open()) {
@@ -80,14 +92,11 @@ void FSceneManager::LoadScene(const std::string& InSceneName)
         return;
     }
 
-    UEngine::GetEngine().CreateNewWorld();
-
     std::string jsonData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     inFile.close();
 
     json::JSON SceneJSON = json::JSON::Load(jsonData);
 
-    UEngine::GetEngine().CreateNewWorld();
     UWorld* World = UEngine::GetEngine().GetWorld();
     if (!World) return;
 
@@ -105,7 +114,7 @@ void FSceneManager::LoadScene(const std::string& InSceneName)
             if (Type == "StaticMeshComp")
             {
                 AStaticMeshActor* Actor = World->SpawnActor<AStaticMeshActor>(TEXT("MeshActor"), Location, Rotation, Scale, nullptr);
-                Actor->GetStaticMeshComponent()->SetStaticMesh(FObjManager::LoadObjStaticMesh(MeshPath));
+                Actor->SetStaticMesh(FObjManager::LoadObjStaticMesh(MeshPath));
             }
         }
     }
@@ -122,5 +131,5 @@ void FSceneManager::LoadScene(const std::string& InSceneName)
 
     }
 
-    UE_LOG(LogTemp, Display, TEXT("Scene Loaded: %s"), UGTLStringLibrary::StringToWString(ScenePath));
+    UE_LOG(LogTemp, Display, TEXT("Scene Loaded: %s"), UGTLStringLibrary::StringToWString(ScenePath).c_str());
 }
