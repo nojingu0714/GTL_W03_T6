@@ -164,7 +164,7 @@ void UControlPanel::ViewportCameraPanel()
             }
 
 
-            if (ImGui::Combo("View Position", (int*)&ViewportCamera->ViewPosition, "Top\0Left\0Right\0Bottom\0Front\0Back\0Perspective\0\0"))
+            if (ImGui::Combo("View Position", (int*)&ViewportCamera->ViewPosition, "Top\0Bottom\0Left\0Right\0Front\0Back\0Perspective\0\0"))
             {
 				ViewportCamera->ProjectionMode = EProjectionMode::Orthogonal;
 				SelectedViewport->SetViewModeIndex(EViewModeIndex::VMI_Wireframe);
@@ -179,20 +179,20 @@ void UControlPanel::ViewportCameraPanel()
 					ViewportCamera->Rotation = FRotator(89.f, 0.f, 0.f);
 					break;
 				case EViewPosition::Left:
-					ViewportCamera->Location = FVector(-50.0f, 0.f, 0.f);
-					ViewportCamera->Rotation = FRotator(0.f, 180.f, 0.f);
+					ViewportCamera->Location = FVector(0.0f, 50.f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, -89.0f, 0.f);
 					break;
 				case EViewPosition::Right:
-					ViewportCamera->Location = FVector(50.0f, 0.f, 0.f);
-					ViewportCamera->Rotation = FRotator(0.f, -89.f, 0.f);
+                    ViewportCamera->Location = FVector(0.0f, -50.f, 0.f);
+                    ViewportCamera->Rotation = FRotator(0.f, 89.0f, 0.f);
 					break;
 				case EViewPosition::Front:
-					ViewportCamera->Location = FVector(0.f, -50.0f, 0.f);
-					ViewportCamera->Rotation = FRotator(0.f, 0.f, 0.f);
+					ViewportCamera->Location = FVector(50.f, 0.0f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, 180.f, 0.f);
 					break;
 				case EViewPosition::Back:
-					ViewportCamera->Location = FVector(0.f, 50.0f, 0.f);
-					ViewportCamera->Rotation = FRotator(0.f, 180.f, 0.f);
+					ViewportCamera->Location = FVector(-50.f, 0.0f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, 0.0f, 0.f);
 					break;
 				default:
 					ViewportCamera->ProjectionMode = EProjectionMode::Perspective;
@@ -206,235 +206,3 @@ void UControlPanel::ViewportCameraPanel()
 }
 
 void UControlPanel::Destroy() {}
-
-const char* primitives[] = { "Sphere", "Cube", "Triangle", "Cylinder", "Cone"};
-
-//void UControlPanel::DrawSpawnPrimitive()
-//{
-//	
-//    // 여기부터 Primitive
-//
-//    ImGui::SetNextItemWidth(100);
-//
-//    ImGui::Combo("Primitive", &CurrentPrimitiveType, Items, IM_ARRAYSIZE(Items));
-//
-//    ImGui::SameLine(0, 5.0f);
-//
-//    if (CreateCustomInputInt("Number Of Spawn", ImGuiDataType_S32, &SpawnNum, "%d", ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsDecimal))
-//    {
-//        std::cout << "SpawnNum : " << SpawnNum << std::endl;
-//
-//        UWorld* World = UEngine::GetEngine().GetWorld();
-//        if (!World)
-//            return;
-//
-//        // 액터 스폰.
-//        switch (static_cast<EPrimitiveType>(CurrentPrimitiveType))
-//        {
-//        case EPrimitiveType::Triangle:
-//            World->SpawnActor<ATriangle>(TEXT("Triangle"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-//            break;
-//        case EPrimitiveType::Sphere:
-//            World->SpawnActor<ASphere>(TEXT("Sphere"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-//            break;
-//        case EPrimitiveType::Cube:
-//            World->SpawnActor<ACube>(TEXT("Cube"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-//            break;
-//        case EPrimitiveType::Cylinder:
-//            World->SpawnActor<ACylinder>(TEXT("Cylinder"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-//            break;
-//        case EPrimitiveType::Cone:
-//            World->SpawnActor<ACone>(TEXT("Cone"), FVector(Location[0], Location[1], Location[2]), FRotator(Rotation[0], Rotation[1], Rotation[2]), FVector(Scale[0], Scale[1], Scale[2]), nullptr);
-//            break;
-//        default:
-//            break;
-//        }
-//    }
-//
-//	ImGui::DragFloat3("Location", Location);
-//	ImGui::DragFloat3("Rotation", Rotation);
-//	ImGui::DragFloat3("Scale", Scale);
-//}
-
-
-//bool UControlPanel::CreateCustomInputInt(const char* label, ImGuiDataType data_type, void* p_data, const char* format, ImGuiInputTextFlags flags)
-//{
-//    ImGuiWindow* window = ImGui::GetCurrentWindow();
-//    if (window->SkipItems)
-//        return false;
-//
-//    ImGuiContext& g = *GImGui;
-//    ImGuiStyle& style = g.Style;
-//    IM_ASSERT((flags & ImGuiInputTextFlags_EnterReturnsTrue) == 0); // Not supported by InputScalar()!
-//
-//    if (format == NULL)
-//        format = ImGui::DataTypeGetInfo(data_type)->PrintFmt;
-//
-//    void* p_data_default = (g.NextItemData.HasFlags & ImGuiNextItemDataFlags_HasRefVal) ? &g.NextItemData.RefVal : &g.DataTypeZeroValue;
-//
-//    char buf[64];
-//    if ((flags & ImGuiInputTextFlags_DisplayEmptyRefVal) && ImGui::DataTypeCompare(data_type, p_data, p_data_default) == 0)
-//        buf[0] = 0;
-//    else
-//        ImGui::DataTypeFormatString(buf, IM_ARRAYSIZE(buf), data_type, p_data, format);
-//
-//    g.NextItemData.ItemFlags |= ImGuiItemFlags_NoMarkEdited;
-//    flags |= ImGuiInputTextFlags_AutoSelectAll | (ImGuiInputTextFlags)ImGuiInputTextFlags_LocalizeDecimalPoint;
-//
-//    bool value_changed = false;
-//    const float button_size = ImGui::GetFrameHeight();
-//
-//    ImGui::BeginGroup();
-//    ImGui::PushID(label);
-//    ImGui::SetNextItemWidth(ImMax(1.0f, ImGui::CalcItemWidth() - (button_size + style.ItemInnerSpacing.x) * 6 + 15));
-//    if (ImGui::InputText("", buf, IM_ARRAYSIZE(buf), flags))
-//        ImGui::DataTypeApplyFromText(buf, data_type, p_data, format, (flags & ImGuiInputTextFlags_ParseEmptyRefVal) ? p_data_default : NULL);
-//    IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Inputable);
-//
-//    const ImVec2 backup_frame_padding = style.FramePadding;
-//    style.FramePadding.x = style.FramePadding.y;
-//    if (flags & ImGuiInputTextFlags_ReadOnly)
-//        ImGui::BeginDisabled();
-//    ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
-//    ImGui::SameLine(0, style.ItemInnerSpacing.x);
-//    if (ImGui::ButtonEx("Spawn", ImVec2(button_size * 4.2f, button_size)))
-//    {
-//        value_changed = true;
-//    }
-//    ImGui::PopItemFlag();
-//    if (flags & ImGuiInputTextFlags_ReadOnly)
-//        ImGui::EndDisabled();
-//
-//    style.FramePadding = backup_frame_padding;
-//
-//    ImGui::PopID();
-//    ImGui::EndGroup();
-//
-//
-//    g.LastItemData.ItemFlags &= ~ImGuiItemFlags_NoMarkEdited;
-//    if (value_changed)
-//        ImGui::MarkItemEdited(g.LastItemData.ID);
-//
-//    return value_changed;
-//}
-
-
-//void UControlPanel::DrawSpawnPrimitive()
-//{
-//    ImGui::PushItemWidth(200);
-//    ImGui::Combo("Primitive", &currentPrimitive, primitives, IM_ARRAYSIZE(primitives));
-//    ImGui::PopItemWidth();
-//    if (ImGui::Button("Spawn")) 
-//    {
-//        UIManager->SpawnPrimitive();
-//    }
-//    ImGui::SameLine();
-//
-//    if (spawnNum < 1) spawnNum = 1;
-//    // 숫자를 문자열로 변환
-//
-//    ImGui::PushItemWidth(148);
-//    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 0.0f);
-//    ImGui::SliderInt("Number of spawn", &spawnNum, 1, 50);
-//    ImGui::PopStyleVar();
-//    ImGui::PopItemWidth();
-//    ImGui::Separator();
-//}
-//
-//void UControlPanel::DrawSceneManage()
-//{
-//    ImGui::PushItemWidth(200);
-//    ImGui::InputText("Scene Name", sceneName, IM_ARRAYSIZE(sceneName));
-//    ImGui::PopItemWidth();
-//    if (ImGui::Button("New Scene")) 
-//    {
-//        UIManager->MakeNewScene();
-//    }
-//    if (ImGui::Button("Save Scene")) 
-//    {
-//        UIManager->SaveScene(sceneName);
-//    }
-//    if (ImGui::Button("Load Scene")) 
-//    {
-//        UIManager->LoadScene(sceneName);
-//    }
-//    ImGui::Separator();
-//}
-//
-//void UControlPanel::DrawCameraSetting()
-//{
-//    bool bOrthogonal = false;
-//    ImGui::Checkbox("Orthogonal", &bOrthogonal);
-//
-//    float fovValue = -1.0f;
-//    UIManager->GetFOV(fovValue);
-//
-//    ImGui::PushItemWidth(200);
-//    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 0.0f);
-//    if (ImGui::SliderFloat("FOV", &fovValue, 0.0f, 90.0f))
-//        UIManager->OnFOVChanged(fovValue);
-//    ImGui::PopStyleVar();
-//    ImGui::PopItemWidth();
-//
-//    FVector cameraLocation;
-//    UIManager->GetCameraLocation(cameraLocation);
-//    ImGui::PushItemWidth(67);
-//    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 0.0f);
-//    bool valueChanged = false;
-//    if (ImGui::SliderFloat("##cameraLocationX", &cameraLocation.X, -10.f, 10.f))
-//        valueChanged = true;
-//    ImGui::SameLine();
-//    if (ImGui::SliderFloat("##cameraLocationY", &cameraLocation.Y, -10.f, 10.f))
-//        valueChanged = true;
-//    ImGui::SameLine();
-//    if (ImGui::SliderFloat("##cameraLocationZ", &cameraLocation.Z, -10.f, 10.f))
-//        valueChanged = true;
-//
-//    if (valueChanged)
-//        UIManager->OnCameraLocationChanged(cameraLocation);
-//    ImGui::SameLine();
-//    ImGui::Text("Camera Location");
-//    ImGui::PopStyleVar();
-//    ImGui::PopItemWidth();
-//
-//    FVector cameraRotation;
-//    UIManager->GetCameraRotation(cameraRotation);
-//    ImGui::PushItemWidth(67);
-//    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 0.0f);
-//    valueChanged = false;
-//    if (ImGui::SliderFloat("##cameraRotationX", &cameraRotation.X, -10.f, 10.f))
-//        valueChanged = true;
-//    ImGui::SameLine();
-//    if (ImGui::SliderFloat("##cameraRotationY", &cameraRotation.Y, -10.f, 10.f))
-//        valueChanged = true;
-//    ImGui::SameLine();
-//    if (ImGui::SliderFloat("##cameraRotationZ", &cameraRotation.Z, -10.f, 10.f))
-//        valueChanged = true;
-//    
-//    if (valueChanged)
-//        UIManager->OnCameraRotationChanged(cameraRotation);
-//
-//    ImGui::SameLine();
-//    ImGui::Text("Camera Rotation");
-//    ImGui::PopStyleVar();
-//    ImGui::PopItemWidth();
-//
-//    ImGui::Separator();
-//    ImGui::Spacing();
-//    ImGui::Text("Select Gizmo Mode");
-//    if (ImGui::Button("Translation", ImVec2(105, 25))) 
-//    {
-//        UIManager->OnGizmoModeChanged(0);
-//    }
-//    ImGui::SameLine();
-//    if (ImGui::Button("Rotation", ImVec2(105, 25))) 
-//    {
-//        UIManager->OnGizmoModeChanged(1);
-//    }
-//    ImGui::SameLine();
-//    if (ImGui::Button("Scale", ImVec2(105, 25))) 
-//    {
-//        UIManager->OnGizmoModeChanged(2);
-//    }
-//
-//}
