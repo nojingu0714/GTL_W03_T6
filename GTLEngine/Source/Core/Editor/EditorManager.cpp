@@ -116,7 +116,6 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
 		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
-		Handle->RenderBoundingBox(World->GetActors());
 		Handle->EndRenderViewport();
 	}
 

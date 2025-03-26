@@ -56,8 +56,6 @@ public:
 	void TickWhenHovered(float DeltaTime);
 	void ProcessCameraMovement(float DeltaTime);
 
-private:
-
 public:
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
