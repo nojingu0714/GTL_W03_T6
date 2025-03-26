@@ -107,9 +107,6 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->PrepareViewport(Viewport);
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
-		Handle->SetFaceMode();
-		Handle->RenderObject(World->GetActors());
-
 		Handle->SetLineMode();
 		if (Viewport.GetCamera()->ProjectionMode == EProjectionMode::Perspective)
 		{
@@ -122,7 +119,8 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 			Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
-		Handle->RenderGizmo(GizmoManager->GetGizmoActor()); // TODO: 메모리 누수중.
+		Handle->RenderObject(World->GetActors());
+		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
 		Handle->EndRenderViewport();
 	}
 

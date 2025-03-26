@@ -10,9 +10,9 @@ class UDirectXHandle;
 enum class EViewPosition : uint32
 {
 	Top,
+	Bottom,
 	Left,
 	Right,
-	Bottom,
 	Front,
 	Back,
 	Perspective
@@ -56,6 +56,7 @@ public:
 	void TickWhenHovered(float DeltaTime);
 	void ProcessCameraMovement(float DeltaTime);
 
+public:
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
 	const D3D11_VIEWPORT& GetViewport() const { return Viewport; }

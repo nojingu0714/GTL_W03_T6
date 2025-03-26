@@ -34,7 +34,7 @@ private:
 template<typename T>
 inline HRESULT UDXDBufferManager::CreateVertexBuffer(const FString& KeyName, const TArray<T>& vertices, FVertexInfo& OutVertexInfo)
 {
-	if (VertexBufferPool.contains(KeyName))
+	if (KeyName != TEXT("") && VertexBufferPool.contains(KeyName))
 	{
 		OutVertexInfo = VertexBufferPool[KeyName];
 		return S_OK;
