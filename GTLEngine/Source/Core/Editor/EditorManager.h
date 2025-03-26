@@ -21,6 +21,7 @@ public:
 	AActor* GetSelectedActor() const { return SelectedActor; }
 	void SetSelectedActor(AActor* InActor) { SelectedActor = InActor; }
 	TArray<FViewport>& GetViewports() { return Viewports; }
+	FViewport* GetSelectedViewport() { return SelectedViewport; }
 
 private:
 	void UpdateHoveredViewport();

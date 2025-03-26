@@ -16,6 +16,7 @@ public:
 	void GizmoPanel();
 	void SceneManagementPanel();
 	void MemoryPanel();
+	void ViewportCameraPanel();
 	virtual void Destroy() override;
 
 private:

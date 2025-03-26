@@ -8,18 +8,9 @@
 
 #include "Engine.h"
 
-#include "Resource/Types.h"
-
-#include "World.h"
-#include "Resource/ResourceManager.h"
-#include "GameFrameWork/Camera.h"
-#include "Components/CameraComponent.h"
-
-#include "GameFrameWork/Shapes/Triangle.h"
-#include "GameFrameWork/Shapes/Sphere.h"
-#include "GameFrameWork/Shapes/Cube.h"
-#include "GameFrameWork/Shapes/Cylinder.h"
-#include "GameFrameWork/Shapes/Cone.h"
+#include "Editor/EditorManager.h"
+#include "Window/Viewport.h"
+#include "Utils/GTLStringLibrary.h"
 
 UControlPanel::UControlPanel()
 	: UUIBase(), CurrentPrimitiveType(0), SpawnNum(1), SceneName("NewScene"), blsOrthogonal(nullptr), 
@@ -45,6 +36,7 @@ void UControlPanel::Tick(float DeltaTime)
     MemoryPanel();
     ImGui::Separator();
 	// CameraSpeed();
+    ViewportCameraPanel();
     ImGui::Separator();
     // GridScale();
     ImGui::Separator();
@@ -127,6 +119,61 @@ void UControlPanel::MemoryPanel()
 {
     ImGui::Text("Allocation Bytes %d", FPlatformMemory::GetAllocationBytes());
     ImGui::Text("Allocation Count %d", FPlatformMemory::GetAllocationCount());
+}
+
+void UControlPanel::ViewportCameraPanel()
+{
+    FViewport* SelectedViewport = UEngine::GetEngine().GetEditorManager()->GetSelectedViewport();
+    if (SelectedViewport)
+    {
+        std::string ViewportName = UGTLStringLibrary::WStringToString(SelectedViewport->GetName());
+        ImGui::Text("Viewport Name : %s", ViewportName.c_str());
+
+        FViewportCamera* ViewportCamera = SelectedViewport->GetCamera();
+        if (ViewportCamera)
+        {
+            ImGui::DragFloat("Camera Speed", &ViewportCamera->Speed, 1.0f, 0.1f, 50.0f);
+            ImGui::DragFloat("Camera FOV", &ViewportCamera->FieldOfView, 1.0f, 0.1f, 180.0f);
+            ImGui::DragFloat("Camera Sensitive", &ViewportCamera->Sensitive, 1.0f, 1.0f, 100.0f);
+
+			/*bool bShowDebugLine = SelectedViewport->GetShowFlags() == EEngineShowFlags::SF_Line;
+            if (ImGui::Checkbox("Spawn debug line", &bShowDebugLine))
+            {
+				if (bShowDebugLine)
+					SelectedViewport->SetShowFlags(EEngineShowFlags::SF_Line);
+				else
+					SelectedViewport->SetShowFlags(EEngineShowFlags::SF_);
+            }*/
+
+
+
+            bool bWireFrame = SelectedViewport->GetViewModeIndex() == EViewModeIndex::VMI_Wireframe;
+            if (ImGui::Checkbox("WireFrame", &bWireFrame))
+            {
+                if (bWireFrame)
+                    SelectedViewport->SetViewModeIndex(EViewModeIndex::VMI_Wireframe);
+                else
+                    SelectedViewport->SetViewModeIndex(EViewModeIndex::VMI_Lit);
+            }
+
+            bool bOrthogonal = ViewportCamera->ProjectionMode == EProjectionMode::Orthogonal;
+            if (ImGui::Checkbox("Orthogonal", &bOrthogonal))
+            {
+                if (bOrthogonal)
+                    ViewportCamera->ProjectionMode = EProjectionMode::Orthogonal;
+                else
+                    ViewportCamera->ProjectionMode = EProjectionMode::Perspective;
+            }
+
+
+            if (ImGui::Combo("View Position", (int*)&ViewportCamera->ViewPosition, "Front\0Back\0Left\0Right\0Top\0Bottom\0\0"))
+            {
+				ViewportCamera->ProjectionMode = EProjectionMode::Orthogonal;
+                
+            }
+
+        }
+    }
 }
 
 void UControlPanel::Destroy() {}
