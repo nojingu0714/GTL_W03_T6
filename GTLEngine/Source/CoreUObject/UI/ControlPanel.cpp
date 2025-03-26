@@ -164,10 +164,41 @@ void UControlPanel::ViewportCameraPanel()
             }
 
 
-            if (ImGui::Combo("View Position", (int*)&ViewportCamera->ViewPosition, "Front\0Back\0Left\0Right\0Top\0Bottom\0\0"))
+            if (ImGui::Combo("View Position", (int*)&ViewportCamera->ViewPosition, "Top\0Left\0Right\0Bottom\0Front\0Back\0Perspective\0\0"))
             {
 				ViewportCamera->ProjectionMode = EProjectionMode::Orthogonal;
-                
+				SelectedViewport->SetViewModeIndex(EViewModeIndex::VMI_Wireframe);
+				switch (ViewportCamera->ViewPosition)
+				{
+				case EViewPosition::Top:
+					ViewportCamera->Location = FVector(0.f, 0.0f, 50.0f);
+					ViewportCamera->Rotation = FRotator(-89.f, 0.f, 0.f);
+					break;
+				case EViewPosition::Bottom:
+					ViewportCamera->Location = FVector(0.f, 0.f, -50.0f);
+					ViewportCamera->Rotation = FRotator(89.f, 0.f, 0.f);
+					break;
+				case EViewPosition::Left:
+					ViewportCamera->Location = FVector(-50.0f, 0.f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, 180.f, 0.f);
+					break;
+				case EViewPosition::Right:
+					ViewportCamera->Location = FVector(50.0f, 0.f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, -89.f, 0.f);
+					break;
+				case EViewPosition::Front:
+					ViewportCamera->Location = FVector(0.f, -50.0f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, 0.f, 0.f);
+					break;
+				case EViewPosition::Back:
+					ViewportCamera->Location = FVector(0.f, 50.0f, 0.f);
+					ViewportCamera->Rotation = FRotator(0.f, 180.f, 0.f);
+					break;
+				default:
+					ViewportCamera->ProjectionMode = EProjectionMode::Perspective;
+					SelectedViewport->SetViewModeIndex(EViewModeIndex::VMI_Lit);
+					break;
+				}
             }
 
         }

@@ -168,6 +168,9 @@ void FViewport::ProcessCameraMovement(float DeltaTime)
 	FVector RightDirection = CameraRotation.TransformRotVecToMatrix(FVector::RightVector);
 	FVector UpDirection = CameraRotation.TransformRotVecToMatrix(FVector::UpVector);
 
+	UE_LOG(LogTemp, Warning, TEXT("%f %f %f"), CameraLocation.X, CameraLocation.Y, CameraLocation.Z);
+	UE_LOG(LogTemp, Warning, TEXT("%f %f %f"), CameraRotation.Pitch, CameraRotation.Yaw, CameraRotation.Roll);
+
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
 
 	if (InputManager->GetKey('W'))

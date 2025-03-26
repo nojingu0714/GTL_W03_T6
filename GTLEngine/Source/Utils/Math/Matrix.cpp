@@ -314,7 +314,7 @@ FMatrix FMatrix::OrthogonalLH(float Width, float Height, float NearPlane, float 
 
 	Result.M[0][0] = 2.0f / Width;
 	Result.M[1][1] = 2.0f / Height;
-	Result.M[2][2] = 1.0f / (FarPlane - NearPlane);
+	Result.M[2][2] = 1.0f / (NearPlane - FarPlane);
 	Result.M[3][2] = -NearPlane / (FarPlane - NearPlane);
 	Result.M[3][3] = 1.0f;
 
