@@ -14,7 +14,8 @@ enum class EViewPosition : uint32
 	Right,
 	Bottom,
 	Front,
-	Back
+	Back,
+	Perspective
 };
 
 struct FViewportCamera
@@ -32,7 +33,7 @@ struct FViewportCamera
 	float Sensitive;
 	float MaxPitch;
 	float MinPitch;
-	EViewPosition ViewPosition;
+	EViewPosition ViewPosition = EViewPosition::Perspective;
 };
 
 // 엔진에 TArray로 저장.

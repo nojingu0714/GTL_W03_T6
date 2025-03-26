@@ -111,8 +111,11 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->RenderObject(World->GetActors());
 
 		Handle->SetLineMode();
-		Handle->RenderWorldPlane(Viewport.GetCamera());
-		Handle->RenderWorldXYZAxis();
+		if (Viewport.GetCamera()->ProjectionMode == EProjectionMode::Perspective)
+		{
+			Handle->RenderWorldPlane(Viewport.GetCamera());
+			Handle->RenderWorldXYZAxis();
+		}
 		Handle->RenderBoundingBox(World->GetActors());
 
 		if (GetFlag(Viewport.ShowFlags, EEngineShowFlags::SF_Line))
