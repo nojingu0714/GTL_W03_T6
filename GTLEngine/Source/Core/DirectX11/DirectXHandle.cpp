@@ -638,10 +638,7 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 
 // quad를 그립니다.
 void UDirectXHandle::RenderViewport(const FViewport& InViewport, bool isDepthStencil)
-{
-	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
-	ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
-	
+{	
 	if (!isDepthStencil)
 	{
 		DXDDeviceContext->PSSetShaderResources(0, 1, GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
@@ -673,9 +670,7 @@ void UDirectXHandle::RenderViewport(const FViewport& InViewport, bool isDepthSte
 		Buffer->height = InViewport.GetViewport().Height / (float)windowInfo.Height * 2;
 	}
 	DXDDeviceContext->Unmap(CbViewportRatio, 0);
-
-
-	Context->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+	DXDDeviceContext->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
 }
 
 HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)

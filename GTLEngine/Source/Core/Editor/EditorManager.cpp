@@ -10,7 +10,7 @@
 #include "Window/Splitter.h"
 
 
-void FEditorManager::Init(const FWindowInfo& InWindowInfo)
+void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handle)
 {
 	/*const int num = 2;
 	const int W = InWindowInfo.Width / num;
@@ -31,16 +31,16 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo)
 	//Viewports.push_back(DefaultViewport);
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
 	Viewports.push_back(DefaultViewport);
 
 	// 뷰포트 클라이언트 생성
@@ -104,10 +104,9 @@ void FEditorManager::Tick(float DeltaTime)
 	}
 }
 
-void FEditorManager::Draw()
+void FEditorManager::Draw(UDirectXHandle* Handle)
 {
 	// TODO : DXDHANDLE에서 하도록 옮기기.
-	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	UWorld* World = UEngine::GetEngine().GetWorld();
 	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 

@@ -3,6 +3,8 @@
 #include "Math/Rotator.h"
 #include "Resource/Types.h"
 
+class UDirectXHandle;
+
 struct FViewportCamera
 {
 	FVector Location;
@@ -26,7 +28,7 @@ class FViewport
 {
 public:
 	FViewport() = default;
-	HRESULT Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight);
+	HRESULT Init(UDirectXHandle* Handle, const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight);
 	void Destroy();
 
 	void SetDepthcomparisonMode(EDepthComparisonMode InDepthComparisonMode);

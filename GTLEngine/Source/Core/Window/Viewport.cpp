@@ -8,7 +8,7 @@
 
 TArray<FRay> FViewport::DebugRays;
 
-HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight)
+HRESULT FViewport::Init(UDirectXHandle* Handle, const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight)
 {
 	Name = InName;
 	Viewport.TopLeftX = InX;
@@ -18,7 +18,6 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	Viewport.MinDepth = 0.0f;
 	Viewport.MaxDepth = 1.0f;
 	
-	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	HRESULT hr = S_OK;
 
 	// 컬러 버퍼.

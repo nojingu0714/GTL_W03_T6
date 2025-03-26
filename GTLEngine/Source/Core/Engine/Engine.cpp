@@ -73,7 +73,7 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 
     // 에디터 매니저 추가.
 	EditorManager = new FEditorManager();
-	EditorManager->Init(InWindowInfo);
+	EditorManager->Init(InWindowInfo, DirectX11Handle);
 
     // 월드 추가.
     //ResourceManager->LoadScene("DefaultScene");
@@ -117,7 +117,11 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-	EditorManager->Draw();
+    for (FViewport& ViewPort : EditorManager->GetViewports())
+    {
+		EditorManager->Draw(DirectX11Handle);
+    }
+
 
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();

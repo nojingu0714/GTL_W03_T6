@@ -7,17 +7,20 @@ class FGizmoManager;
 class FSplitterH;
 class FSplitterV;
 
+class UDirectXHandle;
+
 class FEditorManager
 {
 public:
-	void Init(const FWindowInfo& InWindowInfo);
+	void Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handle);
 	void Tick(float TickTime);
-	void Draw();
+	void Draw(UDirectXHandle* Handle);
 	void Destroy();
 
 
 	AActor* GetSelectedActor() const { return SelectedActor; }
 	void SetSelectedActor(AActor* InActor) { SelectedActor = InActor; }
+	TArray<FViewport>& GetViewports() { return Viewports; }
 
 private:
 	void UpdateHoveredViewport();
