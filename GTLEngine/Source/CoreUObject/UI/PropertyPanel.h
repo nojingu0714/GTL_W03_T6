@@ -17,6 +17,8 @@ private:
 	void WorldCoordCheckbox();
 	void PropertiesInspector();
 
+	void DrawSMActorProperties(AActor* SelectedActor);
+
 
 private:
 	float Location[3] = { 0, 0, 0 };

@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 
+class UStaticMesh;
 class UStaticMeshComponent;
 
 class AStaticMeshActor : public AActor
@@ -14,6 +15,7 @@ public:
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
 
+	void SetStaticMesh(UStaticMesh* InStaticMesh);
 	void SetStaticMesh(UStaticMeshComponent* InStaticMeshComponent);
 
 	UStaticMeshComponent* GetStaticMeshComponent() const { return StaticMeshComponent; }

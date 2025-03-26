@@ -10,20 +10,23 @@ class FObjManager;
 
 
 */
-class UAssetManager : public UObject
+class FAssetManager
 {
-	DECLARE_CLASS(UAssetManager, UObject)
 
-
-
-public:
-	UAssetManager();
-	virtual void Destroy() override;
+	static TArray<FString> ObjFileNames;
 
 public:
-	UAssetManager& GetInstance()
+	void InitAssetManager();
+
+	TArray<FString> GetObjFileNames() const { return ObjFileNames; }
+
+private:
+	void PreLoadObjFiles();
+
+public:
+	static FAssetManager& Get()
 	{
-		static UAssetManager Instance;
+		static FAssetManager Instance;
 		return Instance;
 	}
 

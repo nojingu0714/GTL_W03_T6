@@ -13,8 +13,4 @@ public:
 	static void SaveScene(const std::string& InSceneName, const std::string& InPath = "Contents/Scene/");
 	static void LoadScene(const std::string& InSceneName);
 
-private:
-	// 현재 Active 월드 포인터.
-	UWorld* World;
-
 };

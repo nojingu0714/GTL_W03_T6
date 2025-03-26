@@ -7,6 +7,7 @@
 #include "Input/InputManager.h"
 #include "UI/UIManager.h"
 #include "Editor/EditorManager.h"
+#include "Asset/AssetManager.h"
 #include "Asset/SceneManager.h"
 
 #include "World.h"
@@ -21,6 +22,8 @@
 bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 {
     WindowInfo = InWindowInfo;
+
+    FAssetManager::Get().InitAssetManager();
 
     DirectX11Handle = new UDirectXHandle();
     HRESULT hr = DirectX11Handle->CreateDirectX11Handle(WindowInfo.WindowHandle);
