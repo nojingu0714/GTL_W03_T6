@@ -29,10 +29,10 @@ FStaticMesh* FObjManager::LoadObjStaticMeshAsset(const FString& PathFileName)
 	FObjInfo NewObj;
 	FObjImporter::ParseObjFile(PathName, FileName, NewObj);
 
-	SaveObjToBinary("TestBin",NewObj);
+	//SaveObjToBinary("TestBin",NewObj);
 
-	FObjInfo NewObj2;
-	LoadObjFromBinary("TestBin", NewObj2);
+	//FObjInfo NewObj2;
+	//LoadObjFromBinary("TestBin", NewObj2);
 
 	FStaticMesh* NewStaticMesh = FObjManager::ConvertObjToStaticMesh(NewObj);
 	ObjStaticMeshMap.emplace(NewStaticMesh->PathFileName, NewStaticMesh);

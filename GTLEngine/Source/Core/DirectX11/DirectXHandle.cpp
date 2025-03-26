@@ -1031,12 +1031,12 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 				DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
 			}
 
-			ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
-			DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
 
 		}
 		
 		DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+		ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
+		DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
 
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;

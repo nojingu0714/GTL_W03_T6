@@ -5,7 +5,6 @@
 #include "Input/InputManager.h"
 #include "CoreUObject/GameFrameWork/Actor.h"
 #include "GameFrameWork/StaticMeshActor.h"
-#include "DirectX11/DirectXHandle.h"
 
 TArray<FRay> FViewport::DebugRays;
 
