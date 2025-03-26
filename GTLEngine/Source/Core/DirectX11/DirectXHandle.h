@@ -51,7 +51,6 @@ public:
 	void RenderGizmo(AGizmoActor* Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
-	void RenderLines(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);
 
 public:

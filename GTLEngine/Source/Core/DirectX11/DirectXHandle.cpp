@@ -435,17 +435,13 @@ void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
 
 	if (!Camera)
 		return;
-    /** state check
-    D3D11_PRIMITIVE_TOPOLOGY topology;
-    DXDDeviceContext->IAGetPrimitiveTopology(&topology);
-    if ( topology != D3D11_PRIMITIVE_TOPOLOGY_LINELIST )
-        DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-    */
 
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("DefaultVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("DefaultPS")), NULL, 0);
+	SetLineMode();
 
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("DefaultVS")));
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("LineVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("LinePS")), NULL, 0);
+
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("LineVS")));
 
     // set position
 	float s = 1.F;//Camera->GridScale;
@@ -464,9 +460,9 @@ void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
     }
     DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexPNCT);
+    uint Stride = sizeof(FVertexPC);
     uint offset = 0;
-	FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("Grid"));
+	FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldGrid"));
     ID3D11Buffer* VB = Info.VertexBuffer;
     uint Num = Info.NumVertices;
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
@@ -1070,11 +1066,6 @@ void UDirectXHandle::RenderObject(const TArray<AActor*> Actors)
     // 현재 액터가 가진 Component 타입 별로 분석해서 셰이더 적용.
     // 컴포넌트에서 정보 가져와서 Constant 버퍼 업데이트.
     // 액터에 해당하는 오브젝트 렌더링.
-}
-
-void UDirectXHandle::RenderLines(const TArray<AActor*> Actors)
-{
-	
 }
 
 void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
