@@ -111,11 +111,7 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-    for (FViewport& ViewPort : EditorManager->GetViewports())
-    {
-		EditorManager->Draw(DirectX11Handle);
-    }
-
+	EditorManager->Draw(DirectX11Handle);
 
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();
