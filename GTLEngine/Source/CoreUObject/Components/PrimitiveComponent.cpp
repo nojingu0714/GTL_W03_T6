@@ -17,10 +17,10 @@ void UPrimitiveComponent::Destroy()
 {
 }
 
-//void UPrimitiveComponent::Serialize(bool bIsLoading, json::JSON Handle)
-//{
-//
-//}
+void UPrimitiveComponent::Serialize()
+{
+
+}
 
 FBoundingBox UPrimitiveComponent::GetAABB(const FMatrix& LocalToWorld) const {
     FVector min = FVector(FLT_MAX, FLT_MAX, FLT_MAX);

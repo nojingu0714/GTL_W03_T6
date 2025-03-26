@@ -977,11 +977,14 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 	
 	FStaticMesh* MeshInfo = FObjManager::LoadObjStaticMeshAsset(Comp->GetStaticMesh()->GetAssetPathFileName());
 
+
 	// 각 섹션별로 처리
 	for (const FStaticMeshSection& Section : MeshInfo->Sections)
 	{
 		
 		UMaterial* Mat = FMaterialManager::LoadMaterial(Section.MaterialName);
+		
+		ID3D11ShaderResourceView* DiffuseSRV = nullptr;
 
 		if (Mat)
 		{
@@ -1025,8 +1028,7 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 			};*/
 			if (DiffuseTextureMap)
 			{
-				ID3D11ShaderResourceView* DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
-				DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+				DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
 			}
 
 			ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
@@ -1034,6 +1036,8 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 
 		}
 		
+		DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;
 		FIndexInfo IndexInfo;

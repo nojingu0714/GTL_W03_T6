@@ -344,5 +344,8 @@ public:
 
     static UStaticMesh* LoadObjStaticMesh(const FString& PathFileName);
 
+    static void SaveObjToBinary(const std::string& BinFileName, const FObjInfo& ObjInfo);
+
+    static void LoadObjFromBinary(const std::string& BinFileName, FObjInfo& ObjInfo);
 };
 

@@ -11,6 +11,7 @@ public:
 
 	virtual void TickComponent(float TickTime) override;
 	virtual void Destroy() override;
+	virtual void Serialize();
 
 public:
 
