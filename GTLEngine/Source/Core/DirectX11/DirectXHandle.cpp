@@ -496,6 +496,9 @@ void UDirectXHandle::RenderWorldXYZAxis()
 	uint Num = Info.NumVertices;
 	DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
 	DXDDeviceContext->Draw(Num, 0);
+
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
+
 }
 
 void UDirectXHandle::RenderAABB(FBoundingBox InBox) {
