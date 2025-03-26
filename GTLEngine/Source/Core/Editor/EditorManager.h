@@ -8,6 +8,7 @@ class FSplitterH;
 class FSplitterV;
 
 class UDirectXHandle;
+struct FVector2;
 
 class FEditorManager
 {
@@ -21,6 +22,11 @@ public:
 	AActor* GetSelectedActor() const { return SelectedActor; }
 	void SetSelectedActor(AActor* InActor) { SelectedActor = InActor; }
 	TArray<FViewport>& GetViewports() { return Viewports; }
+
+	FVector2 GetSplitterPosition() const;
+	void SetSplitterPosition(FVector2 Position);
+
+	FVector2 GetSplitterRatio() const;
 
 private:
 	void UpdateHoveredViewport();
@@ -38,7 +44,6 @@ private:
 	FGizmoManager* GizmoManager;
 
 	AActor* SelectedActor;
-
 
 	FSplitterH* SplitterH;
 	FSplitterV* SplitterV;

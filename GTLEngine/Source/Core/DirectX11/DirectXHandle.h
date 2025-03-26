@@ -109,8 +109,9 @@ private:
 	////////////////////////////////////////
 	// Viewport Renderings
 public:
-	void PrepareViewport(const FViewport& InViewport);
+	void PrepareViewport(FViewport& InViewport);
 	void RenderViewport(FViewport& InViewport, bool isDepthStencil = false);
+	void EndRenderViewport();
 
 private:
 	HRESULT UpdateViewportBuffer(const FViewport& InViewport);

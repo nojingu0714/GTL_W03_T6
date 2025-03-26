@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Splitter.h"
 #include "Viewport.h"
+#include "Engine/Engine.h"
 
 void FSplitter::Init(FViewport* InTopLeft, FViewport* InTopRight, FViewport* InBottomLeft, FViewport* InBottomRight)
 {
@@ -10,18 +11,45 @@ void FSplitter::Init(FViewport* InTopLeft, FViewport* InTopRight, FViewport* InB
 		BottomLeft = InBottomLeft;
 		BottomRight = InBottomRight;
 
+		MinViewportWidth = 100;
+		MinViewportHeight = 100;
+
 		bIsDragging = false;
 
 		CalculateInitialSplitterPosition();
 		SplitterThickness = 10.f;
+		UpdateSplitterRatio();
 	}
+}
+
+void FSplitter::SetSplitterPosition(FVector2 Position)
+{
+	SplitterPosition = Position;
+	UpdateSplitterRatio();
+}
+
+FVector2 FSplitter::GetPosition() const
+{
+	return SplitterPosition;
+}
+
+void FSplitter::UpdateSplitterRatio()
+{
+	/*float TotalWidth = TopLeft->GetViewport().Width + TopRight->GetViewport().Width;
+	float TotalHeight = TopLeft->GetViewport().Height + BottomLeft->GetViewport().Height;*/
+
+	SplitterRatio.X = SplitterPosition.X / UEngine::GetEngine().GetWindowInfo().Width;
+	SplitterRatio.Y = SplitterPosition.Y / UEngine::GetEngine().GetWindowInfo().Height;;
 }
 
 void FSplitterH::OnDrag(FVector2 Position)
 {
+	int32 WindowHeight = UEngine::GetEngine().GetWindowInfo().Height;
+	Position.Y = FMath::Clamp((int32)Position.Y, MinViewportHeight, WindowHeight - MinViewportHeight);
+
+	
 	if (TopLeft && BottomLeft && TopRight && BottomRight)
 	{
-		UINT WindowHeight = TopLeft->GetViewport().Height + BottomLeft->GetViewport().Height;
 		// 상단 뷰포트의 높이 조절 
 		UINT NewHeight = static_cast<UINT>(Position.Y);
 		TopLeft->ResizeViewport(TopLeft->GetViewport().Width, NewHeight);
@@ -34,7 +62,7 @@ void FSplitterH::OnDrag(FVector2 Position)
 		BottomLeft->ResizeViewport(BottomLeft->GetViewport().Width, NewHeightBottom);
 		BottomRight->ResizeViewport(BottomRight->GetViewport().Width, NewHeightBottom);
 
-		SetSplitterPosition(Position);
+		SetSplitterPosition(FVector2(SplitterPosition.X, Position.Y));
 	}
 }
 
@@ -52,9 +80,11 @@ void FSplitterH::CalculateInitialSplitterPosition()
 
 void FSplitterV::OnDrag(FVector2 Position)
 {
+	int32 WindowWidth = UEngine::GetEngine().GetWindowInfo().Width;
+	Position.X = FMath::Clamp((int32)Position.X, MinViewportWidth, WindowWidth - MinViewportWidth);
+
 	if (TopLeft && BottomLeft && TopRight && BottomRight)
 	{
-		UINT WindowWidth = TopLeft->GetViewport().Width + TopRight->GetViewport().Width;
 		// 좌측 뷰포트의 너비를 조절
 		UINT NewWidth = static_cast<UINT>(Position.X);
 		TopLeft->ResizeViewport(NewWidth, TopLeft->GetViewport().Height);
@@ -67,7 +97,7 @@ void FSplitterV::OnDrag(FVector2 Position)
 		TopRight->ResizeViewport(NewWidthRight, TopRight->GetViewport().Height);
 		BottomRight->ResizeViewport(NewWidthRight, BottomRight->GetViewport().Height);
 
-		SetSplitterPosition(Position);
+		SetSplitterPosition(FVector2(Position.X, SplitterPosition.Y));
 	}
 }
 

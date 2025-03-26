@@ -31,16 +31,16 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handl
 	//Viewports.push_back(DefaultViewport);
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(Handle, TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(Handle, TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_1"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 );
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(Handle, TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_2"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(Handle, TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
 	// 뷰포트 클라이언트 생성
@@ -51,11 +51,11 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handl
 
 	//Splitter 생성 
 	SplitterH = new FSplitterH();
-	SplitterH->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
+	SplitterH->Init(&Viewports[0], &Viewports[1], &Viewports[2], &Viewports[3]);
 	
 
 	SplitterV = new FSplitterV();
-	SplitterV->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
+	SplitterV->Init(&Viewports[0], &Viewports[1], &Viewports[2], &Viewports[3]);
 
 	GizmoManager = new FGizmoManager();
 	GizmoManager->Init();
@@ -97,7 +97,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 
 	// viewport (Texture2D) 에 그리기.
-	for (const FViewport& Viewport : Viewports)
+	for ( FViewport& Viewport : Viewports)
 	{
 		Handle->PrepareViewport(Viewport);
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
@@ -113,6 +113,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->RenderObject(World->GetActors());
 		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
 		Handle->RenderBoundingBox(World->GetActors());
+		Handle->EndRenderViewport();
 	}
 
 	Handle->PrepareWindow();
@@ -129,6 +130,22 @@ void FEditorManager::Destroy()
 	{
 		Viewport.Destroy();
 	}
+}
+
+FVector2 FEditorManager::GetSplitterPosition() const
+{
+	return FVector2(SplitterV->GetPosition().X, SplitterH->GetPosition().Y);
+}
+
+void FEditorManager::SetSplitterPosition(FVector2 Position)
+{
+	SplitterH->SetSplitterPosition(Position);
+	SplitterV->SetSplitterPosition(Position);
+}
+
+FVector2 FEditorManager::GetSplitterRatio() const
+{
+	return FVector2(SplitterV->GetSplitterRatio().X, SplitterH->GetSplitterRatio().Y);
 }
 
 void FEditorManager::UpdateHoveredViewport()
