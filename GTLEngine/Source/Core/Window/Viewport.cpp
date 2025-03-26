@@ -59,7 +59,7 @@ HRESULT FViewport::Init(UDirectXHandle* Handle, const FString& InName, HWND hWnd
 		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
 		return hr;
 	}
-	hr = Handle->AddDepthStencilView(InName, hWnd, InWidth, InHeight);
+	hr = Handle->AddDepthStencilView(InName, InWidth, InHeight);
 	if (FAILED(hr))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
@@ -84,10 +84,13 @@ void FViewport::MoveViewport(int InX, int InY)
 	Viewport.TopLeftY = InY;
 }
 
+// handle에서 update 필요함.
 void FViewport::ResizeViewport(UINT InWidth, UINT InHeight)
 {
 	Viewport.Width = InWidth;
 	Viewport.Height = InHeight;
+
+	bIsResized = true;
 }
 
 void FViewport::SetProjectionMatrix(const FMatrix& InProjectionMatrix)

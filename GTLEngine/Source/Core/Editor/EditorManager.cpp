@@ -108,6 +108,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 {
 	// TODO : DXDHANDLE에서 하도록 옮기기.
 	UWorld* World = UEngine::GetEngine().GetWorld();
+
 	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 
 	// viewport (Texture2D) 에 그리기.

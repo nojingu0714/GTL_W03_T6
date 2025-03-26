@@ -53,7 +53,7 @@ public:
 	FRay GetRayOnWorld(int InClientMouseX, int InClientMouseY);
 
 	bool Contains(int x, int y) const;
-
+	bool bIsResized = false;
 
 private:
 	FString Name;
