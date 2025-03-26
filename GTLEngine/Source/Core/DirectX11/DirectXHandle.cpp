@@ -513,17 +513,21 @@ void UDirectXHandle::RenderWorldXYZAxis()
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-	uint Stride = sizeof(FVertexPC);
-	uint offset = 0;
-	FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
-	ID3D11Buffer* VB = Info.VertexBuffer;
-	uint Num = Info.NumVertices;
-	DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
-	DXDDeviceContext->Draw(Num, 0);
-
-	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
+    uint Stride = sizeof(FVertexPNCT);
+    uint offset = 0;
+    FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
+    ID3D11Buffer* VB = Info.VertexBuffer;
+    uint Num = Info.NumVertices;
+    DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
+    DXDDeviceContext->Draw(Num, 0);
 
 }
+
+void UDirectXHandle::EndRenderViewport()
+{
+	DXDDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+}
+
 
 void UDirectXHandle::RenderAABB(FBoundingBox InBox) {
     // Begin Object Matrix Update. 
@@ -708,12 +712,6 @@ void UDirectXHandle::RenderViewport(FViewport& InViewport, bool isDepthStencil)
 	DXDDeviceContext->Unmap(CbViewportRatio, 0);
 	
 	DXDDeviceContext->Draw(BufferManager->GetVertexBuffer(TEXT("Quad")).NumVertices, 0);
-
-}
-
-void UDirectXHandle::EndRenderViewport()
-{
-	DXDDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 HRESULT UDirectXHandle::UpdateViewportBuffer(const FViewport& InViewport)
