@@ -22,6 +22,7 @@ public:
 private:
 	void UpdateHoveredViewport();
 	void UpdateSelectedViewport();
+	void UpdateSplitterDragging();
 	//void CastRay(FRay Ray);
 
 	//FViewportClient* ViewportClient;

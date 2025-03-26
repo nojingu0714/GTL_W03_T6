@@ -66,25 +66,10 @@ void FEditorManager::Tick(float DeltaTime)
 {
 	UpdateHoveredViewport();
 	UpdateSelectedViewport();
+	
+	UpdateSplitterDragging();
 
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
-
-	if (InputManager->GetMouseButton(UInputManager::EMouseButton::LEFT))
-	{
-		int32 MouseX = InputManager->GetMouseClientX();
-		int32 MouseY = InputManager->GetMouseClientY();
-		FVector2 MousePosition = FVector2(MouseX, MouseY);
-		if (SplitterH->IsMouseOverSplitter(MousePosition))
-		{
-			SplitterH->OnDrag(MousePosition);
-		}
-		if (SplitterV->IsMouseOverSplitter(MousePosition))
-		{
-			SplitterV->OnDrag(MousePosition);
-		}
-	}
-
-
 	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
 	{
 		InputManager->LockMouse();
@@ -184,3 +169,51 @@ void FEditorManager::UpdateSelectedViewport()
 		}
 	}
 }
+
+void FEditorManager::UpdateSplitterDragging()
+{
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+
+	int32 MouseX = InputManager->GetMouseClientX();
+	int32 MouseY = InputManager->GetMouseClientY();
+	FVector2 MousePosition = FVector2(MouseX, MouseY);
+
+	if (InputManager->GetMouseButton(UInputManager::EMouseButton::LEFT))
+	{
+		// 드래그 되고 있지 않은 경우
+		if (false == SplitterH->bIsDragging && false == SplitterV->bIsDragging)
+		{
+			// 드래그 시작
+			if (SplitterH->IsMouseOverSplitter(MousePosition))
+			{
+				SplitterH->bIsDragging = true;
+				SplitterH->OnDrag(MousePosition);
+			}
+			if (SplitterV->IsMouseOverSplitter(MousePosition))
+			{
+				SplitterV->bIsDragging = true;
+				SplitterV->OnDrag(MousePosition);
+			}
+		}
+		// 드래그 중인 경우
+		else
+		{
+			if (SplitterH->bIsDragging)
+			{
+				SplitterH->OnDrag(MousePosition);
+			}
+			if (SplitterV->bIsDragging)
+			{
+				SplitterV->OnDrag(MousePosition);
+			}
+		}
+
+	}
+	// 마우스 버튼이 떼어진 경우 드래그 종료
+	else
+	{
+		SplitterH->bIsDragging = false;
+		SplitterV->bIsDragging = false;
+	}
+}
+		
