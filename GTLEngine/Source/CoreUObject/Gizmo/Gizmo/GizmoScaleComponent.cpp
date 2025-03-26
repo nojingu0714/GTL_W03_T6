@@ -3,7 +3,7 @@
 
 #include "Asset/ObjManager.h"
 
-UGizmoScaleComponent::UGizmoScaleComponent()
+UGizmoScaleMesh::UGizmoScaleMesh()
 {
 	SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Resource/Shape/GizmoScale.obj")));
 }

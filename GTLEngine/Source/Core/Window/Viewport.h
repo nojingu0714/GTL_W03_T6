@@ -10,11 +10,12 @@ class UDirectXHandle;
 enum class EViewPosition : uint32
 {
 	Top,
+	Bottom,
 	Left,
 	Right,
-	Bottom,
 	Front,
-	Back
+	Back,
+	Perspective
 };
 
 struct FViewportCamera
@@ -32,7 +33,7 @@ struct FViewportCamera
 	float Sensitive;
 	float MaxPitch;
 	float MinPitch;
-	EViewPosition ViewPosition;
+	EViewPosition ViewPosition = EViewPosition::Perspective;
 };
 
 // 엔진에 TArray로 저장.
@@ -55,6 +56,7 @@ public:
 	void TickWhenHovered(float DeltaTime);
 	void ProcessCameraMovement(float DeltaTime);
 
+public:
 	EDepthComparisonMode GetDepthComparisonMode() const { return DepthComparisonMode; }
 	ERasterizerMode GetRasterizerMode() const { return RasterizerMode; }
 	const D3D11_VIEWPORT& GetViewport() const { return Viewport; }
@@ -68,8 +70,6 @@ public:
 	bool bIsResized = false;
 
 public:
-	EEngineShowFlags GetShowFlags() const { return ShowFlags; }
-	void SetShowFlags(EEngineShowFlags InShowFlags) { ShowFlags = InShowFlags; }
 	EViewModeIndex GetViewModeIndex() const { return ViewModeIndex; }
 	void SetViewModeIndex(EViewModeIndex InViewModeIndex) { ViewModeIndex = InViewModeIndex; }
 
@@ -81,8 +81,10 @@ private:
 	D3D11_VIEWPORT Viewport;
 	FViewportCamera* Camera;
 
-	EEngineShowFlags ShowFlags;
 	EViewModeIndex ViewModeIndex;
+
+public:
+	EEngineShowFlags ShowFlags = EEngineShowFlags::SF_StaticMesh;
 	
 public:
 	static TArray<FRay> DebugRays;

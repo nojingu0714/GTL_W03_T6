@@ -1,123 +1,108 @@
 #include "pch.h"
 #include "GizmoRotate.h"
+#include "Asset/ObjManager.h"
+#include "CoreUObject/Components/StaticMeshComponent.h"
 
-#include "Input/InputManager.h"
-#include "CoreUObject/GameFrameWork/Camera.h"
 
-UGizmoRotate::UGizmoRotate() : UGizmoBase() {
+AGizmoRotate::AGizmoRotate() : AGizmoBase() {
 }
 
-void UGizmoRotate::Init(EAxis axis, AActor* Target) {
-	this->axis = axis;
-	this->Target = Target;
-	GizmoMode = EGizmoModeIndex::GMI_GizmoRotate;
-	FVector Min = FVector(-0.120000f, -2.170000f, -2.170000f);	//하드코딩 min, max
-	FVector Max = FVector(0.120000f, 2.170000f, 2.170000f);
+void AGizmoRotate::Init() {
+	// Rendering용으로 사용할 StaticMeshComponent 생성.
+	UStaticMeshComponent* GizmoRotateMeshX = AddComponent<UStaticMeshComponent>(this);
+	GizmoRotateMeshX->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Resource/Shape/GizmoRotateNormalized.obj")));
+	GizmoRotateMeshX->SetRelativeRotation(FRotator(90, 0, 0));
+	GizmoRotateMeshX->SetupAttachment(RootComponent);
 
-	//X축 기준
-	OriginalAABB[0] = FVector(Min.X, Min.Y, Min.Z);
-	OriginalAABB[1] = FVector(Max.X, Min.Y, Min.Z);
-	OriginalAABB[2] = FVector(Min.X, Max.Y, Min.Z);
-	OriginalAABB[3] = FVector(Max.X, Max.Y, Min.Z);
-	OriginalAABB[4] = FVector(Min.X, Min.Y, Max.Z);
-	OriginalAABB[5] = FVector(Max.X, Min.Y, Max.Z);
-	OriginalAABB[6] = FVector(Min.X, Max.Y, Max.Z);
-	OriginalAABB[7] = FVector(Max.X, Max.Y, Max.Z);
-	GizmoViewType = EGizmoViewType::XRotate;
+	UStaticMeshComponent* GizmoRotateMeshY = AddComponent<UStaticMeshComponent>(this);
+	GizmoRotateMeshY->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Resource/Shape/GizmoRotateNormalized.obj")));
+	GizmoRotateMeshY->SetRelativeRotation(FRotator(0, 0, -90));
+	GizmoRotateMeshY->SetupAttachment(RootComponent);
 
-	switch (axis) {
-	case EAxis::X:
-		break;
-	case EAxis::Y:
-		for (uint32 i = 0; i < 8; ++i)
-			OriginalAABB[i] = FVector(OriginalAABB[i].Y, OriginalAABB[i].X, OriginalAABB[i].Z);
-		GizmoViewType = EGizmoViewType::YRotate;
-		break;
-	case EAxis::Z:
-		for (uint32 i = 0; i < 8; ++i)
-			OriginalAABB[i] = FVector(OriginalAABB[i].Z, OriginalAABB[i].Y, OriginalAABB[i].X);
-		GizmoViewType = EGizmoViewType::ZRotate;
-		break;
-	}
+	UStaticMeshComponent* GizmoRotateMeshZ = AddComponent<UStaticMeshComponent>(this);
+	GizmoRotateMeshZ->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Resource/Shape/GizmoRotateNormalized.obj")));
+	GizmoRotateMeshZ->SetRelativeRotation(FRotator(0, 0, 0));
+	GizmoRotateMeshZ->SetupAttachment(RootComponent);
 }
 
-void UGizmoRotate::Tick(float TickTime)
+void AGizmoRotate::Tick(float TickTime)
 {
-	UGizmoBase::Tick(TickTime);
+	AGizmoBase::Tick(TickTime);
 }
 
-void UGizmoRotate::Destroy()
+void AGizmoRotate::Destroy()
 {
-	UGizmoBase::Destroy();
+	AGizmoBase::Destroy();
 }
 
-void UGizmoRotate::OnClick(int mx, int my)
+void AGizmoRotate::OnClick(int mx, int my)
 {
 	startMouseX = mx;
 	startMouseY = my;
 }
 
-void UGizmoRotate::OnDragTick(int mx, int my, int dmx, int dmy)
+void AGizmoRotate::OnDragTick(FVector2 PointNDC, FVector2 DeltaNDC)
 {
-	// Rotation Gizmo의 방향으로 움직이게 수정
-	FRotator ActorRotation = Target->GetActorRotation();
-	const float sensitive = 1.f;
-	FVector RotationAxis;
-	switch (axis) {
-	case EAxis::X:
-		RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(1, 0, 0));
-		break;
-	case EAxis::Y:
-		RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(0,1,0));
-		break;
-	case EAxis::Z:
-		RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(0,0,1));
-		break;
-	}
+	//// Rotation Gizmo의 방향으로 움직이게 수정
+	//FRotator ActorRotation = Target->GetActorRotation();
+	//const float sensitive = 1.f;
+	//FVector RotationAxis;
+	//switch (axis) {
+	//case EAxis::X:
+	//	RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(1, 0, 0));
+	//	break;
+	//case EAxis::Y:
+	//	RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(0,1,0));
+	//	break;
+	//case EAxis::Z:
+	//	RotationAxis = ActorRotation.TransformRotVecToMatrix(FVector(0,0,1));
+	//	break;
+	//}
 
-	// screen 상에서의 회전.
-	FMatrix view = UEngine::GetEngine().GetWorld()->GetViewMatrix();
-	FMatrix proj = UEngine::GetEngine().GetWorld()->GetProjectionMatrix();
-	float x = mx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width)*2 - 1.0f;
-	float y = my / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height)*(-2) + 1.0f;
-	float dx = dmx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width);
-	float dy = -dmy / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height);
-	FVector MousePosNDC(x, y, 0);
-	FVector MouseDeltaPosNDC(dx, dy, 0);
-	FVector4 TargetPosNDC4((view * proj).TransformVector4(FVector4(Target->GetActorLocation(), 1.f)));
-	FVector TargetPosNDC = TargetPosNDC4 / TargetPosNDC4.W;
-	TargetPosNDC.Z = 0;
-	FVector Displacement = MousePosNDC - TargetPosNDC;
-	FVector RotationDirection = Displacement.Cross(MouseDeltaPosNDC); // z > 0 for clockwise, z < 0 for counter-clockwise.
+	//// screen 상에서의 회전.
+	//FMatrix view = UEngine::GetEngine().GetWorld()->GetViewMatrix();
+	//FMatrix proj = UEngine::GetEngine().GetWorld()->GetProjectionMatrix();
+	//float x = mx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width)*2 - 1.0f;
+	//float y = my / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height)*(-2) + 1.0f;
+	//float dx = dmx / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Width);
+	//float dy = -dmy / static_cast<float>(UEngine::GetEngine().GetWindowInfo().Height);
+	//FVector MousePosNDC(x, y, 0);
+	//FVector MouseDeltaPosNDC(dx, dy, 0);
+	//FVector4 TargetPosNDC4((view * proj).TransformVector4(FVector4(Target->GetActorLocation(), 1.f)));
+	//FVector TargetPosNDC = TargetPosNDC4 / TargetPosNDC4.W;
+	//TargetPosNDC.Z = 0;
+	//FVector Displacement = MousePosNDC - TargetPosNDC;
+	//FVector RotationDirection = Displacement.Cross(MouseDeltaPosNDC); // z > 0 for clockwise, z < 0 for counter-clockwise.
 
-	// direction of axis : toward or backward the screen.
-    FVector AxisNDC = (view * proj).TransformVector4(FVector4(RotationAxis, 0.f)).xyz();
-	RotationDirection.Z *= AxisNDC.Z;
+	//// direction of axis : toward or backward the screen.
+ //   FVector AxisNDC = (view * proj).TransformVector4(FVector4(RotationAxis, 0.f)).xyz();
+	//RotationDirection.Z *= AxisNDC.Z;
 
-	// slow rotation when the cursor is far from the gizmo.
-	RotationDirection.Z /= Displacement.LengthSquared();
+	//// slow rotation when the cursor is far from the gizmo.
+	//RotationDirection.Z /= Displacement.LengthSquared();
 
-	// quaternions.
-	RotationAxis.Normalize();
-	FVector v = RotationAxis * sin(RotationDirection.Z * sensitive);
-	FQuat RotationQuat(v.X, v.Y, v.Z, cos(RotationDirection.Z * sensitive));
-	//RotationQuat.Normalize(); // already normalized.
-	FQuat PreviousQuat = Target->GetActorRotation().Quaternion();
-	//PreviousQuat.Normalize(); // already normalized.
-	FQuat NewQuat = FQuat::MultiplyQuaternions(RotationQuat, PreviousQuat);
-	//NewQuat.Normalize(); // already normalized.
-	FRotator NewRotator(NewQuat);
-	Target->SetActorRotation(NewRotator);
+	//// quaternions.
+	//RotationAxis.Normalize();
+	//FVector v = RotationAxis * sin(RotationDirection.Z * sensitive);
+	//FQuat RotationQuat(v.X, v.Y, v.Z, cos(RotationDirection.Z * sensitive));
+	////RotationQuat.Normalize(); // already normalized.
+	//FQuat PreviousQuat = Target->GetActorRotation().Quaternion();
+	////PreviousQuat.Normalize(); // already normalized.
+	//FQuat NewQuat = FQuat::MultiplyQuaternions(RotationQuat, PreviousQuat);
+	////NewQuat.Normalize(); // already normalized.
+	//FRotator NewRotator(NewQuat);
+	//Target->SetActorRotation(NewRotator);
 }
 
-void UGizmoRotate::OnRelease(int mx, int my) {}
+void AGizmoRotate::OnRelease(int mx, int my) {}
 
-bool UGizmoRotate::IsClicked(FRay ray, float maxDistance, FVector& hitpoint)
+bool AGizmoRotate::Intersects(FRay ray, float& hitDistance)
 {
-	if (!Geometry::IsRayIntersectAABB(GetAABB(), ray, maxDistance))
+	if (!Geometry::IsRayIntersectAABB(GetAABB(), ray, hitDistance))
 		return false;
-
-	USceneComponent* RootComp = Cast<USceneComponent>(Target->GetRootComponent());
+	else
+		return true;
+	/*USceneComponent* RootComp = Cast<USceneComponent>(Target->GetRootComponent());
 	FMatrix transform;
 
 	if (IsAbsoluteCoord)
@@ -130,7 +115,8 @@ bool UGizmoRotate::IsClicked(FRay ray, float maxDistance, FVector& hitpoint)
 		transform.TransformDirectionVector(ray.Direction).GetSafeNormal()
 	);
 
-	TArray<FVertexSimple> vertices = UEngine::GetEngine().GetResourceManager()->GetGizmoVertexData(GizmoViewType);
+	TArray<FVertexSimple> vertices = FObjManager::LoadObjStaticMeshAsset(Get)
+		GetGizmoVertexData(GizmoViewType);
 	TArray<uint32> indices = UEngine::GetEngine().GetResourceManager()->GetGizmoIndexData(GizmoViewType);
 	if (indices.size() < 3)
 		return false;
@@ -159,5 +145,5 @@ bool UGizmoRotate::IsClicked(FRay ray, float maxDistance, FVector& hitpoint)
 			result = true;
 		}
 	}
-	return result;
+	return result;*/
 }

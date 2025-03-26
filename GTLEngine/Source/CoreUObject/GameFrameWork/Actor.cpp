@@ -95,10 +95,10 @@ void AActor::OnRelease(int mx, int my) {
 	IsSelected = false;
 }
 
-bool AActor::IsClicked(FRay ray, float maxDistance, FVector& hitpoint) {
+bool AActor::IsClicked(FRay ray, float& hitDistance) {
 	// aabb로 1차 검사
 	FBoundingBox aabb = GetAABB();
-	if ( !Geometry::IsRayIntersectAABB(aabb, ray, 100.f) ) {
+	if (!Geometry::IsRayIntersectAABB(aabb, ray, hitDistance)) {
 		return false;
 	}
 	else

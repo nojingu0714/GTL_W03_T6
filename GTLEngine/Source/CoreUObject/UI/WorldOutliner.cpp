@@ -25,10 +25,6 @@ void UWorldOutliner::Tick(float TickTime) {
 
     ImGui::Separator();
 
-    DebugLineToggle();
-
-    ImGui::Separator();
-
     SceneHierarchy();
 
     ImGui::End();
@@ -93,11 +89,6 @@ void UWorldOutliner::ActorSpawner()
             }
         }
     }
-}
-
-void UWorldOutliner::DebugLineToggle()
-{
-    ImGui::Checkbox("Spawn debug line", &DebugSpawnLine);
 }
 
 void UWorldOutliner::SceneHierarchy()

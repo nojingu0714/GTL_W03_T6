@@ -2,20 +2,18 @@
 
 #include "GizmoBase.h"
 
-class UGizmoTranslate : public UGizmoBase
+class AGizmoTranslate : public AGizmoBase
 {
-	DECLARE_CLASS(UGizmoTranslate, UGizmoBase)
+	DECLARE_CLASS(AGizmoTranslate, AGizmoBase)
 public:
-	UGizmoTranslate();
+	AGizmoTranslate();
 
-	void Init(EAxis axis, AActor* Target);
+	void Init();
 
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
 
-	void OnClick(int mx, int my) override;
-	void OnDragTick(int mx, int my, int dmx, int dmy) override;
-	void OnRelease(int mx, int my) override;
+	void OnDragTick(FVector2 PointNDC, FVector2 DeltaNDC) override;
 
-	virtual bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint) override;
+	virtual bool Intersects(FRay ray, float& hitDistance) override;
 };

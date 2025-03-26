@@ -2,20 +2,20 @@
 
 #include "GizmoBase.h"
 
-class UGizmoScale : public UGizmoBase
+class AGizmoScale : public AGizmoBase
 {
-	DECLARE_CLASS(UGizmoScale, UGizmoBase)
+	DECLARE_CLASS(AGizmoScale, AGizmoBase)
 public:
-	UGizmoScale();
+	AGizmoScale();
 
-	void Init(EAxis axis, AActor* Target);
+	void Init();
 
 	virtual void Tick(float TickTime) override;
 	virtual void Destroy() override;
 
 	void OnClick(int mx, int my) override;
-	void OnDragTick(int mx, int my, int dmx, int dmy) override;
+	void OnDragTick(FVector2 PointNDC, FVector2 DeltaNDC) override;
 	void OnRelease(int mx, int my) override;
 
-	virtual bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint) override;
+	virtual bool Intersects(FRay ray, float& hitDistance) override;
 };

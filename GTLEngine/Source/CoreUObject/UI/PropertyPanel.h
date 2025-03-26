@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Math/Vector.h"
-#include "Gizmo/GizmoManager.h"
+#include "GizmoManager/GizmoManager.h"
 #include "UI/UIBase.h"
 
 class AActor;

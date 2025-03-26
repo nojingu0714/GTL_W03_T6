@@ -53,9 +53,6 @@
     <Filter Include="Source\Core\Input">
       <UniqueIdentifier>{199bb3f6-6195-46c7-b919-e3b1fd7feed2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core\Gizmo">
-      <UniqueIdentifier>{8012af6f-ea9d-4e28-9b17-91bde153d4ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Core\Time">
       <UniqueIdentifier>{12710c6e-6d7e-4998-8adc-3f0a341f51f1}</UniqueIdentifier>
     </Filter>
@@ -103,6 +100,9 @@
     </Filter>
     <Filter Include="Source\CoreUObject\Gizmo">
       <UniqueIdentifier>{0ade6913-53e5-48cb-a95b-cf2573bcb070}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\GizmoManager">
+      <UniqueIdentifier>{8012af6f-ea9d-4e28-9b17-91bde153d4ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -174,9 +174,6 @@
     </ClCompile>
     <ClCompile Include="Source\CoreUObject\UI\ControlPanel.cpp">
       <Filter>Source\CoreUObject\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Gizmo\GizmoManager.cpp">
-      <Filter>Source\Core\Gizmo</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Time\TimeManager.cpp">
       <Filter>Source\Core\Time</Filter>
@@ -343,20 +340,14 @@
     <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotate.cpp">
       <Filter>Source\CoreUObject\Gizmo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoActor.cpp">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoRotateComponent.cpp">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoScaleComponent.cpp">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoTranslateComponent.cpp">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Window\Splitter.cpp">
       <Filter>Source\Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\GizmoManager\GizmoManager.cpp">
+      <Filter>Source\Core\GizmoManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CoreUObject\Gizmo\GizmoStaticMeshComponent.cpp">
+      <Filter>Source\CoreUObject\Gizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -437,9 +428,6 @@
     </ClInclude>
     <ClInclude Include="Source\Utils\Math\MathFwd.h">
       <Filter>Utils\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\Gizmo\GizmoManager.h">
-      <Filter>Source\Core\Gizmo</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Time\TimeManager.h">
       <Filter>Source\Core\Time</Filter>
@@ -615,16 +603,13 @@
     <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotate.h">
       <Filter>Source\CoreUObject\Gizmo</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoActor.h">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
+    <ClInclude Include="Source\Core\Window\Splitter.h">
+      <Filter>Source\Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoRotateComponent.h">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
+    <ClInclude Include="Source\Core\GizmoManager\GizmoManager.h">
+      <Filter>Source\Core\GizmoManager</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoScaleComponent.h">
-      <Filter>Source\CoreUObject\Gizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoTranslateComponent.h">
+    <ClInclude Include="Source\CoreUObject\Gizmo\GizmoStaticMeshComponent.h">
       <Filter>Source\CoreUObject\Gizmo</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Window\Splitter.h">

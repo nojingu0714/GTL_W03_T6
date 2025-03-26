@@ -5,6 +5,11 @@
 #include "Input/InputManager.h"
 #include "CoreUObject/GameFrameWork/Actor.h"
 #include "GameFrameWork/StaticMeshActor.h"
+#include "GizmoManager/GizmoManager.h"
+#include "Editor/EditorManager.h"
+#include "Gizmo/GizmoActor.h" // 기즈모 테스트용.
+//#include "Gizmo/GizmoTranslateComponent.h" // 기즈모 테스트용.
+#include "CoreUObject/World.h" // 기즈모 테스트용.
 
 TArray<FRay> FViewport::DebugRays;
 
@@ -138,15 +143,19 @@ void FViewport::TickWhenHovered(float DeltaTime)
 {
 	// 클릭으로 선택
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
-	FVector _v;
+	float _f;
 	if (InputManager->GetMouseDown(UInputManager::EMouseButton::LEFT))
 	{
 		FRay ray = GetRayOnWorld(InputManager->GetMouseClientX(), InputManager->GetMouseClientY());
 		DebugRays.push_back(ray);
+
+		// 기즈모는 StaticMeshActor가 아니기 때문에 따로 처리.
+		AGizmoBase* Gizmo = UEngine::GetEngine().GetEditorManager()->GetGizmoManager()->GetGizmoActor();
+
 		for (TObjectIterator<AStaticMeshActor> It; It; ++It)
 		{
 			AStaticMeshActor* Actor = *It;
-			if (Actor->IsClicked(ray, 1.f, _v))
+			if (Actor->IsClicked(ray, _f))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("%s"), Actor->GetName().c_str());
 			}
@@ -167,6 +176,9 @@ void FViewport::ProcessCameraMovement(float DeltaTime)
 	FVector ForwardDirection = CameraRotation.TransformRotVecToMatrix(FVector::ForwardVector);
 	FVector RightDirection = CameraRotation.TransformRotVecToMatrix(FVector::RightVector);
 	FVector UpDirection = CameraRotation.TransformRotVecToMatrix(FVector::UpVector);
+
+	UE_LOG(LogTemp, Warning, TEXT("%f %f %f"), CameraLocation.X, CameraLocation.Y, CameraLocation.Z);
+	UE_LOG(LogTemp, Warning, TEXT("%f %f %f"), CameraRotation.Pitch, CameraRotation.Yaw, CameraRotation.Roll);
 
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
 

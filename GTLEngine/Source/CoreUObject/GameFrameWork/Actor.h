@@ -71,7 +71,7 @@ private:
 public:
 	void OnClick(int mx, int my);
 	void OnRelease(int mx, int my);
-	bool IsClicked(FRay ray, float maxDistance, FVector& hitpoint);
+	bool IsClicked(FRay ray, float& hitDistance);
 
 };
 

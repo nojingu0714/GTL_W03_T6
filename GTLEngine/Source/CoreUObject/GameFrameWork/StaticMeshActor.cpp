@@ -10,7 +10,7 @@ AStaticMeshActor::AStaticMeshActor()
 
 void AStaticMeshActor::Tick(float TickTime)
 {
-	FVector pos = GetActorLocation();
+	/*FVector pos = GetActorLocation();
 	FRotator rot = GetActorRotation();
 
 	pos.X += 0.01;
@@ -18,7 +18,7 @@ void AStaticMeshActor::Tick(float TickTime)
 
 	Super::Tick(TickTime);
 	SetActorLocation(pos);
-	this->SetActorRotation(rot);
+	SetActorRotation(rot);*/
 }
 
 void AStaticMeshActor::Destroy()

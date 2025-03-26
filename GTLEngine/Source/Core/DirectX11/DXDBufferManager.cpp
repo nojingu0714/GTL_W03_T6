@@ -8,7 +8,7 @@ UDXDBufferManager::UDXDBufferManager(ID3D11Device* InDXDDevice)
 
 HRESULT UDXDBufferManager::CreateIndexBuffer(const FString& KeyName, const TArray<uint32>& indices, FIndexInfo& OutIndexInfo)
 {
-	if (IndexBufferPool.contains(KeyName))
+	if (KeyName != TEXT("") && IndexBufferPool.contains(KeyName))
 	{
 		OutIndexInfo = IndexBufferPool[KeyName];
 		return S_OK;

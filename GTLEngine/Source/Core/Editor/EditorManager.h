@@ -1,11 +1,14 @@
 #pragma once
 
+#include "Core/Resource/Types.h"
+
 class FViewport;
 class FViewportClient;
 class AActor;
 class FGizmoManager;
 class FSplitterH;
 class FSplitterV;
+
 
 class UDirectXHandle;
 struct FVector2;
@@ -21,6 +24,8 @@ public:
 
 	AActor* GetSelectedActor() const { return SelectedActor; }
 	void SetSelectedActor(AActor* InActor) { SelectedActor = InActor; }
+	FGizmoManager* GetGizmoManager() const { return GizmoManager; }
+
 	TArray<FViewport>& GetViewports() { return Viewports; }
 	FViewport* GetSelectedViewport() { return SelectedViewport; }
 
@@ -39,6 +44,9 @@ private:
 	//void CastRay(FRay Ray);
 
 	//FViewportClient* ViewportClient;
+
+public:
+	FRay GetRayOnWorld();
 
 private:
 	TArray<FViewport> Viewports;

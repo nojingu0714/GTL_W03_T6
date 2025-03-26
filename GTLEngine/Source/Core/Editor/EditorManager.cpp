@@ -4,11 +4,11 @@
 #include "Window/ViewportClient.h"
 #include "DirectX11/DirectXHandle.h"
 #include "Engine/Engine.h"
-#include "Gizmo/GizmoManager.h"
+#include "GizmoManager/GizmoManager.h"
 #include "Input/InputManager.h"
 #include "World.h"
+#include "CoreUObject/GameFrameWork/StaticMeshActor.h"
 #include "Window/Splitter.h"
-
 
 void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handle)
 {
@@ -83,6 +83,13 @@ void FEditorManager::Tick(float DeltaTime)
 	SelectedViewport->TickWhenSelected(DeltaTime);
 	HoveredViewport->TickWhenHovered(DeltaTime);
 
+	GizmoManager->Tick(DeltaTime);
+	GizmoManager->ProcessPicking(GetRayOnWorld());
+	
+	TObjectIterator<AStaticMeshActor> it;
+	if(it)
+		GizmoManager->AttachTo(*it);
+
 	for (FViewport& Viewport : Viewports)
 	{
 		Viewport.Tick(DeltaTime);
@@ -103,12 +110,15 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
 		Handle->SetLineMode();
-		Handle->RenderWorldPlane(Viewport.GetCamera());
-		Handle->RenderWorldXYZAxis();
+		if (Viewport.GetCamera()->ProjectionMode == EProjectionMode::Perspective)
+		{
+			Handle->RenderWorldPlane(Viewport.GetCamera());
+			Handle->RenderWorldXYZAxis();
+		}
 		Handle->RenderBoundingBox(World->GetActors());
 
-		//if (Viewport.GetShowFlags() == EEngineShowFlags::SF_Line)
-		Handle->RenderDebugRays(FViewport::DebugRays);
+		if (GetFlag(Viewport.ShowFlags, EEngineShowFlags::SF_Line))
+			Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());
@@ -128,20 +138,22 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 			Handle->PrepareViewport(Viewport);
 			Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
-			Handle->SetLineMode();
+		Handle->SetLineMode();
+		if (Viewport.GetCamera()->ProjectionMode == EProjectionMode::Perspective)
+		{
 			Handle->RenderWorldPlane(Viewport.GetCamera());
 			Handle->RenderWorldXYZAxis();
-			Handle->RenderBoundingBox(World->GetActors());
+		}
+		Handle->RenderBoundingBox(World->GetActors());
 
-			//if (Viewport.GetShowFlags() == EEngineShowFlags::SF_Line)
+		if (GetFlag(Viewport.ShowFlags, EEngineShowFlags::SF_Line))
 			Handle->RenderDebugRays(FViewport::DebugRays);
 
-			Handle->SetFaceMode();
-			Handle->RenderObject(World->GetActors());
-			Handle->RenderGizmo(GizmoManager->GetGizmoActor());
-			Handle->RenderBoundingBox(World->GetActors());
-			Handle->EndRenderViewport();
-		}
+		Handle->SetFaceMode();
+		Handle->RenderObject(World->GetActors());
+		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
+		Handle->EndRenderViewport();
+	}
 
 		Handle->PrepareWindow();
 
@@ -289,4 +301,12 @@ void FEditorManager::UpdateSplitterDragging()
 		SplitterV->bIsDragging = false;
 	}
 }
-		
+
+FRay FEditorManager::GetRayOnWorld()
+{
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+	if (HoveredViewport)
+	{
+		return HoveredViewport->GetRayOnWorld(InputManager->GetMouseClientX(), InputManager->GetMouseClientY());
+	}
+}

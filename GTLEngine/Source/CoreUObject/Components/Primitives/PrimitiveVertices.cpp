@@ -111,8 +111,8 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 		20, 21, 22, 21, 23, 22
 	};
 
-	hr = BufferManager->CreateVertexBuffer(TEXT("Cube"), CubeVertices, VertexDummy);
-	hr = BufferManager->CreateIndexBuffer(TEXT("Cube"), CubeIndices, IndexDummy);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Primitive_Cube"), CubeVertices, VertexDummy);
+	hr = BufferManager->CreateIndexBuffer(TEXT("Primitive_Cube"), CubeIndices, IndexDummy);
 
 	///////////////////////////////////
 	/// Cylinder

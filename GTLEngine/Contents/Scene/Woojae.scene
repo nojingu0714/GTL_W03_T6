@@ -2,41 +2,103 @@
   "Cameras" : [{
       "FarClip" : 1000.000000,
       "FieldOfView" : 60.000000,
-      "Location" : [-11.143446, 9.316185, 6.163584],
+      "Location" : [-10.000000, 0.000000, 0.000000],
       "NearClip" : 0.100000,
       "ProjectionMode" : 0,
-      "Rotation" : [0.000000, -22.518419, -44.286686],
+      "Rotation" : [0.000000, 0.000000, 0.000000],
       "Sensitive" : 10.000000,
       "Speed" : 10.000000
     }, {
       "FarClip" : 1000.000000,
       "FieldOfView" : 60.000000,
-      "Location" : [-7.328226, -8.977213, 0.000000],
+      "Location" : [15.600294, -6.011949, 5.380795],
       "NearClip" : 0.100000,
       "ProjectionMode" : 0,
-      "Rotation" : [0.000000, 0.732096, 33.351208],
+      "Rotation" : [0.000000, -2.502118, 164.073792],
       "Sensitive" : 10.000000,
       "Speed" : 10.000000
     }, {
       "FarClip" : 1000.000000,
       "FieldOfView" : 60.000000,
-      "Location" : [-8.230137, 0.776050, -1.452191],
+      "Location" : [-10.000000, 0.000000, 0.000000],
       "NearClip" : 0.100000,
       "ProjectionMode" : 0,
-      "Rotation" : [0.000000, -2.126208, 11.215350],
+      "Rotation" : [0.000000, 0.000000, 0.000000],
       "Sensitive" : 10.000000,
       "Speed" : 10.000000
     }, {
       "FarClip" : 1000.000000,
       "FieldOfView" : 60.000000,
-      "Location" : [-8.886416, 10.066868, 0.000000],
+      "Location" : [-13.548612, 15.495690, 4.554728],
       "NearClip" : 0.100000,
       "ProjectionMode" : 0,
-      "Rotation" : [0.000000, -0.070845, -18.598015],
+      "Rotation" : [0.000000, -15.005071, -24.476568],
       "Sensitive" : 10.000000,
       "Speed" : 10.000000
     }],
   "Primitives" : {
-
+    "ACylinder_38" : {
+      "Location" : [0.000000, 0.000000, 3.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [0.000000, 0.000000, 0.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_41" : {
+      "Location" : [0.000000, 3.000000, 3.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [0.000000, 0.000000, 2.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_44" : {
+      "Location" : [3.000000, 3.000000, 3.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [0.000000, 0.000000, 11.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_47" : {
+      "Location" : [3.000000, 3.000000, 3.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [44.000000, 0.000000, 11.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_50" : {
+      "Location" : [3.000000, 3.000000, 31.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [44.000000, 0.000000, 11.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_53" : {
+      "Location" : [35.000000, 3.000000, 31.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [44.000000, 0.000000, 11.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_56" : {
+      "Location" : [-57.000000, 3.000000, 31.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [44.000000, 0.000000, 11.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "ACylinder_59" : {
+      "Location" : [0.000000, 3.000000, 31.000000],
+      "ObjStaticMeshAsset" : "Contents/Cylinder.obj",
+      "Rotation" : [44.000000, 0.000000, 11.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    },
+    "AStaticMeshActor_34" : {
+      "Location" : [0.000000, 0.000000, 0.000000],
+      "ObjStaticMeshAsset" : "Contents/Conan.obj",
+      "Rotation" : [0.000000, 0.000000, 0.000000],
+      "Scale" : [1.000000, 1.000000, 1.000000],
+      "Type" : "StaticMeshComp"
+    }
   }
 }
