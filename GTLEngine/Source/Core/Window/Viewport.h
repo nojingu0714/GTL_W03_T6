@@ -3,6 +3,8 @@
 #include "Math/Rotator.h"
 #include "Resource/Types.h"
 
+#include "Engine/ShowFlag.h"
+
 class UDirectXHandle;
 
 struct FViewportCamera
@@ -55,6 +57,10 @@ public:
 	bool Contains(int x, int y) const;
 	bool bIsResized = false;
 
+public:
+	EEngineShowFlags GetShowFlags() const { return ShowFlags; }
+	EViewModeIndex GetViewModeIndex() const { return ViewModeIndex; }
+
 private:
 	FString Name;
 	
@@ -62,6 +68,9 @@ private:
 	ERasterizerMode RasterizerMode = ERasterizerMode::Solid_Back;
 	D3D11_VIEWPORT Viewport;
 	FViewportCamera* Camera;
+
+	EEngineShowFlags ShowFlags;
+	EViewModeIndex ViewModeIndex;
 	
 public:
 	static TArray<FRay> DebugRays;

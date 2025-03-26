@@ -122,7 +122,8 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->RenderBoundingBox(World->GetActors());
 		Handle->RenderLines(World->GetActors());
 
-		Handle->RenderDebugRays(FViewport::DebugRays);
+		if (Viewport.GetShowFlags() == EEngineShowFlags::SF_Line)
+			Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());

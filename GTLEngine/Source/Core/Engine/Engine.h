@@ -13,24 +13,6 @@ class UObject;
 class UUIManager;
 class FEditorManager;
 
-enum class EViewModeIndex : uint32 {
-    VMI_Lit,
-    VMI_Unlit,
-    VMI_Wireframe
-};
-
-enum class EGizmoModeIndex : uint32 {
-    GMI_GizmoTranslate,
-    GMI_GizmoRotate,
-    GMI_GizmoScale
-};
-
-enum class EEngineShowFlags : uint64 {
-    SF_Primitives = 1 << 0,
-    SF_Line = 1 << 1,
-    SF_BillboardText = 1 << 2,
-};
-
 class UEngine
 {
 

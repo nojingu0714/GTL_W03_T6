@@ -627,9 +627,10 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 	Viewport.TopLeftY = 0;
 
 	DXDDeviceContext->RSSetViewports(1, &Viewport);
-	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
-	/*if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
-		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());*/
+	if (InViewport.GetViewModeIndex() == EViewModeIndex::VMI_Wireframe)
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
+	else
+		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 
 	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
 	DXDDeviceContext->OMSetRenderTargets(1, GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().GetAddressOf(), GetDepthStencilView(InViewport.GetName())->GetDepthStencilView());
@@ -958,6 +959,8 @@ void UDirectXHandle::RenderBoundingBox(const TArray<AActor*> Actors) {
 void UDirectXHandle::RenderGizmo(AGizmoActor* Gizmos) {
 
 	SetFaceMode();
+	// Gizmo는 언제든 SOLID로 그려지도록 설정.
+	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
 	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("GizmoVS")), NULL, 0);
 	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("GizmoPS")), NULL, 0);
 
