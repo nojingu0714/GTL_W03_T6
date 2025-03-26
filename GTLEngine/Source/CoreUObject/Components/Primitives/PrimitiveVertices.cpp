@@ -15,7 +15,9 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 	LineVertices.push_back({ {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
 	LineVertices.push_back({ {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
 
-	hr = BufferManager->CreateVertexBuffer(TEXT("Line"), LineVertices, nullptr);
+	FVertexInfo VertexDummy;
+	FIndexInfo IndexDummy;
+	hr = BufferManager->CreateVertexBuffer(TEXT("Line"), LineVertices, VertexDummy);
 
 	///////////////////////////////////
 	// Cube
@@ -70,8 +72,8 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 		20, 21, 22, 21, 23, 22
 	};
 
-	hr = BufferManager->CreateVertexBuffer(TEXT("Cube"), CubeVertices, CubeIndices);
-	hr = BufferManager->CreateIndexBuffer(TEXT("Cube"), CubeIndices, )
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cube"), CubeVertices, VertexDummy);
+	hr = BufferManager->CreateIndexBuffer(TEXT("Cube"), CubeIndices, IndexDummy);
 
 	///////////////////////////////////
 	/// Cylinder
@@ -105,7 +107,7 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 		CylinderIndices.push_back(i * 2 + 3);
 	}
 
-	hr = BufferManager->CreateVertexBuffer(TEXT("Cylinder"), CylinderVertices, CylinderIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cylinder"), CylinderVertices, VertexDummy);
 
 	///////////////////////////////////
 	/// Cone
@@ -134,7 +136,7 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 		ConeIndices.push_back(NumSegments + 2);
 	}
 
-	hr = BufferManager->CreateVertexBuffer(TEXT("Cone"), ConeVertices, ConeIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cone"), ConeVertices, VertexDummy);
 
 	///////////////////////////////////
 	///	Quarter Ring
@@ -159,7 +161,7 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 		QuarterRingIndices.push_back(i * 2 + 2);
 	}
 
-	hr = Handle->CreateVertexBuffer(TEXT("QuarterRing"), QuarterRingVertices, QuarterRingIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("QuarterRing"), QuarterRingVertices, VertexDummy);
 
 	///////////////////////////////////
 	/// CubeFrame
@@ -183,7 +185,8 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 		0, 4, 1, 6, 2, 5, 3, 7
 	};
 
-	hr = Handle->CreateVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, CubeFrameIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, VertexDummy);
+	hr = BufferManager->CreateIndexBuffer(TEXT("BoundingBox"), CubeFrameIndices, IndexDummy);
 
 	///////////////////////////////////
 	/// Quad
@@ -200,7 +203,7 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
     // Change the line causing the error to explicitly specify the template parameter
 	TArray<uint32> EmptyIndices;
 
-    hr = Handle->CreateVertexBuffer(TEXT("Quad"), QuadVertices, EmptyIndices);
+    hr = BufferManager->CreateVertexBuffer(TEXT("Quad"), QuadVertices, VertexDummy);
 	return hr;
 
 

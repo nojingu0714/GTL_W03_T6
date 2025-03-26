@@ -76,15 +76,7 @@ private:
 	ID3D11DeviceContext* DXDDeviceContext;
 	IDXGISwapChain* DXDSwapChain;
 
-	////////////////////////////////////////
-	// Buffers
-	// TODO: Name으로 버텍스 버퍼 저장.
-	// Array 타입을 다른 방식으로 바꿔서 저장.
 public:
-
-	FVertexInfo GetVertexBuffer(FString KeyName);
-	// for batch line render
-	
 	HRESULT AddConstantBuffer(EConstantBufferType Type);
 
 	void ResizeViewport(int width, int height);
@@ -141,9 +133,6 @@ private:
 	UDXDShaderManager* ShaderManager;
 	UDXDBufferManager* BufferManager;
 	UDXDResourceManager* ResourceManager;
-
-	TMap<FString, FVertexInfo> VertexBuffers;
-	TMap<FString, FIndexInfo> IndexBuffers;
 
 	TMap<EConstantBufferType, UDXDConstantBuffer*> ConstantBuffers;
 

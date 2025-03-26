@@ -246,7 +246,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 
 	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
 
-	BufferManager = new UDXDBufferManager();
+	BufferManager = new UDXDBufferManager(DXDDevice);
 
 	/**
 	* TODO: 뎁스 스텐실 스테이트 생성 권장.
@@ -309,7 +309,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 
 	DynamicVertexBufferSize = 1024;
 	
-	CreatePrimitives(this);
+	CreatePrimitives(BufferManager);
 
 	if (FAILED(hr))
 	{
@@ -376,16 +376,6 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		BufferManager = nullptr;
 	}
 
-	if (IndexBuffers.empty())
-	{
-		for (auto& IndexBuffer : IndexBuffers)
-		{
-			IndexBuffer.second.IndexBuffer->Release();
-			IndexBuffer.second.IndexBuffer = nullptr;
-		}
-		VertexBuffers.clear();
-	}
-	
 	if (!ConstantBuffers.empty())
 	{
 		for (auto& ConstantBuffer : ConstantBuffers)
@@ -476,7 +466,7 @@ void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
 
     uint Stride = sizeof(FVertexPNCT);
     uint offset = 0;
-    FVertexInfo Info = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::Grid)];
+	FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("Grid"));
     ID3D11Buffer* VB = Info.VertexBuffer;
     uint Num = Info.NumVertices;
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
@@ -502,11 +492,11 @@ void UDirectXHandle::RenderAABB(FBoundingBox InBox) {
 
     uint Stride = sizeof(FVertexPC);
     UINT offset = 0;
-    FVertexInfo VertexInfo = VertexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
+	FVertexInfo VertexInfo = BufferManager->GetVertexBuffer(TEXT("BoundingBox"));
     ID3D11Buffer* VB = VertexInfo.VertexBuffer;
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
 
-	FIndexInfo IndexInfo = IndexBuffers[GetPrimitiveTypeAsString(EPrimitiveType::BoundingBox)];
+	FIndexInfo IndexInfo = BufferManager->GetIndexBuffer(TEXT("BoundingBox"));
 	ID3D11Buffer* IB = IndexInfo.IndexBuffer;
 	DXDDeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
 	DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
@@ -567,7 +557,8 @@ void UDirectXHandle::PrepareWindow()
 	UINT Offset = 0;
 
 	DXDDeviceContext->IASetInputLayout(GetShaderManager()->GetInputLayoutByKey(TEXT("FontVS")));
-	DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexBuffers[TEXT("Quad")].VertexBuffer, &Stride, &Offset);
+	FVertexInfo VertexInfo = BufferManager->GetVertexBuffer(TEXT("Quad"));
+	DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &Offset);
 	DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// 셰이더 설정
@@ -664,7 +655,8 @@ void UDirectXHandle::RenderViewport(FViewport& InViewport, bool isDepthStencil)
 		Buffer->height = InViewport.GetViewport().Height / (float)windowInfo.Height * 2;
 	}
 	DXDDeviceContext->Unmap(CbViewportRatio, 0);
-	DXDDeviceContext->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+	
+	DXDDeviceContext->Draw(BufferManager->GetVertexBuffer(TEXT("Quad")).NumVertices, 0);
 }
 
 HRESULT UDirectXHandle::UpdateViewportBuffer(const FViewport& InViewport)
@@ -879,7 +871,7 @@ HRESULT UDirectXHandle::ReleaseDepthStencilView(const FString& InName)
 
 void UDirectXHandle::RenderDebugRays(const TArray<FRay>& Rays)
 {
-	FVertexInfo v = GetVertexBuffer(TEXT("Line"));
+	FVertexInfo LineVertex = BufferManager->GetVertexBuffer(TEXT("Line"));
 
 	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("LineVS")), NULL, 0);
 	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("LinePS")), NULL, 0);
@@ -917,8 +909,8 @@ void UDirectXHandle::RenderDebugRays(const TArray<FRay>& Rays)
 		uint Stride = sizeof(FVertexPC);
 		UINT offset = 0;
 
-		DXDDeviceContext->IASetVertexBuffers(0, 1, &v.VertexBuffer, &Stride, &offset);
-		DXDDeviceContext->Draw(v.NumVertices, 0);
+		DXDDeviceContext->IASetVertexBuffers(0, 1, &LineVertex.VertexBuffer, &Stride, &offset);
+		DXDDeviceContext->Draw(LineVertex.NumVertices, 0);
 
 	}
 	DXDDeviceContext->IASetPrimitiveTopology(top);
@@ -1052,9 +1044,6 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 
 		// 인덱스를 기반으로 그리기
 		DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
-		
-		VertexInfo.VertexBuffer->Release();
-		IndexInfo.IndexBuffer->Release();
 	}
 }
 
@@ -1146,10 +1135,6 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 
 	// DepthStencilState 기본으로 변경
 	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
-
-
-	Info.VertexInfo.VertexBuffer->Release();
-	Info.IndexInfo.IndexBuffer->Release();
 }
 
 HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)

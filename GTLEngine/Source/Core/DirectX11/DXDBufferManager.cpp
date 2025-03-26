@@ -99,15 +99,20 @@ void UDXDBufferManager::ReleaseBuffers()
 	
 }
 
-FVertexInfo UDXDBufferManager::GetVertex(const FString& InName)
+FVertexInfo UDXDBufferManager::GetVertexBuffer(const FString& InName)
 {
 	if (VertexBufferPool.contains(InName))
 	{
 		return VertexBufferPool[InName];
 	}
+	return FVertexInfo();
 }
 
-FVertexInfo UDXDBufferManager::GetIndexBuffer(const FString& InName)
+FIndexInfo UDXDBufferManager::GetIndexBuffer(const FString& InName)
 {
-	return FVertexInfo();
+	if (IndexBufferPool.contains(InName))
+	{
+		return IndexBufferPool[InName];
+	}
+	return FIndexInfo();
 }

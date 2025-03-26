@@ -53,12 +53,6 @@ bool UEngine::InitEngine(const FWindowInfo& InWindowInfo)
 	
     // 텍스쳐용 UV 버퍼 추가.
 
-    // for batch line rendering
-    hr = DirectX11Handle->CheckAndAddDynamicVertexBuffer<FVertexPNCT>(L"Dynamic", 1024);
-    if ( FAILED(hr) ) {
-        MessageBox(WindowInfo.WindowHandle, TEXT("버텍스 버퍼 생성 실패"), TEXT("Error"), MB_OK);
-        return false;
-    }
 
 	// TimeManager 추가
 	TimeManager = new UTimeManager();

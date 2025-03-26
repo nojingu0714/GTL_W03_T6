@@ -19,8 +19,8 @@ public:
 	template<typename T>
 	HRESULT CreateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
 
-	FVertexInfo GetVertex(const FString& InName);
-	FVertexInfo GetIndexBuffer(const FString& InName);
+	FVertexInfo GetVertexBuffer(const FString& InName);
+	FIndexInfo GetIndexBuffer(const FString& InName);
 
 private:
 
