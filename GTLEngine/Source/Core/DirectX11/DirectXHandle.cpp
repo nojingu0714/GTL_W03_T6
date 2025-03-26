@@ -706,7 +706,8 @@ void UDirectXHandle::RenderViewport(FViewport& InViewport, bool isDepthStencil)
 		Buffer->height = InViewport.GetViewport().Height / (float)windowInfo.Height * 2;
 	}
 	DXDDeviceContext->Unmap(CbViewportRatio, 0);
-	DXDDeviceContext->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+	
+	DXDDeviceContext->Draw(BufferManager->GetVertexBuffer(TEXT("Quad")).NumVertices, 0);
 
 }
 
