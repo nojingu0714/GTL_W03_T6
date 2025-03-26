@@ -17,6 +17,7 @@ public:
 	void SceneManagementPanel();
 	void MemoryPanel();
 	void ViewportCameraPanel();
+	void ViewportModePanel();
 	virtual void Destroy() override;
 
 private:

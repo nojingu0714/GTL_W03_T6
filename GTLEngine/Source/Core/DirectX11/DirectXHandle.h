@@ -53,6 +53,7 @@ public:
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
 	void RenderObject(const TArray<AActor*> Actors);
 	void RenderActorUUID(AActor* TargetActor);
+	void RenderSplitter(const FVector2& InSplitterPosition, float InSplitterThickness);
 
 public:
 	//void InitView();

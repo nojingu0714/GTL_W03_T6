@@ -513,14 +513,14 @@ void UDirectXHandle::RenderWorldXYZAxis()
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-    uint Stride = sizeof(FVertexPNCT);
+    uint Stride = sizeof(FVertexPC);
     uint offset = 0;
     FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
     ID3D11Buffer* VB = Info.VertexBuffer;
     uint Num = Info.NumVertices;
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
     DXDDeviceContext->Draw(Num, 0);
-
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
 }
 
 void UDirectXHandle::EndRenderViewport()
@@ -1185,6 +1185,10 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 
 	// DepthStencilState 기본으로 변경
 	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
+}
+
+void UDirectXHandle::RenderSplitter(const FVector2& InSplitterPosition, float InSplitterThickness)
+{
 }
 
 HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)

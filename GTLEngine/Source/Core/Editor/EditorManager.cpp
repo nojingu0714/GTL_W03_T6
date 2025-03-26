@@ -94,11 +94,11 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 	// TODO : DXDHANDLE에서 하도록 옮기기.
 	UWorld* World = UEngine::GetEngine().GetWorld();
 
-	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
-
-	// viewport (Texture2D) 에 그리기.
-	for ( FViewport& Viewport : Viewports)
+	if (bIsSingleViewport)
 	{
+		FViewport& Viewport = Viewports[0];
+		Viewport.ResizeViewport(UEngine::GetEngine().GetWindowInfo().Width, UEngine::GetEngine().GetWindowInfo().Height);
+
 		Handle->PrepareViewport(Viewport);
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
 
@@ -115,13 +115,40 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
 		Handle->RenderBoundingBox(World->GetActors());
 		Handle->EndRenderViewport();
-	}
 
-	Handle->PrepareWindow();
+		Handle->PrepareWindow();
 
-	for (FViewport& Viewport : Viewports)
-	{
 		Handle->RenderViewport(Viewport);
+	}
+	else
+	{
+		// viewport (Texture2D) 에 그리기.
+		for (FViewport& Viewport : Viewports)
+		{
+			Handle->PrepareViewport(Viewport);
+			Handle->UpdateCameraMatrix(Viewport.GetCamera());
+
+			Handle->SetLineMode();
+			Handle->RenderWorldPlane(Viewport.GetCamera());
+			Handle->RenderWorldXYZAxis();
+			Handle->RenderBoundingBox(World->GetActors());
+
+			//if (Viewport.GetShowFlags() == EEngineShowFlags::SF_Line)
+			Handle->RenderDebugRays(FViewport::DebugRays);
+
+			Handle->SetFaceMode();
+			Handle->RenderObject(World->GetActors());
+			Handle->RenderGizmo(GizmoManager->GetGizmoActor());
+			Handle->RenderBoundingBox(World->GetActors());
+			Handle->EndRenderViewport();
+		}
+
+		Handle->PrepareWindow();
+
+		for (FViewport& Viewport : Viewports)
+		{
+			Handle->RenderViewport(Viewport);
+		}
 	}
 }
 
@@ -147,6 +174,34 @@ void FEditorManager::SetSplitterPosition(FVector2 Position)
 FVector2 FEditorManager::GetSplitterRatio() const
 {
 	return FVector2(SplitterV->GetSplitterRatio().X, SplitterH->GetSplitterRatio().Y);
+}
+
+void FEditorManager::SetSingleViewport(bool bSingleViewport)
+{
+	bIsSingleViewport = bSingleViewport;
+
+	if (!bSingleViewport)
+	{
+		// 모든 뷰포트를 균등하게 설정
+		const FWindowInfo& WindowInfo = UEngine::GetEngine().GetWindowInfo();
+		const int Width = WindowInfo.Width / 2;
+		const int Height = WindowInfo.Height / 2;
+
+		Viewports[0].ResizeViewport(Width, Height);
+		Viewports[0].MoveViewport(0, 0);
+
+		Viewports[1].ResizeViewport(Width, Height);
+		Viewports[1].MoveViewport(Width, 0);
+
+		Viewports[2].ResizeViewport(Width, Height);
+		Viewports[2].MoveViewport(0, Height);
+
+		Viewports[3].ResizeViewport(Width, Height);
+		Viewports[3].MoveViewport(Width, Height);
+
+		//Splitter 위치 설정
+		SetSplitterPosition(FVector2(Width, Height));
+	}
 }
 
 void FEditorManager::UpdateHoveredViewport()

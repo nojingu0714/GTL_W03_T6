@@ -40,6 +40,8 @@ void UControlPanel::Tick(float DeltaTime)
     ImGui::Separator();
     // GridScale();
     ImGui::Separator();
+    ViewportModePanel();
+    ImGui::Separator();
 
     ImGui::End();
 }
@@ -175,6 +177,17 @@ void UControlPanel::ViewportCameraPanel()
         }
     }
 }
+
+void UControlPanel::ViewportModePanel()
+{
+	bool bIsSingleViewport = UEngine::GetEngine().GetEditorManager()->IsSingleViewport();
+	if (ImGui::Checkbox("Single Viewport Mode", &bIsSingleViewport))
+	{
+		UEngine::GetEngine().GetEditorManager()->SetSingleViewport(bIsSingleViewport);
+	}
+}
+
+
 
 void UControlPanel::Destroy() {}
 

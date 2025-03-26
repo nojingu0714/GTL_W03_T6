@@ -29,6 +29,9 @@ public:
 
 	FVector2 GetSplitterRatio() const;
 
+	void SetSingleViewport(bool bSingleViewport);
+	bool IsSingleViewport() const { return bIsSingleViewport; }
+
 private:
 	void UpdateHoveredViewport();
 	void UpdateSelectedViewport();
@@ -48,4 +51,6 @@ private:
 
 	FSplitterH* SplitterH;
 	FSplitterV* SplitterV;
+
+	bool bIsSingleViewport;
 };
