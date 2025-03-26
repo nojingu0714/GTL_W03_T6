@@ -1,8 +1,19 @@
 #include "pch.h"
 #include "DXDBufferManager.h"
 
-HRESULT UDXDBufferManager::CreateIndexBuffer(ID3D11Device* Device, const TArray<uint32>& indices, FIndexInfo& OutIndexInfo)
+UDXDBufferManager::UDXDBufferManager(ID3D11Device* InDXDDevice)
+	:DXDDevice(InDXDDevice)
 {
+}
+
+HRESULT UDXDBufferManager::CreateIndexBuffer(const FString& KeyName, const TArray<uint32>& indices, FIndexInfo& OutIndexInfo)
+{
+	if (IndexBufferPool.contains(KeyName))
+	{
+		OutIndexInfo = IndexBufferPool[KeyName];
+		return S_OK;
+	}
+
 	ID3D11Buffer* NewBuffer = nullptr;
 
 	D3D11_BUFFER_DESC indexBufferDesc = {};
@@ -14,21 +25,28 @@ HRESULT UDXDBufferManager::CreateIndexBuffer(ID3D11Device* Device, const TArray<
 	D3D11_SUBRESOURCE_DATA indexInitData = {};
 	indexInitData.pSysMem = indices.data();
 
-	HRESULT hr = Device->CreateBuffer(&indexBufferDesc, &indexInitData, &NewBuffer);
+	HRESULT hr = DXDDevice->CreateBuffer(&indexBufferDesc, &indexInitData, &NewBuffer);
 	if (FAILED(hr))
 		return hr;
 
 	OutIndexInfo.NumIndices = static_cast<uint32>(indices.size());
 	OutIndexInfo.IndexBuffer = NewBuffer;
+
+	IndexBufferPool.insert({ KeyName, { static_cast<uint32>(indices.size()), NewBuffer} });
+
 	return S_OK;
 }
 
-HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset)
+HRESULT UDXDBufferManager::CreateASCIITextBuffer(const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset)
 {
+	if (TextAtlasBufferPool.contains(Text))
+	{
+		OutBufferInfo = TextAtlasBufferPool[Text];
+		return S_OK;
+	}
+
 	TArray<FVertexPT> Vertices;
 	TArray<uint32> Indices;
-
-	
 
 	float gap = 1.0f / 16.0f;
 	uint baseIndex = 0;
@@ -62,13 +80,16 @@ HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FSt
 		baseIndex += 4;
 	}
 
-	HRESULT hr = CreateVertexBuffer(Device, Vertices, OutBufferInfo.VertexInfo);
+
+	HRESULT hr = CreateVertexBuffer(Text, Vertices, OutBufferInfo.VertexInfo);
 	if (FAILED(hr))
 		return hr;
 
-	hr = CreateIndexBuffer(Device, Indices, OutBufferInfo.IndexInfo);
+	hr = CreateIndexBuffer(Text, Indices, OutBufferInfo.IndexInfo);
 	if (FAILED(hr))
 		return hr;
+
+	TextAtlasBufferPool.insert({ Text, OutBufferInfo });
 
 	return S_OK;
 }
@@ -76,4 +97,17 @@ HRESULT UDXDBufferManager::CreateASCIITextBuffer(ID3D11Device* Device, const FSt
 void UDXDBufferManager::ReleaseBuffers()
 {
 	
+}
+
+FVertexInfo UDXDBufferManager::GetVertex(const FString& InName)
+{
+	if (VertexBufferPool.contains(InName))
+	{
+		return VertexBufferPool[InName];
+	}
+}
+
+FVertexInfo UDXDBufferManager::GetIndexBuffer(const FString& InName)
+{
+	return FVertexInfo();
 }

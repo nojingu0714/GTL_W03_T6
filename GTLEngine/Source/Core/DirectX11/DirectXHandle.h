@@ -81,12 +81,9 @@ private:
 	// TODO: Name으로 버텍스 버퍼 저장.
 	// Array 타입을 다른 방식으로 바꿔서 저장.
 public:
-	template<typename T>
-	HRESULT AddVertexBuffer(FString KeyName, const TArray<T> vertices, const TArray<uint32>& indices);
+
 	FVertexInfo GetVertexBuffer(FString KeyName);
 	// for batch line render
-	template<typename T>
-	HRESULT CheckAndAddDynamicVertexBuffer(FString KeyName, const uint32 size);
 	
 	HRESULT AddConstantBuffer(EConstantBufferType Type);
 
@@ -159,82 +156,3 @@ private:
 public:
 	void RenderDebugRays(const TArray<FRay>& Rays);
 };
-
-template<typename T>
-inline HRESULT UDirectXHandle::AddVertexBuffer(FString KeyName, const TArray<T> vertices, const TArray<uint32>& indices)
-{
-	ID3D11Buffer* NewVertexBuffer;
-	// 버텍스 버퍼 생성
-	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(T) * static_cast<uint32>(vertices.size());
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = vertices.data();
-
-	HRESULT hr = DXDDevice->CreateBuffer(&bufferDesc, &initData, &NewVertexBuffer);
-	if (FAILED(hr))
-		return hr;
-
-	FVertexInfo Info = { static_cast<uint32>(vertices.size()), NewVertexBuffer };
-	VertexBuffers.insert({ KeyName, Info });
-
-	if (indices.size() > 0)
-	{
-		ID3D11Buffer* NewIndexBuffer = nullptr;
-		D3D11_BUFFER_DESC indexBufferDesc = {};
-		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		indexBufferDesc.ByteWidth = sizeof(uint32) * static_cast<uint32>(indices.size());
-		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.CPUAccessFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA indexInitData = {};
-		indexInitData.pSysMem = indices.data();
-
-		hr = DXDDevice->CreateBuffer(&indexBufferDesc, &indexInitData, &NewIndexBuffer);
-		if (FAILED(hr))
-			return hr;
-
-		FIndexInfo IndexInfo = { static_cast<uint32>(indices.size()), NewIndexBuffer };
-		IndexBuffers.insert({ KeyName, IndexInfo });
-	}
-
-	return S_OK;
-}
-
-template<typename T>
-inline HRESULT UDirectXHandle::CheckAndAddDynamicVertexBuffer(FString KeyName, const uint32 size) {
-	
-	if ( VertexBuffers.contains(KeyName) ) {
-
-		if ( size < DynamicVertexBufferSize )
-			return S_OK;
-
-		while ( size >= DynamicVertexBufferSize ) {
-			DynamicVertexBufferSize *= 2;
-		}
-
-		VertexBuffers[KeyName].VertexBuffer->Release();
-		VertexBuffers[KeyName].VertexBuffer = nullptr;
-	}
-	
-	ID3D11Buffer* NewVertexBuffer;
-	// 버텍스 버퍼 생성
-	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.ByteWidth = sizeof(T) * DynamicVertexBufferSize;
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	HRESULT hr = DXDDevice->CreateBuffer(&bufferDesc, nullptr, &NewVertexBuffer);
-	if ( FAILED(hr) )
-		return hr;
-
-	FVertexInfo Info = { 0, NewVertexBuffer };
-	//VertexBuffers.insert({ KeyName, Info });
-	VertexBuffers[KeyName] = Info;
-
-	return S_OK;
-}
