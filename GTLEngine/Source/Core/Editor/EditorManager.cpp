@@ -112,7 +112,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 	//FGizmoManager* GizmoManager = UEngine::GetEngine().GetGizmoManager();
 
 	// viewport (Texture2D) 에 그리기.
-	for (const FViewport& Viewport : Viewports)
+	for (FViewport& Viewport : Viewports)
 	{
 		Handle->PrepareViewport(Viewport);
 		Handle->UpdateCameraMatrix(Viewport.GetCamera());
@@ -122,8 +122,8 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->RenderWorldXYZAxis();
 		Handle->RenderBoundingBox(World->GetActors());
 
-		//if (Viewport.GetShowFlags() == EEngineShowFlags::SF_Line)
-		Handle->RenderDebugRays(FViewport::DebugRays);
+		if (GetFlag(Viewport.ShowFlags, EEngineShowFlags::SF_Line))
+			Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
 		Handle->RenderObject(World->GetActors());

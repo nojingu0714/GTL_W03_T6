@@ -68,8 +68,6 @@ public:
 	bool bIsResized = false;
 
 public:
-	EEngineShowFlags GetShowFlags() const { return ShowFlags; }
-	void SetShowFlags(EEngineShowFlags InShowFlags) { ShowFlags = InShowFlags; }
 	EViewModeIndex GetViewModeIndex() const { return ViewModeIndex; }
 	void SetViewModeIndex(EViewModeIndex InViewModeIndex) { ViewModeIndex = InViewModeIndex; }
 
@@ -81,8 +79,10 @@ private:
 	D3D11_VIEWPORT Viewport;
 	FViewportCamera* Camera;
 
-	EEngineShowFlags ShowFlags;
 	EViewModeIndex ViewModeIndex;
+
+public:
+	EEngineShowFlags ShowFlags = EEngineShowFlags::SF_StaticMesh;
 	
 public:
 	static TArray<FRay> DebugRays;

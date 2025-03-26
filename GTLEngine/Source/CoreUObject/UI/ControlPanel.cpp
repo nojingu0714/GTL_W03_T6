@@ -136,16 +136,14 @@ void UControlPanel::ViewportCameraPanel()
             ImGui::DragFloat("Camera FOV", &ViewportCamera->FieldOfView, 1.0f, 0.1f, 180.0f);
             ImGui::DragFloat("Camera Sensitive", &ViewportCamera->Sensitive, 1.0f, 1.0f, 100.0f);
 
-			/*bool bShowDebugLine = SelectedViewport->GetShowFlags() == EEngineShowFlags::SF_Line;
+			bool bShowDebugLine = GetFlag(SelectedViewport->ShowFlags, EEngineShowFlags::SF_Line);
             if (ImGui::Checkbox("Spawn debug line", &bShowDebugLine))
             {
 				if (bShowDebugLine)
-					SelectedViewport->SetShowFlags(EEngineShowFlags::SF_Line);
+					SetFlagOn(SelectedViewport->ShowFlags, EEngineShowFlags::SF_Line);
 				else
-					SelectedViewport->SetShowFlags(EEngineShowFlags::SF_);
-            }*/
-
-
+					SetFlagOff(SelectedViewport->ShowFlags, EEngineShowFlags::SF_Line);
+            }
 
             bool bWireFrame = SelectedViewport->GetViewModeIndex() == EViewModeIndex::VMI_Wireframe;
             if (ImGui::Checkbox("WireFrame", &bWireFrame))

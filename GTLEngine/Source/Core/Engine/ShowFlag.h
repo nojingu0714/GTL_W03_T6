@@ -9,7 +9,7 @@ enum class EViewModeIndex : uint32
     VMI_Wireframe
 };
 
-enum class EEngineShowFlags : uint64
+enum class EEngineShowFlags : uint32
 {
     SF_Primitives,
     SF_StaticMesh,
