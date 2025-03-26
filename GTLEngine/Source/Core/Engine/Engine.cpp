@@ -111,14 +111,17 @@ void UEngine::TickWindowInfo() {
 
 void UEngine::Render()
 {
-	EditorManager->Draw(DirectX11Handle);
+
+    EditorManager->Draw(DirectX11Handle);
+    
 
     UIManager->RenderUI();
     DirectX11Handle->RenderWindow();
 
 }
 
-HRESULT UEngine::ResizeWindow(int width, int height) {
+HRESULT UEngine::ResizeWindow(int width, int height)
+{
 
     WindowInfo.Width = width;
     WindowInfo.Height = height;
@@ -128,6 +131,82 @@ HRESULT UEngine::ResizeWindow(int width, int height) {
     if (DirectX11Handle) {
         hr = DirectX11Handle->ResizeWindow(width, height);
         DirectX11Handle->ResizeViewport(width, height);
+
+        // Splitter 비율 가져오기 (예: 0.5, 0.3 등등)
+        FVector2 SplitterRatio = EditorManager->GetSplitterRatio();
+        // 새로운 픽셀 위치로 변환
+		FVector2 NewSplitterPos = FVector2(width * SplitterRatio.X, height * SplitterRatio.Y);
+
+		auto& Viewports = EditorManager->GetViewports();
+        for (int32 i = 0; i < Viewports.size(); ++i)
+        {
+			FViewport& Viewport = Viewports[i];
+
+            bool IsTop = (i < 2); // 0, 1은 상단, 2, 3은 하단
+			bool IsLeft = ((i % 2) == 0); // 0, 2는 좌측, 1, 3은 우측
+
+            float TopLeftX = 0.f;
+			float TopLeftY = 0.f;
+			float Width = 0.f;
+			float Height = 0.f;
+
+            // 세로 위치 결정
+            if (IsTop)
+            {
+                TopLeftY = 0.f;
+				Height = NewSplitterPos.Y;
+            }
+            else
+            {
+                TopLeftY = NewSplitterPos.Y;
+				Height = height - NewSplitterPos.Y;
+            }
+
+            // 가로 위치 결정
+            if (IsLeft)
+            {
+				TopLeftX = 0.f;
+				Width = NewSplitterPos.X;
+			}
+            else
+            {
+				TopLeftX = NewSplitterPos.X;
+				Width = width - NewSplitterPos.X;
+            }
+
+   //         switch (i)
+   //         {
+   //         case 0: // 좌상단
+			//	TopLeftX = 0;
+			//	TopLeftY = 0;
+			//	Width = NewSplitterPos.X;
+			//	Height = NewSplitterPos.Y;
+			//	break;
+			//case 1: // 우상단
+			//	TopLeftX = NewSplitterPos.X;
+			//	TopLeftY = 0;
+			//	Width = width - NewSplitterPos.X;
+			//	Height = NewSplitterPos.Y;
+			//	break;
+			//case 2: // 좌하단
+			//	TopLeftX = 0;
+			//	TopLeftY = NewSplitterPos.Y;
+			//	Width = NewSplitterPos.X;
+			//	Height = height - NewSplitterPos.Y;
+			//	break;
+			//case 3: // 우하단
+			//	TopLeftX = NewSplitterPos.X;   
+			//	TopLeftY = NewSplitterPos.Y;
+			//	Width = width - NewSplitterPos.X;
+			//	Height = height - NewSplitterPos.Y;
+			//	break;
+   //         }
+
+            
+            Viewport.MoveViewport(static_cast<UINT>(TopLeftX), static_cast<UINT>(TopLeftY));
+            Viewport.ResizeViewport(static_cast<UINT>(Width), static_cast<UINT>(Height));
+        }
+		EditorManager->SetSplitterPosition(NewSplitterPos);
     }
     return hr;
 }

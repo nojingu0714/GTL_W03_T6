@@ -31,16 +31,16 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handl
 	//Viewports.push_back(DefaultViewport);
 
 	FViewport DefaultViewport;
-	DefaultViewport.Init(Handle, TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_0"), InWindowInfo.WindowHandle, 0, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(Handle, TEXT("Default_1"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2 + 5, InWindowInfo.Width / 2 - 5, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_1"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 );
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(Handle, TEXT("Default_2"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, 0, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_2"), InWindowInfo.WindowHandle, 0, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
-	DefaultViewport.Init(Handle, TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2 + 5, InWindowInfo.Height / 2  + 5, InWindowInfo.Width / 2, InWindowInfo.Height / 2 - 5);
+	DefaultViewport.Init(Handle, TEXT("Default_3"), InWindowInfo.WindowHandle, InWindowInfo.Width / 2, InWindowInfo.Height / 2, InWindowInfo.Width / 2, InWindowInfo.Height / 2);
 	Viewports.push_back(DefaultViewport);
 
 	// 뷰포트 클라이언트 생성
@@ -51,11 +51,11 @@ void FEditorManager::Init(const FWindowInfo& InWindowInfo, UDirectXHandle* Handl
 
 	//Splitter 생성 
 	SplitterH = new FSplitterH();
-	SplitterH->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
+	SplitterH->Init(&Viewports[0], &Viewports[1], &Viewports[2], &Viewports[3]);
 	
 
 	SplitterV = new FSplitterV();
-	SplitterV->Init(&Viewports[0], &Viewports[2], &Viewports[1], &Viewports[3]);
+	SplitterV->Init(&Viewports[0], &Viewports[1], &Viewports[2], &Viewports[3]);
 
 	GizmoManager = new FGizmoManager();
 	GizmoManager->Init();
@@ -66,25 +66,10 @@ void FEditorManager::Tick(float DeltaTime)
 {
 	UpdateHoveredViewport();
 	UpdateSelectedViewport();
+	
+	UpdateSplitterDragging();
 
 	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
-
-	if (InputManager->GetMouseButton(UInputManager::EMouseButton::LEFT))
-	{
-		int32 MouseX = InputManager->GetMouseClientX();
-		int32 MouseY = InputManager->GetMouseClientY();
-		FVector2 MousePosition = FVector2(MouseX, MouseY);
-		if (SplitterH->IsMouseOverSplitter(MousePosition))
-		{
-			SplitterH->OnDrag(MousePosition);
-		}
-		if (SplitterV->IsMouseOverSplitter(MousePosition))
-		{
-			SplitterV->OnDrag(MousePosition);
-		}
-	}
-
-
 	if (InputManager->GetMouseButton(UInputManager::EMouseButton::RIGHT))
 	{
 		InputManager->LockMouse();
@@ -129,6 +114,7 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 		Handle->RenderObject(World->GetActors());
 		Handle->RenderGizmo(GizmoManager->GetGizmoActor());
 		Handle->RenderBoundingBox(World->GetActors());
+		Handle->EndRenderViewport();
 	}
 
 	Handle->PrepareWindow();
@@ -145,6 +131,22 @@ void FEditorManager::Destroy()
 	{
 		Viewport.Destroy();
 	}
+}
+
+FVector2 FEditorManager::GetSplitterPosition() const
+{
+	return FVector2(SplitterV->GetPosition().X, SplitterH->GetPosition().Y);
+}
+
+void FEditorManager::SetSplitterPosition(FVector2 Position)
+{
+	SplitterH->SetSplitterPosition(Position);
+	SplitterV->SetSplitterPosition(Position);
+}
+
+FVector2 FEditorManager::GetSplitterRatio() const
+{
+	return FVector2(SplitterV->GetSplitterRatio().X, SplitterH->GetSplitterRatio().Y);
 }
 
 void FEditorManager::UpdateHoveredViewport()
@@ -185,3 +187,51 @@ void FEditorManager::UpdateSelectedViewport()
 		}
 	}
 }
+
+void FEditorManager::UpdateSplitterDragging()
+{
+	UInputManager* InputManager = UEngine::GetEngine().GetInputManager();
+
+	int32 MouseX = InputManager->GetMouseClientX();
+	int32 MouseY = InputManager->GetMouseClientY();
+	FVector2 MousePosition = FVector2(MouseX, MouseY);
+
+	if (InputManager->GetMouseButton(UInputManager::EMouseButton::LEFT))
+	{
+		// 드래그 되고 있지 않은 경우
+		if (false == SplitterH->bIsDragging && false == SplitterV->bIsDragging)
+		{
+			// 드래그 시작
+			if (SplitterH->IsMouseOverSplitter(MousePosition))
+			{
+				SplitterH->bIsDragging = true;
+				SplitterH->OnDrag(MousePosition);
+			}
+			if (SplitterV->IsMouseOverSplitter(MousePosition))
+			{
+				SplitterV->bIsDragging = true;
+				SplitterV->OnDrag(MousePosition);
+			}
+		}
+		// 드래그 중인 경우
+		else
+		{
+			if (SplitterH->bIsDragging)
+			{
+				SplitterH->OnDrag(MousePosition);
+			}
+			if (SplitterV->bIsDragging)
+			{
+				SplitterV->OnDrag(MousePosition);
+			}
+		}
+
+	}
+	// 마우스 버튼이 떼어진 경우 드래그 종료
+	else
+	{
+		SplitterH->bIsDragging = false;
+		SplitterV->bIsDragging = false;
+	}
+}
+		

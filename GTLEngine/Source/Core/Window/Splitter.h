@@ -6,30 +6,32 @@ class FViewport;
 class FSplitter
 {
 public:
-	void Init(FViewport* InTopLeft, FViewport* InTopRight, FViewport* InBottomLeft, FViewport* InBottomRight)
-	{
-		TopLeft = InTopLeft;
-		TopRight = InTopRight;
-		BottomLeft = InBottomLeft;
-		BottomRight = InBottomRight;
-
-		CalculateInitialSplitterPosition();
-		SplitterThickness = 10.f;
-	}
-	void SetSplitterPosition(FVector2 Position) { SplitterPosition = Position; }
+	void Init(FViewport* InTopLeft, FViewport* InTopRight, FViewport* InBottomLeft, FViewport* InBottomRight);
+	void SetSplitterPosition(FVector2 Position);
 	void SetSplitterThickness(float Thickness) { SplitterThickness = Thickness; }
 	virtual void OnDrag(FVector2 Position) = 0;
 	virtual bool IsMouseOverSplitter(FVector2 MousePOsition) const = 0;
+	FVector2 GetPosition() const;
+	FVector2 GetSplitterRatio() const { return SplitterRatio; }
+
+public:
+	bool bIsDragging;
+
 protected:
 	FViewport* TopLeft;
 	FViewport* TopRight;
 	FViewport* BottomLeft;
 	FViewport* BottomRight;
 
+	FVector2 SplitterRatio;
 	FVector2 SplitterPosition;
 	float SplitterThickness; 
 
+	int32 MinViewportWidth;
+	int32 MinViewportHeight;
+
 	virtual void CalculateInitialSplitterPosition() = 0;
+	void UpdateSplitterRatio();
 	
 };
 
@@ -42,11 +44,7 @@ public:
 		FSplitter::Init(InTopLeft, InTopRight, InBottomLeft, InBottomRight);
 	}
 	void OnDrag(FVector2 Position) override;
-	bool IsMouseOverSplitter(FVector2 MousePosition) const override
-	{
-		return (MousePosition.Y >= SplitterPosition.Y - SplitterThickness / 2 &&
-			MousePosition.Y <= SplitterPosition.Y + SplitterThickness / 2);
-	}
+	bool IsMouseOverSplitter(FVector2 MousePosition) const override;
 
 protected:
 	void CalculateInitialSplitterPosition() override;
@@ -60,11 +58,7 @@ public:
 		FSplitter::Init(InTopLeft, InTopRight, InBottomLeft, InBottomRight);
 	}
 	void OnDrag(FVector2 Position) override;
-	bool IsMouseOverSplitter(FVector2 MousePosition) const override
-	{
-		return (MousePosition.X >= SplitterPosition.X - SplitterThickness / 2 &&
-			MousePosition.X <= SplitterPosition.X + SplitterThickness / 2);
-	}
+	bool IsMouseOverSplitter(FVector2 MousePosition) const override;
 
 protected:
 	void CalculateInitialSplitterPosition() override;

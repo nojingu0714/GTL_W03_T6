@@ -289,8 +289,32 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	{
 		return hr;
 	}
-
+	
 	D3D11_SAMPLER_DESC SamplerDesc = {};
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.MipLODBias = -1.0f;
+
+	SamplerDesc.MaxAnisotropy = 16;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = 0;
+	hr = ResourceManager->CreateTextureSampler(FileName, SamplerDesc);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+	
+	FileName = TEXT("Resource/Texture/BlackBoard.jpg");
+	hr = ResourceManager->CreateTextureSRV(FileName);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+	
+	SamplerDesc = {};
 	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -489,17 +513,21 @@ void UDirectXHandle::RenderWorldXYZAxis()
 	}
 	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
 
-	uint Stride = sizeof(FVertexPC);
-	uint offset = 0;
-	FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
-	ID3D11Buffer* VB = Info.VertexBuffer;
-	uint Num = Info.NumVertices;
-	DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
-	DXDDeviceContext->Draw(Num, 0);
-
-	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
+    uint Stride = sizeof(FVertexPNCT);
+    uint offset = 0;
+    FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
+    ID3D11Buffer* VB = Info.VertexBuffer;
+    uint Num = Info.NumVertices;
+    DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
+    DXDDeviceContext->Draw(Num, 0);
 
 }
+
+void UDirectXHandle::EndRenderViewport()
+{
+	DXDDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+}
+
 
 void UDirectXHandle::RenderAABB(FBoundingBox InBox) {
     // Begin Object Matrix Update. 
@@ -614,8 +642,14 @@ void UDirectXHandle::RenderWindow()
 }
 
 // texture2d를 생성합니다.
-void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
+void UDirectXHandle::PrepareViewport( FViewport& InViewport)
 {
+	if (InViewport.bIsResized)
+	{
+		UpdateViewportBuffer(InViewport);
+		InViewport.bIsResized = false;
+	}
+
 	FLOAT ClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 	DXDDeviceContext->ClearRenderTargetView(GetRenderTarget(InViewport.GetName())->GetFrameBufferRTV().Get(), ClearColor);
@@ -645,12 +679,6 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 // quad를 그립니다.
 void UDirectXHandle::RenderViewport(FViewport& InViewport, bool isDepthStencil)
 {	
-	if (InViewport.bIsResized)
-	{
-		UpdateViewportBuffer(InViewport);
-		InViewport.bIsResized = false;
-	}
-
 	if (!isDepthStencil)
 	{
 		DXDDeviceContext->PSSetShaderResources(0, 1, GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
