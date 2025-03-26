@@ -22,6 +22,7 @@ public:
 	AActor* GetSelectedActor() const { return SelectedActor; }
 	void SetSelectedActor(AActor* InActor) { SelectedActor = InActor; }
 	TArray<FViewport>& GetViewports() { return Viewports; }
+	FViewport* GetSelectedViewport() { return SelectedViewport; }
 
 	FVector2 GetSplitterPosition() const;
 	void SetSplitterPosition(FVector2 Position);

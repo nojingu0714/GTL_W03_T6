@@ -7,6 +7,16 @@
 
 class UDirectXHandle;
 
+enum class EViewPosition : uint32
+{
+	Top,
+	Left,
+	Right,
+	Bottom,
+	Front,
+	Back
+};
+
 struct FViewportCamera
 {
 	FVector Location;
@@ -22,7 +32,7 @@ struct FViewportCamera
 	float Sensitive;
 	float MaxPitch;
 	float MinPitch;
-
+	EViewPosition ViewPosition;
 };
 
 // 엔진에 TArray로 저장.
@@ -59,7 +69,9 @@ public:
 
 public:
 	EEngineShowFlags GetShowFlags() const { return ShowFlags; }
+	void SetShowFlags(EEngineShowFlags InShowFlags) { ShowFlags = InShowFlags; }
 	EViewModeIndex GetViewModeIndex() const { return ViewModeIndex; }
+	void SetViewModeIndex(EViewModeIndex InViewModeIndex) { ViewModeIndex = InViewModeIndex; }
 
 private:
 	FString Name;

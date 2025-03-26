@@ -1,25 +1,42 @@
 {
+  "Cameras" : [{
+      "FarClip" : 1000.000000,
+      "FieldOfView" : 60.000000,
+      "Location" : [-9.826747, -1.898393, 6.868253],
+      "NearClip" : 0.100000,
+      "ProjectionMode" : 0,
+      "Rotation" : [0.000000, -33.473446, 12.381665],
+      "Sensitive" : 10.000000,
+      "Speed" : 10.000000
+    }, {
+      "FarClip" : 1000.000000,
+      "FieldOfView" : 60.000000,
+      "Location" : [-4.028733, -0.483333, -1.962585],
+      "NearClip" : 0.100000,
+      "ProjectionMode" : 0,
+      "Rotation" : [0.000000, -19.878952, -5.200113],
+      "Sensitive" : 10.000000,
+      "Speed" : 10.000000
+    }, {
+      "FarClip" : 1000.000000,
+      "FieldOfView" : 60.000000,
+      "Location" : [-7.598496, -5.647726, 0.000000],
+      "NearClip" : 0.100000,
+      "ProjectionMode" : 0,
+      "Rotation" : [0.000000, 0.945550, 39.528454],
+      "Sensitive" : 10.000000,
+      "Speed" : 10.000000
+    }, {
+      "FarClip" : 1000.000000,
+      "FieldOfView" : 60.000000,
+      "Location" : [-13.084170, 13.368740, 0.234642],
+      "NearClip" : 0.100000,
+      "ProjectionMode" : 0,
+      "Rotation" : [0.000000, -1.746669, -24.206823],
+      "Sensitive" : 10.000000,
+      "Speed" : 10.000000
+    }],
   "Primitives" : {
-    "AStaticMeshActor_34" : {
-      "Location" : [2.259998, 0.000000, 0.000000],
-      "ObjStaticMeshAsset" : "Contents/Conan.obj",
-      "Rotation" : [0.000000, 0.000000, 22.600050],
-      "Scale" : [1.000000, 1.000000, 1.000000],
-      "Type" : "StaticMeshComp"
-    },
-    "AStaticMeshActor_37" : {
-      "Location" : [2.559998, 0.000000, 0.000000],
-      "ObjStaticMeshAsset" : "Contents/Conan.obj",
-      "Rotation" : [0.000000, 0.000000, 25.600061],
-      "Scale" : [1.000000, 1.000000, 1.000000],
-      "Type" : "StaticMeshComp"
-    },
-    "AStaticMeshActor_40" : {
-      "Location" : [8.020088, 0.000000, 0.000000],
-      "ObjStaticMeshAsset" : "Contents/Conan.obj",
-      "Rotation" : [0.000000, 0.000000, 80.199348],
-      "Scale" : [1.000000, 1.000000, 1.000000],
-      "Type" : "StaticMeshComp"
-    }
+
   }
 }

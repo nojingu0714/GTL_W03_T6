@@ -55,6 +55,27 @@ void FSceneManager::SaveScene(const std::string& InSceneName, const std::string&
     // ✅ Scene에 Primitives 추가
     Scene["Primitives"] = Primitives;
 
+    json::JSON CameraArray = json::Array();
+    for (const auto& Viewport : UEngine::GetEngine().GetEditorManager()->GetViewports())
+    {
+        if (FViewportCamera* Camera = Viewport.GetCamera())
+        {
+            json::JSON CameraJSON;
+            CameraJSON["Location"] = json::FVectorToJSON(Camera->Location);
+            CameraJSON["Rotation"] = json::FRotatorToJSON(Camera->Rotation);
+            CameraJSON["ProjectionMode"] = static_cast<int>(Camera->ProjectionMode);
+            CameraJSON["FieldOfView"] = Camera->FieldOfView;
+            CameraJSON["NearClip"] = Camera->NearClip;
+            CameraJSON["FarClip"] = Camera->FarClip;
+            CameraJSON["Speed"] = Camera->Speed;
+            CameraJSON["Sensitive"] = Camera->Sensitive;
+
+            CameraArray.append(CameraJSON);
+        }
+    }
+
+    Scene["Cameras"] = CameraArray;
+
     std::string ScenePath = InPath + InSceneName + ".scene";
 
     if (!std::filesystem::exists(InPath))

@@ -175,7 +175,7 @@ HRESULT UDirectXHandle::CreateDirectX11Handle(HWND hWnd)
 	AddRasterizerState(TEXT("Gizmo"), GizmoRasterizerDesc);
 
 	D3D11_RASTERIZER_DESC WireframeRasterizerDesc = {};
-	WireframeRasterizerDesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
+	WireframeRasterizerDesc.FillMode = D3D11_FILL_WIREFRAME; // 채우기 모드
 	WireframeRasterizerDesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
 	AddRasterizerState(TEXT("Wireframe"), WireframeRasterizerDesc);
 
