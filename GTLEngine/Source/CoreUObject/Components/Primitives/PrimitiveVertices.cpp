@@ -2,10 +2,10 @@
 
 //#include "PrimitiveVertices.h"
 #include "Core/Resource/Types.h"
-#include "DirectX11/DirectXHandle.h"
+#include "DirectX11/DXDBufferManager.h"
 
 // 가장 기본적인 Primitive들을 생성하는 함수.
-HRESULT CreatePrimitives(UDirectXHandle* Handle)
+HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 {
 	const int NumSegments = 32;
 	HRESULT hr = S_OK;
@@ -15,7 +15,48 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 	LineVertices.push_back({ {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
 	LineVertices.push_back({ {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
 
-	hr = Handle->AddVertexBuffer(TEXT("Line"), LineVertices, TArray<uint32>());
+	FVertexInfo VertexDummy;
+	FIndexInfo IndexDummy;
+	hr = BufferManager->CreateVertexBuffer(TEXT("Line"), LineVertices, VertexDummy);
+
+	TArray<FVertexPC> WorldXYZAxisVertices;
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {100.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 100.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 100.0f}, {0.0f, 0.0f, 1.0f, 1.0f} });
+
+	hr = BufferManager->CreateVertexBuffer(TEXT("WorldXYZAxis"), WorldXYZAxisVertices, VertexDummy);
+
+
+	uint64 GridVertexNum = 1000;
+	float offset = static_cast<float>(GridVertexNum / 2) / 4;
+	TArray<FVertexPC> WorldGridVertices;
+	for (int i = 0; i < GridVertexNum / 4; ++i)
+	{
+		WorldGridVertices.push_back({ {float(i) - offset, offset, 0.f }, { 1.0f, 1.0f, 1.0f, 1.0f }
+	});
+		WorldGridVertices.push_back({ {float(i) - offset, -offset, 0.f }, { 1.0f, 1.0f, 1.0f, 1.0f }
+			});
+		WorldGridVertices.push_back({ {offset, float(i) - offset, 0.f }, { 1.0f, 1.0f, 1.0f, 1.0f }
+			});
+		WorldGridVertices.push_back({ {-offset, float(i) - offset, 0.f }, { 1.0f, 1.0f, 1.0f, 1.0f }
+			});
+
+	}
+
+	/*WorldGridVertices.push_back({ {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
+	WorldGridVertices.push_back({ {100.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
+
+	WorldGridVertices.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} });
+	WorldGridVertices.push_back({ {0.0f, 100.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} });
+
+	WorldGridVertices.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f} });
+	WorldGridVertices.push_back({ {0.0f, 0.0f, 100.0f}, {0.0f, 0.0f, 1.0f, 1.0f} });*/
+
+	hr = BufferManager->CreateVertexBuffer(TEXT("WorldGrid"), WorldGridVertices, VertexDummy);
+	
 
 	///////////////////////////////////
 	// Cube
@@ -70,8 +111,8 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		20, 21, 22, 21, 23, 22
 	};
 
-	hr = Handle->AddVertexBuffer(TEXT("Cube"), CubeVertices, CubeIndices);
-
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cube"), CubeVertices, VertexDummy);
+	hr = BufferManager->CreateIndexBuffer(TEXT("Cube"), CubeIndices, IndexDummy);
 
 	///////////////////////////////////
 	/// Cylinder
@@ -105,7 +146,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		CylinderIndices.push_back(i * 2 + 3);
 	}
 
-	hr = Handle->AddVertexBuffer(TEXT("Cylinder"), CylinderVertices, CylinderIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cylinder"), CylinderVertices, VertexDummy);
 
 	///////////////////////////////////
 	/// Cone
@@ -134,7 +175,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		ConeIndices.push_back(NumSegments + 2);
 	}
 
-	hr = Handle->AddVertexBuffer(TEXT("Cone"), ConeVertices, ConeIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cone"), ConeVertices, VertexDummy);
 
 	///////////////////////////////////
 	///	Quarter Ring
@@ -159,7 +200,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		QuarterRingIndices.push_back(i * 2 + 2);
 	}
 
-	hr = Handle->AddVertexBuffer(TEXT("QuarterRing"), QuarterRingVertices, QuarterRingIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("QuarterRing"), QuarterRingVertices, VertexDummy);
 
 	///////////////////////////////////
 	/// CubeFrame
@@ -183,7 +224,8 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		0, 4, 1, 6, 2, 5, 3, 7
 	};
 
-	hr = Handle->AddVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, CubeFrameIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, VertexDummy);
+	hr = BufferManager->CreateIndexBuffer(TEXT("BoundingBox"), CubeFrameIndices, IndexDummy);
 
 	///////////////////////////////////
 	/// Quad
@@ -200,7 +242,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
     // Change the line causing the error to explicitly specify the template parameter
 	TArray<uint32> EmptyIndices;
 
-    hr = Handle->AddVertexBuffer(TEXT("Quad"), QuadVertices, EmptyIndices);
+    hr = BufferManager->CreateVertexBuffer(TEXT("Quad"), QuadVertices, VertexDummy);
 	return hr;
 
 

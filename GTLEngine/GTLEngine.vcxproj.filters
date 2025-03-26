@@ -630,6 +630,9 @@
     <ClInclude Include="Source\Core\Window\Splitter.h">
       <Filter>Source\Core\Window</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Engine\ShowFlag.h">
+      <Filter>Source\Core\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\PrimitiveShader.hlsl">

@@ -8,7 +8,7 @@
 ACube::ACube()
 	: Super()
 {
-	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Cube.obj")));
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/cube.obj")));
 }
 
 void ACube::Tick(float TickTime)

@@ -372,6 +372,7 @@
     <ClInclude Include="Source\Core\Editor\EditorManager.h" />
     <ClInclude Include="Source\Core\Engine\Engine.h" />
     <ClInclude Include="Source\Core\Engine\EngineStatics.h" />
+    <ClInclude Include="Source\Core\Engine\ShowFlag.h" />
     <ClInclude Include="Source\Core\Gizmo\GizmoManager.h" />
     <ClInclude Include="Source\Core\HAL\PlatformMemory.h" />
     <ClInclude Include="Source\Core\Input\InputManager.h" />

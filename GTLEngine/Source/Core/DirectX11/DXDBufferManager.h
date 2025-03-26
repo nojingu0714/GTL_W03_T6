@@ -6,28 +6,40 @@ class UDXDBufferManager
 {
 
 public:
+	UDXDBufferManager(ID3D11Device* DXDDevice = nullptr);
+
 	template<typename T>
-	HRESULT CreateVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
+	HRESULT CreateVertexBuffer(const FString& KeyName, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
 
-	HRESULT CreateIndexBuffer(ID3D11Device* Device, const TArray<uint32>& indices, FIndexInfo& OutIndexInfo);
+	HRESULT CreateIndexBuffer(const FString& KeyName, const TArray<uint32>& indices, FIndexInfo& OutIndexInfo);
 
-	HRESULT CreateASCIITextBuffer(ID3D11Device* Device, const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset);
+	HRESULT CreateASCIITextBuffer(const FString& Text, FBufferInfo& OutBufferInfo, float WidthOffset, float HeightOffset);
 
 	void ReleaseBuffers();
 	template<typename T>
-	HRESULT CreateDynamicVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
+	HRESULT CreateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices, FVertexInfo& OutVertexInfo);
+
+	FVertexInfo GetVertexBuffer(const FString& InName);
+	FIndexInfo GetIndexBuffer(const FString& InName);
 
 private:
-	TMap<FString, FVertexInfo> StaticVertexBufferPool;
-	TMap<FString, FVertexInfo> DynamicVertexBufferPool;
+
+	ID3D11Device* DXDDevice;
+
+	TMap<FString, FVertexInfo> VertexBufferPool;
 	TMap<FString, FIndexInfo> IndexBufferPool;
-
-
+	TMap<FString, FBufferInfo> TextAtlasBufferPool;
 };
 
 template<typename T>
-inline HRESULT UDXDBufferManager::CreateVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo)
+inline HRESULT UDXDBufferManager::CreateVertexBuffer(const FString& KeyName, const TArray<T>& vertices, FVertexInfo& OutVertexInfo)
 {
+	if (VertexBufferPool.contains(KeyName))
+	{
+		OutVertexInfo = VertexBufferPool[KeyName];
+		return S_OK;
+	}
+
 	ID3D11Buffer* NewVertexBuffer;
 	// 버텍스 버퍼 생성
 	D3D11_BUFFER_DESC bufferDesc = {};
@@ -39,19 +51,27 @@ inline HRESULT UDXDBufferManager::CreateVertexBuffer(ID3D11Device* Device, const
 	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = vertices.data();
 
-	HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, &NewVertexBuffer);
+	HRESULT hr = DXDDevice->CreateBuffer(&bufferDesc, &initData, &NewVertexBuffer);
 	if (FAILED(hr))
 		return hr;
 
 	OutVertexInfo.NumVertices = static_cast<uint32>(vertices.size());
 	OutVertexInfo.VertexBuffer = NewVertexBuffer;
 
+	VertexBufferPool.insert({ KeyName, { OutVertexInfo} });
 	return S_OK;
-	
 }
 
 template<typename T>
-inline HRESULT UDXDBufferManager::CreateDynamicVertexBuffer(ID3D11Device* Device, const TArray<T>& vertices, FVertexInfo& OutVertexInfo) {
+inline HRESULT UDXDBufferManager::CreateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices, FVertexInfo& OutVertexInfo)
+{
+
+	if (VertexBufferPool.contains(KeyName))
+	{
+		OutVertexInfo = VertexBufferPool[KeyName];
+		return S_OK;
+	}
+
 	ID3D11Buffer* NewVertexBuffer;
 	// 버텍스 버퍼 생성
 	D3D11_BUFFER_DESC bufferDesc = {};
@@ -63,12 +83,13 @@ inline HRESULT UDXDBufferManager::CreateDynamicVertexBuffer(ID3D11Device* Device
 	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = vertices.data();
 
-	HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, &NewVertexBuffer);
+	HRESULT hr = DXDDevice->CreateBuffer(&bufferDesc, &initData, &NewVertexBuffer);
 	if ( FAILED(hr) )
 		return hr;
 
 	OutVertexInfo.NumVertices = static_cast<uint32>(vertices.size());
 	OutVertexInfo.VertexBuffer = NewVertexBuffer;
 
+	VertexBufferPool.insert({ KeyName, { OutVertexInfo} });
 	return S_OK;
 }

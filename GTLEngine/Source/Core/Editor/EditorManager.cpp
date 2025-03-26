@@ -104,9 +104,10 @@ void FEditorManager::Draw(UDirectXHandle* Handle)
 
 		Handle->SetLineMode();
 		Handle->RenderWorldPlane(Viewport.GetCamera());
+		Handle->RenderWorldXYZAxis();
 		Handle->RenderBoundingBox(World->GetActors());
-		Handle->RenderLines(World->GetActors());
 
+		//if (Viewport.GetShowFlags() == EEngineShowFlags::SF_Line)
 		Handle->RenderDebugRays(FViewport::DebugRays);
 
 		Handle->SetFaceMode();
