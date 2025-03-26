@@ -13,6 +13,8 @@
 #include "GameFrameWork/Shapes/Cylinder.h"
 #include "GameFrameWork/Shapes/Cone.h"
 
+#include "Utils/GTLStringLibrary.h"
+
 #include <functional>
 
 
@@ -91,15 +93,19 @@ void UWorldOutliner::SceneHierarchy()
 
     // create node for child
     std::function<void(USceneComponent*)> createNode = [&createNode](USceneComponent* comp)->void {
-        FString ws = comp->GetName();
-        std::string s;
-        s.assign(ws.begin(), ws.end());
+
+        std::string Name;
+
+		if (comp == comp->GetOwner()->GetRootComponent())
+			Name = UGTLStringLibrary::WStringToString(comp->GetOwner()->GetName());
+        else
+            Name = UGTLStringLibrary::WStringToString(comp->GetName());
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
         if (comp->GetAllChildren().size() == 0)
             flags |= ImGuiTreeNodeFlags_Leaf;
 
-        bool nodeOpen = ImGui::TreeNodeEx(s.c_str(), flags);
+        bool nodeOpen = ImGui::TreeNodeEx(Name.c_str(), flags);
 
         // 노드 클릭 시 특정 동작 실행 (예: 로그 출력, 선택 처리 등)
         if (ImGui::IsItemClicked()) {

@@ -4,6 +4,8 @@
 #include "Gizmo/GizmoManager.h"
 #include "UI/UIBase.h"
 
+class AActor;
+
 class UPropertyPanel: public UUIBase
 {
 	DECLARE_CLASS(UPropertyPanel, UUIBase)
@@ -16,6 +18,8 @@ public:
 private:
 	void WorldCoordCheckbox();
 	void PropertiesInspector();
+
+	void DrawSMActorProperties(AActor* SelectedActor);
 
 
 private:

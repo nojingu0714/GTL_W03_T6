@@ -2,9 +2,18 @@
 #include "PropertyPanel.h"
 
 #include "ImGui/imgui.h"
-#include "UI/UIManager.h"
 #include "Utils/Math/Vector.h"
 #include "Engine.h"
+
+#include "Editor/EditorManager.h"
+
+#include "GameFrameWork/Actor.h"
+#include "GameFrameWork/StaticMeshActor.h"
+
+#include "Asset/AssetManager.h"
+#include "Asset/ObjManager.h"
+#include "Utils/GTLStringLibrary.h"
+
 
 UPropertyPanel::UPropertyPanel()
 	:UUIBase(), WindowWidth(280.f), WindowHeight(360.f)
@@ -42,27 +51,55 @@ void UPropertyPanel::WorldCoordCheckbox()
 
 void UPropertyPanel::PropertiesInspector()
 {
-	/*AActor* selected = UEngine::GetEngine().GetGizmoManager()->GetSelected();
+	AActor* SelectedActor = UEngine::GetEngine().GetEditorManager()->GetSelectedActor();
 
-	if (selected) {
-		Location[0] = selected->GetActorLocation().X;
-		Location[1] = selected->GetActorLocation().Y;
-		Location[2] = selected->GetActorLocation().Z;
+	if (SelectedActor) {
+		Location[0] = SelectedActor->GetActorLocation().X;
+		Location[1] = SelectedActor->GetActorLocation().Y;
+		Location[2] = SelectedActor->GetActorLocation().Z;
 		ImGui::DragFloat3("Location", Location);
-		selected->SetActorLocation(FVector(Location[0], Location[1], Location[2]));
+		SelectedActor->SetActorLocation(FVector(Location[0], Location[1], Location[2]));
 
-		Rotation[0] = selected->GetActorRotation().Euler().X;
-		Rotation[1] = selected->GetActorRotation().Euler().Y;
-		Rotation[2] = selected->GetActorRotation().Euler().Z;
+		Rotation[0] = SelectedActor->GetActorRotation().Euler().X;
+		Rotation[1] = SelectedActor->GetActorRotation().Euler().Y;
+		Rotation[2] = SelectedActor->GetActorRotation().Euler().Z;
 		ImGui::DragFloat3("Rotation", Rotation);
-		selected->SetActorRotation(FRotator(Rotation[1], Rotation[2], Rotation[0]));
+		SelectedActor->SetActorRotation(FRotator(Rotation[1], Rotation[2], Rotation[0]));
 
-		Scale[0] = selected->GetActorScale().X;
-		Scale[1] = selected->GetActorScale().Y;
-		Scale[2] = selected->GetActorScale().Z;
+		Scale[0] = SelectedActor->GetActorScale().X;
+		Scale[1] = SelectedActor->GetActorScale().Y;
+		Scale[2] = SelectedActor->GetActorScale().Z;
 		ImGui::DragFloat3("Scale", Scale);
-		selected->SetActorScale(FVector(Scale[0], Scale[1], Scale[2]));
+		SelectedActor->SetActorScale(FVector(Scale[0], Scale[1], Scale[2]));
 
-		ImGui::Text("GUID : %d", selected->GetUUID());
-	}*/
+		ImGui::Text("GUID : %d", SelectedActor->GetUUID());
+
+		DrawSMActorProperties(SelectedActor);
+
+	}
+}
+
+void UPropertyPanel::DrawSMActorProperties(AActor* SelectedActor)
+{
+	if (AStaticMeshActor* SMActor = Cast<AStaticMeshActor>(SelectedActor))
+	{
+		TArray<FString> MeshNames = FAssetManager::Get().GetObjFileNames();
+
+		// Array로 넣어줘야 수명이 맞음.
+		TArray<std::string> UTF8MeshNames;
+		TArray<const char*> MeshItems;
+		for (int i = 0; i < MeshNames.size(); i++)
+		{
+			UTF8MeshNames.push_back(UGTLStringLibrary::WStringToString(MeshNames[i]));
+			MeshItems.push_back(UTF8MeshNames[i].c_str());
+		}
+
+		static int32 CurrentIndex = 0;
+		if (ImGui::Combo("Mesh", &CurrentIndex, MeshItems.data(), MeshItems.size()))
+		{
+			UStaticMesh* Mesh = FObjManager::LoadObjStaticMesh(MeshNames[CurrentIndex]);
+			SMActor->SetStaticMesh(Mesh);
+		}
+
+	}
 }

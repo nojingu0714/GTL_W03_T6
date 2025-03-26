@@ -5,11 +5,10 @@
 #include "Input/InputManager.h"
 #include "CoreUObject/GameFrameWork/Actor.h"
 #include "GameFrameWork/StaticMeshActor.h"
-#include "DirectX11/DirectXHandle.h"
 
 TArray<FRay> FViewport::DebugRays;
 
-HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight)
+HRESULT FViewport::Init(UDirectXHandle* Handle, const FString& InName, HWND hWnd, int InX, int InY, UINT InWidth, UINT InHeight)
 {
 	Name = InName;
 	Viewport.TopLeftX = InX;
@@ -19,7 +18,6 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 	Viewport.MinDepth = 0.0f;
 	Viewport.MaxDepth = 1.0f;
 	
-	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
 	HRESULT hr = S_OK;
 
 	// 컬러 버퍼.
@@ -61,7 +59,7 @@ HRESULT FViewport::Init(const FString& InName, HWND hWnd, int InX, int InY, UINT
 		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
 		return hr;
 	}
-	hr = Handle->AddDepthStencilView(InName, hWnd, InWidth, InHeight);
+	hr = Handle->AddDepthStencilView(InName, InWidth, InHeight);
 	if (FAILED(hr))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FViewport::Init::Failed to add render target"));
@@ -86,10 +84,13 @@ void FViewport::MoveViewport(int InX, int InY)
 	Viewport.TopLeftY = InY;
 }
 
+// handle에서 update 필요함.
 void FViewport::ResizeViewport(UINT InWidth, UINT InHeight)
 {
 	Viewport.Width = InWidth;
 	Viewport.Height = InHeight;
+
+	bIsResized = true;
 }
 
 void FViewport::SetProjectionMatrix(const FMatrix& InProjectionMatrix)

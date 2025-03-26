@@ -541,7 +541,7 @@ void UDirectXHandle::InitWindow(HWND hWnd, UINT InWidth, UINT InHeight)
 	AddRenderTargetToSwapChain(TEXT("Window"));
 
 	// depth stencil view
-	AddDepthStencilView(TEXT("Window"), hWnd, InWidth, InHeight);
+	AddDepthStencilView(TEXT("Window"), InWidth, InHeight);
 
 	// depth stencil state
 	D3D11_DEPTH_STENCIL_DESC DepthStencilDesc = {};
@@ -637,11 +637,14 @@ void UDirectXHandle::PrepareViewport(const FViewport& InViewport)
 }
 
 // quad를 그립니다.
-void UDirectXHandle::RenderViewport(const FViewport& InViewport, bool isDepthStencil)
-{
-	UDirectXHandle* Handle = UEngine::GetEngine().GetDirectX11Handle();
-	ID3D11DeviceContext* Context = Handle->GetD3DDeviceContext();
-	
+void UDirectXHandle::RenderViewport(FViewport& InViewport, bool isDepthStencil)
+{	
+	if (InViewport.bIsResized)
+	{
+		UpdateViewportBuffer(InViewport);
+		InViewport.bIsResized = false;
+	}
+
 	if (!isDepthStencil)
 	{
 		DXDDeviceContext->PSSetShaderResources(0, 1, GetRenderTarget(InViewport.GetName())->GetFrameBufferSRV().GetAddressOf());
@@ -673,9 +676,50 @@ void UDirectXHandle::RenderViewport(const FViewport& InViewport, bool isDepthSte
 		Buffer->height = InViewport.GetViewport().Height / (float)windowInfo.Height * 2;
 	}
 	DXDDeviceContext->Unmap(CbViewportRatio, 0);
+	DXDDeviceContext->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+}
 
+HRESULT UDirectXHandle::UpdateViewportBuffer(const FViewport& InViewport)
+{
+	FString Name = InViewport.GetName();
+	ReleaseRenderTarget(Name);
+	ReleaseDepthStencilView(Name);
 
-	Context->Draw(VertexBuffers[TEXT("Quad")].NumVertices, 0);
+	// 컬러 버퍼.
+	D3D11_TEXTURE2D_DESC TextureDesc = {};
+	TextureDesc.Width = InViewport.GetViewport().Width;
+	TextureDesc.Height = InViewport.GetViewport().Height;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	TextureDesc.SampleDesc.Count = 1;
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.CPUAccessFlags = 0;
+	TextureDesc.MiscFlags = 0;
+
+	D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc = {};
+	RenderTargetViewDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	RenderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	RenderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	HRESULT hr = S_OK;
+
+	hr = AddRenderTarget(Name, TextureDesc, RenderTargetViewDesc);
+	if (FAILED(hr))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FViewport::ResizeViewport::Failed to add render target"));
+		return hr;
+	}
+	hr = AddDepthStencilView(Name, TextureDesc.Width, TextureDesc.Height);
+	if (FAILED(hr))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FViewport::ResizeViewport::Failed to add render target"));
+		return hr;
+	}
+	return hr;
+
 }
 
 HRESULT UDirectXHandle::AddRenderTarget(const FString& InName, const D3D11_TEXTURE2D_DESC InRenderTargetDesc, const D3D11_RENDER_TARGET_VIEW_DESC& InRenderTargetViewDesc)
@@ -714,7 +758,7 @@ HRESULT UDirectXHandle::AddRenderTargetToSwapChain(const FString& InName)
 	return S_OK;
 }
 
-HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UINT InWidth, UINT InHeight)
+HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, UINT InWidth, UINT InHeight)
 {
 	if (DepthStencilViews.find(InName) != DepthStencilViews.end())
 	{
@@ -724,7 +768,7 @@ HRESULT UDirectXHandle::AddDepthStencilView(const FString& InName, HWND hWnd, UI
 
 	UDXDDepthStencilView* DepthStencilView = new UDXDDepthStencilView();
 
-	HRESULT hr = DepthStencilView->CreateDepthStencilView(DXDDevice, hWnd, InWidth, InHeight);
+	HRESULT hr = DepthStencilView->CreateDepthStencilView(DXDDevice, InWidth, InHeight);
 	if (FAILED(hr))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::AddDepthStencilView::Create Failed"));
@@ -815,6 +859,34 @@ UDXDRasterizerState* UDirectXHandle::GetRasterizerState(const FString& InName)
 		return nullptr;
 	}
 	return RasterizerStates[InName];
+}
+
+HRESULT UDirectXHandle::ReleaseRenderTarget(const FString& InName)
+{
+	if (RenderTargets.find(InName) == RenderTargets.end())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::ReleaseRenderTarget::Invalid Name"));
+		return S_FALSE;
+	}
+
+	RenderTargets[InName]->ReleaseRenderTarget();
+	RenderTargets.erase(InName);
+
+	return S_OK;
+}
+
+HRESULT UDirectXHandle::ReleaseDepthStencilView(const FString& InName)
+{
+	if (DepthStencilViews.find(InName) == DepthStencilViews.end())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::ReleaseDepthStencilView::Invalid Name"));
+		return S_FALSE;
+	}
+
+	DepthStencilViews[InName]->ReleaseDepthStencilView();
+	DepthStencilViews.erase(InName);
+
+	return S_OK;
 }
 
 void UDirectXHandle::RenderDebugRays(const TArray<FRay>& Rays)
@@ -977,11 +1049,14 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 	
 	FStaticMesh* MeshInfo = FObjManager::LoadObjStaticMeshAsset(Comp->GetStaticMesh()->GetAssetPathFileName());
 
+
 	// 각 섹션별로 처리
 	for (const FStaticMeshSection& Section : MeshInfo->Sections)
 	{
 		
 		UMaterial* Mat = FMaterialManager::LoadMaterial(Section.MaterialName);
+		
+		ID3D11ShaderResourceView* DiffuseSRV = nullptr;
 
 		if (Mat)
 		{
@@ -1025,15 +1100,16 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 			};*/
 			if (DiffuseTextureMap)
 			{
-				ID3D11ShaderResourceView* DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
-				DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+				DiffuseSRV = ResourceManager->TryGetTextureSRV(DiffuseTextureMap->GetTextureName());
 			}
 
-			ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
-			DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
 
 		}
 		
+		DXDDeviceContext->PSSetShaderResources(1, 1, &DiffuseSRV);
+		ID3D11SamplerState* Sampler = ResourceManager->TryGetTextureSampler(TEXT("Resource/Texture/Fonts/DejaVu_Sans_Mono.dds"));
+		DXDDeviceContext->PSSetSamplers(0, 1, &Sampler);
+
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;
 		FIndexInfo IndexInfo;
@@ -1229,7 +1305,7 @@ HRESULT UDirectXHandle::ResizeWindow(int width, int height) {
 		return hr;
 
 	FWindowInfo winInfo = UEngine::GetEngine().GetWindowInfo();
-	hr = DepthStencilViews[TEXT("Window")]->CreateDepthStencilView(DXDDevice, winInfo.WindowHandle, static_cast<float>(width), static_cast<float>(height));
+	hr = DepthStencilViews[TEXT("Window")]->CreateDepthStencilView(DXDDevice, static_cast<float>(width), static_cast<float>(height));
 	if ( FAILED(hr) )
 		return hr;
 

@@ -58,7 +58,6 @@ private:
 
 public:
     // Getter
-    UDirectXHandle* GetDirectX11Handle() const { return DirectX11Handle; }
     UResourceManager* GetResourceManager() const { return ResourceManager; }
     UWorld* GetWorld() const { return World; }
 	UTimeManager* GetTimeManager() const { return TimeManager; }
