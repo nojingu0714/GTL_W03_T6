@@ -7,7 +7,7 @@
 ACone::ACone()
 	: Super()
 {
-	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Triangle.obj")));
+	StaticMeshComponent->SetStaticMesh(FObjManager::LoadObjStaticMesh(TEXT("Contents/Cone.obj")));
 
 }
 
