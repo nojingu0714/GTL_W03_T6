@@ -2,10 +2,10 @@
 
 //#include "PrimitiveVertices.h"
 #include "Core/Resource/Types.h"
-#include "DirectX11/DirectXHandle.h"
+#include "DirectX11/DXDBufferManager.h"
 
 // 가장 기본적인 Primitive들을 생성하는 함수.
-HRESULT CreatePrimitives(UDirectXHandle* Handle)
+HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 {
 	const int NumSegments = 32;
 	HRESULT hr = S_OK;
@@ -15,7 +15,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 	LineVertices.push_back({ {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
 	LineVertices.push_back({ {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
 
-	hr = Handle->AddVertexBuffer(TEXT("Line"), LineVertices, TArray<uint32>());
+	hr = BufferManager->CreateVertexBuffer(TEXT("Line"), LineVertices, nullptr);
 
 	///////////////////////////////////
 	// Cube
@@ -70,8 +70,8 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		20, 21, 22, 21, 23, 22
 	};
 
-	hr = Handle->AddVertexBuffer(TEXT("Cube"), CubeVertices, CubeIndices);
-
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cube"), CubeVertices, CubeIndices);
+	hr = BufferManager->CreateIndexBuffer(TEXT("Cube"), CubeIndices, )
 
 	///////////////////////////////////
 	/// Cylinder
@@ -105,7 +105,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		CylinderIndices.push_back(i * 2 + 3);
 	}
 
-	hr = Handle->AddVertexBuffer(TEXT("Cylinder"), CylinderVertices, CylinderIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cylinder"), CylinderVertices, CylinderIndices);
 
 	///////////////////////////////////
 	/// Cone
@@ -134,7 +134,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		ConeIndices.push_back(NumSegments + 2);
 	}
 
-	hr = Handle->AddVertexBuffer(TEXT("Cone"), ConeVertices, ConeIndices);
+	hr = BufferManager->CreateVertexBuffer(TEXT("Cone"), ConeVertices, ConeIndices);
 
 	///////////////////////////////////
 	///	Quarter Ring
@@ -159,7 +159,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		QuarterRingIndices.push_back(i * 2 + 2);
 	}
 
-	hr = Handle->AddVertexBuffer(TEXT("QuarterRing"), QuarterRingVertices, QuarterRingIndices);
+	hr = Handle->CreateVertexBuffer(TEXT("QuarterRing"), QuarterRingVertices, QuarterRingIndices);
 
 	///////////////////////////////////
 	/// CubeFrame
@@ -183,7 +183,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
 		0, 4, 1, 6, 2, 5, 3, 7
 	};
 
-	hr = Handle->AddVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, CubeFrameIndices);
+	hr = Handle->CreateVertexBuffer(TEXT("BoundingBox"), CubeFrameVertices, CubeFrameIndices);
 
 	///////////////////////////////////
 	/// Quad
@@ -200,7 +200,7 @@ HRESULT CreatePrimitives(UDirectXHandle* Handle)
     // Change the line causing the error to explicitly specify the template parameter
 	TArray<uint32> EmptyIndices;
 
-    hr = Handle->AddVertexBuffer(TEXT("Quad"), QuadVertices, EmptyIndices);
+    hr = Handle->CreateVertexBuffer(TEXT("Quad"), QuadVertices, EmptyIndices);
 	return hr;
 
 

@@ -36,7 +36,7 @@
 #include "Window/Viewport.h"
 #include "Core/Window/ViewportClient.h"
 
-HRESULT CreatePrimitives(UDirectXHandle* Handle);
+HRESULT CreatePrimitives(UDXDBufferManager* BufferManager);
 
 UDirectXHandle::~UDirectXHandle()
 {
@@ -374,19 +374,6 @@ void UDirectXHandle::ReleaseDirectX11Handle()
 		BufferManager->ReleaseBuffers();
 		delete BufferManager;
 		BufferManager = nullptr;
-	}
-
-	if (!VertexBuffers.empty())
-	{
-		for (auto& VertexBuffer : VertexBuffers)
-		{
-			if (VertexBuffer.second.VertexBuffer)
-			{
-				VertexBuffer.second.VertexBuffer->Release();
-				VertexBuffer.second.VertexBuffer = nullptr;
-			}
-		}
-		VertexBuffers.clear();
 	}
 
 	if (IndexBuffers.empty())
@@ -958,68 +945,6 @@ void UDirectXHandle::RenderBoundingBox(const TArray<AActor*> Actors) {
 
 void UDirectXHandle::RenderGizmo(AGizmoActor* Gizmos) {
 
-	SetFaceMode();
-	// Gizmo는 언제든 SOLID로 그려지도록 설정.
-	DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
-	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("GizmoVS")), NULL, 0);
-	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("GizmoPS")), NULL, 0);
-
-	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("GizmoVS")));
-
-    if (!Gizmos)
-        return;
-
-	
-    // Begin Object Matrix Update. 
-    ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
-    if (!CbChangesEveryObject)
-    {
-        return;
-    } 
-    D3D11_MAPPED_SUBRESOURCE MappedData = {};
-    DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-    if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
-    {
-		Buffer->WorldMatrix = FMatrix::Identity();
-    }
-    DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
-
-	ID3D11Buffer* Gizmo = ConstantBuffers[EConstantBufferType::Gizmo]->GetConstantBuffer();
-	if (!Gizmo)
-	{
-		return;
-	}
-	MappedData = {};
-	DXDDeviceContext->Map(Gizmo, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
-	if (FCbGizmo* Buffer = reinterpret_cast<FCbGizmo*>(MappedData.pData))
-	{
-		Buffer->Color = FVector4(1, 0, 0, 1);
-	}
-	DXDDeviceContext->Unmap(Gizmo, 0);
-
-
-    DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Always"))->GetDepthStencilState(), 0);
-
-	FStaticMesh* MeshInfo = FObjManager::LoadObjStaticMeshAsset(Gizmos->GetGizmoTranslateComponent()->GetStaticMesh()->GetAssetPathFileName());
-
-	uint Stride = sizeof(FVertexPNCT);
-	UINT offset = 0;
-
-	FVertexInfo VertexInfo;
-	FIndexInfo IndexInfo;
-	BufferManager->CreateVertexBuffer(DXDDevice, MeshInfo->Sections[0].Vertices, VertexInfo);
-	BufferManager->CreateIndexBuffer(DXDDevice, MeshInfo->Sections[0].Indices, IndexInfo);
-
-	// Vertex 버퍼 바인딩
-	DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &offset);
-
-	// Index 버퍼 바인딩
-	DXDDeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// 인덱스를 기반으로 그리기
-	DXDDeviceContext->DrawIndexed(IndexInfo.NumIndices, 0, 0);
-
-	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Default"))->GetDepthStencilState(), 0);
 }
 
 void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
@@ -1116,8 +1041,8 @@ void UDirectXHandle::RenderStaticMesh(UStaticMeshComponent* Comp)
 		// Vertex/Index 버퍼 생성
 		FVertexInfo VertexInfo;
 		FIndexInfo IndexInfo;
-		BufferManager->CreateVertexBuffer(DXDDevice, Section.Vertices, VertexInfo);
-		BufferManager->CreateIndexBuffer(DXDDevice, Section.Indices, IndexInfo);
+		BufferManager->CreateVertexBuffer(Section.MaterialName, Section.Vertices, VertexInfo);
+		BufferManager->CreateIndexBuffer(Section.MaterialName, Section.Indices, IndexInfo);
 
 		// Vertex 버퍼 바인딩
 		DXDDeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &offset);
@@ -1214,7 +1139,7 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
     uint Stride = sizeof(FVertexPT);
     UINT offset = 0;
 	FBufferInfo Info;
-	BufferManager->CreateASCIITextBuffer(DXDDevice, TargetActor->GetName(), Info, 0.0f, 0.0f);
+	BufferManager->CreateASCIITextBuffer(TargetActor->GetName(), Info, 0.0f, 0.0f);
     DXDDeviceContext->IASetVertexBuffers(0, 1, &Info.VertexInfo.VertexBuffer, &Stride, &offset);
 	DXDDeviceContext->IASetIndexBuffer(Info.IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	DXDDeviceContext->DrawIndexed(Info.IndexInfo.NumIndices, 0, 0);
@@ -1225,41 +1150,6 @@ void UDirectXHandle::RenderActorUUID(AActor* TargetActor)
 
 	Info.VertexInfo.VertexBuffer->Release();
 	Info.IndexInfo.IndexBuffer->Release();
-}
-
-//void UDirectXHandle::InitView()
-//{
-//	// 렌더 타겟 클리어 및 클리어에 적용할 색.
-//	FLOAT ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-//
-//	DXDDeviceContext->ClearRenderTargetView(RenderTargets[TEXT("Default")]->GetFrameBufferRTV().Get(), ClearColor);
-//
-//	// 뎁스/스텐실 뷰 클리어. 뷰, DEPTH만 클리어, 깊이 버퍼 클리어 할 값, 스텐실 버퍼 클리어 할 값.
-//	DXDDeviceContext->ClearDepthStencilView(DepthStencilViews[TEXT("Default")]->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-//
-//    //DXDDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//
-//	DXDDeviceContext->RSSetViewports(1, &ViewportInfo);
-//	if (UEngine::GetEngine().ViewModeIndex == EViewModeIndex::VMI_Wireframe)
-//		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Wireframe")]->GetRasterizerState());
-//	else
-//		DXDDeviceContext->RSSetState(RasterizerStates[TEXT("Default")]->GetRasterizerState());
-//
-//	// TODO: SwapChain Window 크기와 DepthStencilView Window 크기가 맞아야 에러 X.
-//	DXDDeviceContext->OMSetRenderTargets(1, RenderTargets[TEXT("Default")]->GetFrameBufferRTV().GetAddressOf(), DepthStencilViews[TEXT("Default")]->GetDepthStencilView());
-//}
-
-FVertexInfo UDirectXHandle::GetVertexBuffer(FString KeyName)
-{
-	if (VertexBuffers.find(KeyName) == VertexBuffers.end())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UDirectXHandle::GetVertexBuffer::Invalid Name"));
-		return FVertexInfo();
-	}
-	else
-	{
-		return VertexBuffers[KeyName];
-	}
 }
 
 HRESULT UDirectXHandle::AddConstantBuffer(EConstantBufferType Type)

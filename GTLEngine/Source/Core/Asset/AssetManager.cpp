@@ -4,6 +4,8 @@
 #include <filesystem>
 #include "Utils/GTLStringLibrary.h"
 
+#include "ObjManager.h"
+
 TArray<FString> FAssetManager::ObjFileNames;
 
 void FAssetManager::InitAssetManager()
@@ -23,6 +25,7 @@ void FAssetManager::PreLoadObjFiles()
 		if (Entry.is_regular_file() && Entry.path().extension() == ".obj")
 		{
 			ObjFileNames.push_back(UGTLStringLibrary::StringToWString(Entry.path().string()));
+			FObjManager::LoadObjStaticMeshAsset(UGTLStringLibrary::StringToWString(Entry.path().string()));
 		}
 	}
 }
