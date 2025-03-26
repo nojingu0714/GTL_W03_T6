@@ -121,6 +121,7 @@ void FSceneManager::LoadScene(const std::string& InSceneName)
     UWorld* World = UEngine::GetEngine().GetWorld();
     if (!World) return;
 
+    // ✅ 오브젝트 로드
     if (SceneJSON.hasKey("Primitives")) {
         json::JSON PrimitiveJSON = SceneJSON["Primitives"];
         for (auto& pair : PrimitiveJSON.ObjectRange())
@@ -140,17 +141,37 @@ void FSceneManager::LoadScene(const std::string& InSceneName)
         }
     }
 
-    if (SceneJSON.hasKey("PerspectiveCamera")) {
-        json::JSON CameraJSON = SceneJSON["PerspectiveCamera"];
-        FVector Location = JSONToFVector(CameraJSON["Location"]);
-        FRotator Rotation = JSONToFRotator(CameraJSON["Rotation"]);
-        float FOV = CameraJSON["FOV"].ToFloat();
-        float Near = CameraJSON["NearClip"].ToFloat();
-        float Far = CameraJSON["FarClip"].ToFloat();
+    // ✅ 카메라 로드 & 적용
+    if (SceneJSON.hasKey("Cameras"))
+    {
+        const json::JSON& CameraArray = SceneJSON["Cameras"];
+        auto& Viewports = UEngine::GetEngine().GetEditorManager()->GetViewports();
+        
+        size_t NumCameras = std::min(static_cast<size_t>(CameraArray.length()), Viewports.size());
 
-        // 카메라 액터.
 
+        for (size_t i = 0; i < NumCameras; ++i)
+        {
+            const json::JSON& CameraJSON = CameraArray.at(i);  // 🔥 `at(i)` 사용
+
+            if (Viewports[i].GetCamera())
+            {
+                FViewportCamera* Camera = Viewports[i].GetCamera();
+
+                if (CameraJSON.hasKey("Location")) Camera->Location = JSONToFVector(CameraJSON.at("Location"));
+                if (CameraJSON.hasKey("Rotation")) Camera->Rotation = JSONToFRotator(CameraJSON.at("Rotation"));
+                if (CameraJSON.hasKey("ProjectionMode")) Camera->ProjectionMode = static_cast<EProjectionMode>(CameraJSON.at("ProjectionMode").ToInt());
+                if (CameraJSON.hasKey("FieldOfView")) Camera->FieldOfView = CameraJSON.at("FieldOfView").ToFloat();
+                if (CameraJSON.hasKey("NearClip")) Camera->NearClip = CameraJSON.at("NearClip").ToFloat();
+                if (CameraJSON.hasKey("FarClip")) Camera->FarClip = CameraJSON.at("FarClip").ToFloat();
+                if (CameraJSON.hasKey("Speed")) Camera->Speed = CameraJSON.at("Speed").ToFloat();
+                if (CameraJSON.hasKey("Sensitive")) Camera->Sensitive = CameraJSON.at("Sensitive").ToFloat();
+            }
+        }
     }
+
+
+
 
     UE_LOG(LogTemp, Display, TEXT("Scene Loaded: %s"), UGTLStringLibrary::StringToWString(ScenePath).c_str());
 }
