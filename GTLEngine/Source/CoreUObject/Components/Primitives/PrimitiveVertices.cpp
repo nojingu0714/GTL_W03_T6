@@ -19,6 +19,17 @@ HRESULT CreatePrimitives(UDXDBufferManager* BufferManager)
 	FIndexInfo IndexDummy;
 	hr = BufferManager->CreateVertexBuffer(TEXT("Line"), LineVertices, VertexDummy);
 
+	TArray<FVertexPC> WorldXYZAxisVertices;
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {100.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 100.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f} });
+	WorldXYZAxisVertices.push_back({ {0.0f, 0.0f, 100.0f}, {0.0f, 0.0f, 1.0f, 1.0f} });
+
+	hr = BufferManager->CreateVertexBuffer(TEXT("WorldXYZAxis"), WorldXYZAxisVertices, VertexDummy);
+
+
 	uint64 GridVertexNum = 1000;
 	float offset = static_cast<float>(GridVertexNum / 2) / 4;
 	TArray<FVertexPC> WorldGridVertices;

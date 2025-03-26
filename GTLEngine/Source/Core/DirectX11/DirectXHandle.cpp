@@ -437,10 +437,8 @@ void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
 		return;
 
 	SetLineMode();
-
 	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("LineVS")), NULL, 0);
 	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("LinePS")), NULL, 0);
-
 	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("LineVS")));
 
     // set position
@@ -467,7 +465,37 @@ void UDirectXHandle::RenderWorldPlane(const FViewportCamera* Camera) {
     uint Num = Info.NumVertices;
     DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
     DXDDeviceContext->Draw(Num, 0);
+}
 
+void UDirectXHandle::RenderWorldXYZAxis()
+{
+	SetLineMode();
+	DXDDeviceContext->VSSetShader(ShaderManager->GetVertexShaderByKey(TEXT("LineVS")), NULL, 0);
+	DXDDeviceContext->PSSetShader(ShaderManager->GetPixelShaderByKey(TEXT("LinePS")), NULL, 0);
+	DXDDeviceContext->IASetInputLayout(ShaderManager->GetInputLayoutByKey(TEXT("LineVS")));
+	DXDDeviceContext->OMSetDepthStencilState(GetDepthStencilState(TEXT("Always"))->GetDepthStencilState(), 0);
+
+	// Begin Object Matrix Update. 
+	ID3D11Buffer* CbChangesEveryObject = ConstantBuffers[EConstantBufferType::ChangesEveryObject]->GetConstantBuffer();
+	if (!CbChangesEveryObject)
+	{
+		return;
+	}
+	D3D11_MAPPED_SUBRESOURCE MappedData = {};
+	DXDDeviceContext->Map(CbChangesEveryObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedData);
+	if (FCbChangesEveryObject* Buffer = reinterpret_cast<FCbChangesEveryObject*>(MappedData.pData))
+	{
+		Buffer->WorldMatrix = FMatrix::Identity();
+	}
+	DXDDeviceContext->Unmap(CbChangesEveryObject, 0);
+
+	uint Stride = sizeof(FVertexPC);
+	uint offset = 0;
+	FVertexInfo Info = BufferManager->GetVertexBuffer(TEXT("WorldXYZAxis"));
+	ID3D11Buffer* VB = Info.VertexBuffer;
+	uint Num = Info.NumVertices;
+	DXDDeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &offset);
+	DXDDeviceContext->Draw(Num, 0);
 }
 
 void UDirectXHandle::RenderAABB(FBoundingBox InBox) {

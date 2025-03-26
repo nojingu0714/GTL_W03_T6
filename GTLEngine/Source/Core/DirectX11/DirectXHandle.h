@@ -47,6 +47,7 @@ public:
 
 	void UpdateCameraMatrix(FViewportCamera* Camera);
 	void RenderWorldPlane(const FViewportCamera* Camera);
+	void RenderWorldXYZAxis();
 	void RenderBoundingBox(const TArray<AActor*> Actors);
 	void RenderGizmo(AGizmoActor* Gizmos);
 	void RenderStaticMesh(UStaticMeshComponent* Comp);
