@@ -128,10 +128,15 @@ bool FObjImporter::ParseObjFile(const std::string& InPath, const std::string& In
 	std::string BinaryFileName = InFileName.substr(0, InFileName.size() - 4) + ".bin";
 	std::string BinaryPathName = "Binary/";
 
-	std::ifstream BinFile(BinaryPathName+BinaryFileName, std::ios::binary);
+	std::ifstream BinFile(BinaryPathName + BinaryFileName, std::ios::binary);
 
+	auto binTime = std::filesystem::last_write_time(BinaryPathName + BinaryFileName);
+	auto objTime = std::filesystem::last_write_time(InPath + "/" + InFileName);
+
+
+	bool IsOBJUpdated = binTime <= objTime;
 	///If binary file is open read that;
-	if (BinFile.is_open())
+	if (!IsOBJUpdated && BinFile.is_open())
 	{
 		LoadObjFromBinary(BinaryPathName + BinaryFileName, OutObjInfo);
 		return true;
